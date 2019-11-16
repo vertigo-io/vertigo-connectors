@@ -24,7 +24,7 @@ import javax.inject.Inject;
 
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.node.component.Activeable;
-import io.vertigo.core.node.component.Component;
+import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -33,7 +33,7 @@ import redis.clients.jedis.JedisPoolConfig;
 /**
  * @author pchretien
  */
-public final class RedisConnector implements Component, Activeable {
+public final class RedisConnector implements Connector, Activeable {
 	private static final int CONNECT_TIMEOUT = 2000;
 	private final JedisPool jedisPool;
 

@@ -38,7 +38,7 @@ public final class RedisFeatures extends Features<RedisFeatures> {
 	@Feature("jedis")
 	public RedisFeatures withJedis(final Param... params) {
 		getModuleConfigBuilder()
-				.addComponent(RedisConnector.class, params);
+				.addConnector(RedisConnector.class, params);
 		return this;
 
 	}
