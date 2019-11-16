@@ -23,6 +23,7 @@
 	<modules>
 		<module>vertigo-redis-connector</module>
 		<module>vertigo-mqtt-connector</module>
+		<module>vertigo-spring-connector</module>
 	</modules>
 
 	<scm>
