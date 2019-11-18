@@ -35,15 +35,15 @@ import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 
 /**
- * @author pchretien
+ * @author mlaroche
  */
-public final class MqttConnector implements Connector, Activeable {
+public final class MosquittoConnector implements Connector, Activeable {
 
 	private final MqttClient mqttClient;
 	private final String connectionName;
 
 	@Inject
-	public MqttConnector(
+	public MosquittoConnector(
 			@ParamValue("name") final Optional<String> connectionNameOpt,
 			@ParamValue("host") final String brokerHost,
 			@ParamValue("clientId") final Optional<String> clientIdOpt) {

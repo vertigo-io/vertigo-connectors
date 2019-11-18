@@ -38,7 +38,7 @@ public final class MqttFeatures extends Features<MqttFeatures> {
 	@Feature("mosquitto")
 	public MqttFeatures withMosquitto(final Param... params) {
 		getModuleConfigBuilder()
-				.addConnector(MqttConnector.class, params);
+				.addConnector(MosquittoConnector.class, params);
 		return this;
 
 	}
