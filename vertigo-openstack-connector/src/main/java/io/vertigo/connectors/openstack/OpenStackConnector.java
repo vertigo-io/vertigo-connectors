@@ -121,8 +121,8 @@ public class OpenStackConnector implements Connector {
 						myConfig);
 			}
 		}
-		// authent is kept in a threadLocal in the underlying, so we are must create new client each time
-		// we reuse the already validated token if possible
+		// authent is kept in a threadLocal in the underlying, so we must create new client each time
+		// but we reuse the already validated token if possible
 		return OSFactory.clientFromToken(osClientV3.getToken(), myConfig);
 	}
 

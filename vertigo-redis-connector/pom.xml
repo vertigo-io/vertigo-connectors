@@ -20,7 +20,6 @@
 			<version>${vertigo.version}</version>
 		</dependency>
 
-		<!-- Twitter4J -->
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>

@@ -26,6 +26,7 @@
 		<module>vertigo-spring-connector</module>
 		<module>vertigo-neo4j-connector</module>
 		<module>vertigo-openstack-connector</module>
+		<module>vertigo-twitter-connector</module>
 	</modules>
 
 	<scm>

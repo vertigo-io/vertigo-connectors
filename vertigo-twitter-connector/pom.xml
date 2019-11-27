@@ -8,9 +8,9 @@
 		<version>3.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>vertigo-openstack-connector</artifactId>
+	<artifactId>vertigo-twitter-connector</artifactId>
 	<packaging>jar</packaging>
-	<name>vertigo-openstack-connector</name>
+	<name>vertigo-twitter-connector</name>
 
 
 	<dependencies>
@@ -20,10 +20,11 @@
 			<version>${vertigo.version}</version>
 		</dependency>
 
+		<!-- Twitter4J -->
 		<dependency>
-			<groupId>org.pacesys</groupId>
-			<artifactId>openstack4j</artifactId>
-			<version>3.2.0</version>
+			<groupId>org.twitter4j</groupId>
+			<artifactId>twitter4j-core</artifactId>
+			<version>4.0.7</version>
 		</dependency>
 	</dependencies> 
 
