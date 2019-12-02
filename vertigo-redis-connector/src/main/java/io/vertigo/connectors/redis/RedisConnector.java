@@ -36,9 +36,11 @@ import redis.clients.jedis.JedisPoolConfig;
 public final class RedisConnector implements Connector, Activeable {
 	private static final int CONNECT_TIMEOUT = 2000;
 	private final JedisPool jedisPool;
+	private final String connectorName;
 
 	/**
 	 * Constructor.
+	 * @param connectorNameOpt name of the connector (main by default)
 	 * @param redisHost REDIS server host name
 	 * @param redisPort REDIS server port
 	 * @param redisDatabase REDIS database index
@@ -46,14 +48,17 @@ public final class RedisConnector implements Connector, Activeable {
 	 */
 	@Inject
 	public RedisConnector(
+			@ParamValue("name") final Optional<String> connectorNameOpt,
 			@ParamValue("host") final String redisHost,
 			@ParamValue("port") final int redisPort,
 			@ParamValue("database") final int redisDatabase,
 			@ParamValue("password") final Optional<String> passwordOption) {
+		Assertion.checkNotNull(connectorNameOpt);
 		Assertion.checkArgNotEmpty(redisHost);
 		Assertion.checkNotNull(passwordOption);
 		Assertion.checkArgument(redisDatabase >= 0 && redisDatabase < 16, "there 16 DBs(0 - 15); your index database '{0}' is not inside this range", redisDatabase);
 		//-----
+		connectorName = connectorNameOpt.orElse("main");
 		final JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 		jedisPool = new JedisPool(jedisPoolConfig, redisHost, redisPort, CONNECT_TIMEOUT, passwordOption.orElse(null), redisDatabase);
 		//test
@@ -67,6 +72,11 @@ public final class RedisConnector implements Connector, Activeable {
 	 */
 	public Jedis getResource() {
 		return jedisPool.getResource();
+	}
+
+	@Override
+	public String getName() {
+		return connectorName;
 	}
 
 	/** {@inheritDoc} */
