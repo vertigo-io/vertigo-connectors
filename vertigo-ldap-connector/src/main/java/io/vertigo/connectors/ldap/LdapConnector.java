@@ -42,6 +42,7 @@ public class LdapConnector implements Connector {
 	private static final String SIMPLE_AUTHENTICATION_MECHANISM_NAME = "simple";
 	private static final String DEFAULT_REFERRAL = "follow";
 
+	private final String connectorName;
 	private final String ldapServer;
 	private final Optional<String> readerLogin;
 	private final Optional<String> readerPassword;
@@ -53,6 +54,7 @@ public class LdapConnector implements Connector {
 	 */
 	@Inject
 	public LdapConnector(
+			@ParamValue("name") final Optional<String> connectorNameOpt,
 			@ParamValue("host") final String ldapServerHost,
 			@ParamValue("port") final int ldapServerPort,
 			@ParamValue("readerLogin") final Optional<String> ldapReaderLogin,
@@ -61,9 +63,15 @@ public class LdapConnector implements Connector {
 		Assertion.when(ldapReaderLogin.isPresent()).check(() -> !StringUtil.isEmpty(ldapReaderLogin.get()), "readerLogin can't be empty");
 		Assertion.when(ldapReaderLogin.isPresent()).check(() -> ldapReaderPassword.isPresent() && ldapReaderPassword.get() != null, "With readerLogin, readerPassword is mandatory");
 		//-----
+		connectorName = connectorNameOpt.orElse("main");
 		ldapServer = ldapServerHost + ":" + ldapServerPort;
 		readerLogin = ldapReaderLogin;
 		readerPassword = ldapReaderPassword;
+	}
+
+	@Override
+	public String getName() {
+		return connectorName;
 	}
 
 	/**
