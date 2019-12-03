@@ -28,6 +28,7 @@
 		<module>vertigo-neo4j-connector</module>
 		<module>vertigo-openstack-connector</module>
 		<module>vertigo-twitter-connector</module>
+		<module>vertigo-elasticsearch-connector</module>
 	</modules>
 
 	<scm>
