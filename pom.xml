@@ -29,6 +29,7 @@
 		<module>vertigo-openstack-connector</module>
 		<module>vertigo-twitter-connector</module>
 		<module>vertigo-elasticsearch-connector</module>
+		<module>vertigo-influxdb-connector</module>
 	</modules>
 
 	<scm>
