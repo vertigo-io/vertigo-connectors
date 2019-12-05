@@ -76,7 +76,7 @@ public class TransportElasticSearchConnector implements ElasticSearchConnector, 
 			@ParamValue("node.name") final Optional<String> nodeNameOpt) {
 		Assertion.checkArgNotEmpty(serversNamesStr,
 				"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','");
-		Assertion.checkArgument(!serversNamesStr.contains(";"),
+		Assertion.checkArgument(!serversNamesStr.contains(","),
 				"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','");
 		Assertion.checkArgNotEmpty(clusterName, "Cluster's name must be defined");
 		Assertion.checkArgument(!"elasticsearch".equals(clusterName), "You have to define a cluster name different from the default one");

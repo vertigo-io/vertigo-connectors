@@ -35,7 +35,7 @@ public final class ElasticSearchFeatures extends Features<ElasticSearchFeatures>
 		super("vertigo-elasticsearch-connector");
 	}
 
-	@Feature("search.elasticsearchEmbedded")
+	@Feature("embedded")
 	public ElasticSearchFeatures withEmbedded(final Param... params) {
 		getModuleConfigBuilder()
 				.addConnector(EmbeddedElasticSearchConnector.class, params);
@@ -43,15 +43,15 @@ public final class ElasticSearchFeatures extends Features<ElasticSearchFeatures>
 
 	}
 
-	@Feature("search.elasticsearchTransport")
-	public ElasticSearchFeatures withESTransport(final Param... params) {
+	@Feature("transport")
+	public ElasticSearchFeatures withTransport(final Param... params) {
 		getModuleConfigBuilder()
 				.addConnector(TransportElasticSearchConnector.class, params);
 		return this;
 	}
 
-	@Feature("search.elasticsearchNode")
-	public ElasticSearchFeatures withESNode(final Param... params) {
+	@Feature("node")
+	public ElasticSearchFeatures withNode(final Param... params) {
 		getModuleConfigBuilder()
 				.addConnector(NodeElasticSearchConnector.class, params);
 		return this;
