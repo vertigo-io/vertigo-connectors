@@ -18,24 +18,28 @@
  */
 package io.vertigo.connectors.elasticsearch;
 
-import java.net.InetSocketAddress;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.node.InternalSettingsPreparer;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.plugins.Plugin;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import io.vertigo.core.lang.Assertion;
+import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.node.component.Activeable;
+import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 
 /**
@@ -43,17 +47,13 @@ import io.vertigo.core.param.ParamValue;
  *
  * @author npiedeloup
  */
-public class TransportElasticSearchConnector implements ElasticSearchConnector, Activeable {
+public class RestHighLevelElasticSearchConnector implements Connector, Activeable {
 
 	private final String connectorName;
 	/** url du serveur elasticSearch. */
 	private final String[] serversNames;
-	/** cluster à rejoindre. */
-	private final String clusterName;
-	/** Nom du node. */
-	private final String nodeName;
 	/** le noeud interne. */
-	private TransportClient client;
+	private RestHighLevelClient client;
 
 	/**
 	 * Constructor.
@@ -69,35 +69,23 @@ public class TransportElasticSearchConnector implements ElasticSearchConnector, 
 	 * @param resourceManager Manager d'accès aux ressources
 	 */
 	@Inject
-	public TransportElasticSearchConnector(
+	public RestHighLevelElasticSearchConnector(
 			@ParamValue("name") final Optional<String> connectorNameOpt,
-			@ParamValue("servers.names") final String serversNamesStr,
-			@ParamValue("cluster.name") final String clusterName,
-			@ParamValue("node.name") final Optional<String> nodeNameOpt) {
+			@ParamValue("servers.names") final String serversNamesStr) {
 		Assertion.checkArgNotEmpty(serversNamesStr,
 				"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','");
 		Assertion.checkArgument(!serversNamesStr.contains(","),
 				"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','");
-		Assertion.checkArgNotEmpty(clusterName, "Cluster's name must be defined");
-		Assertion.checkArgument(!"elasticsearch".equals(clusterName), "You must define a cluster name different from the default one");
 		// ---------------------------------------------------------------------
 		connectorName = connectorNameOpt.orElse("main");
 		serversNames = serversNamesStr.split(",");
-		this.clusterName = clusterName;
-		nodeName = nodeNameOpt.orElseGet(() -> "es-client-node-" + System.currentTimeMillis());
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public void start() {
-		client = new PreBuiltTransportClient(buildNodeSettings());
-		for (final String serverName : serversNames) {
-			final String[] serverNameSplit = serverName.split(":");
-			Assertion.checkArgument(serverNameSplit.length == 2,
-					"La déclaration du serveur doit être au format host:port ({0}", serverName);
-			final int port = Integer.parseInt(serverNameSplit[1]);
-			client.addTransportAddress(new TransportAddress(new InetSocketAddress(serverNameSplit[0], port)));
-		}
+		client = new RestHighLevelClient(buildRestClientBuilder());
+
 	}
 
 	protected static class MyNode extends Node {
@@ -111,25 +99,31 @@ public class TransportElasticSearchConnector implements ElasticSearchConnector, 
 		return connectorName;
 	}
 
-	@Override
-	public Client getClient() {
+	public RestHighLevelClient getClient() {
 		return client;
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public void stop() {
-		client.close();
+		try {
+			client.close();
+		} catch (final IOException e) {
+			WrappedException.wrap(e);
+		}
 	}
 
-	protected Settings buildNodeSettings() {
-		// Build settings
-		return Settings.builder().put("node.name", nodeName)
-				// .put("client.transport.sniff", false)
-				// .put("client.transport.ignore_cluster_name", false)
-				// .put("client.transport.ping_timeout", "5s")
-				// .put("client.transport.nodes_sampler_interval", "5s")
-				.put("cluster.name", clusterName)
-				.build();
+	protected RestClientBuilder buildRestClientBuilder() {
+		final List<HttpHost> httpHostList = new ArrayList<>();
+		for (final String serverName : serversNames) {
+			final String[] serverNameSplit = serverName.split(":");
+			Assertion.checkArgument(serverNameSplit.length == 2,
+					"La déclaration du serveur doit être au format host:port ({0})", serverName);
+			final int port = Integer.parseInt(serverNameSplit[1]);
+			httpHostList.add(new HttpHost(serverNameSplit[0], port));
+		}
+
+		final HttpHost[] httpHosts = httpHostList.toArray(new HttpHost[httpHostList.size()]);
+		return RestClient.builder(httpHosts);
 	}
 }

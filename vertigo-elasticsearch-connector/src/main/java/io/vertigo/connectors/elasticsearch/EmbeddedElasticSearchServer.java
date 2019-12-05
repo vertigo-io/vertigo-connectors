@@ -32,7 +32,6 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.mapper.MapperExtrasPlugin;
 import org.elasticsearch.index.reindex.ReindexPlugin;
@@ -45,6 +44,7 @@ import org.elasticsearch.transport.Netty4Plugin;
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.node.component.Activeable;
+import io.vertigo.core.node.component.Component;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
 
@@ -54,12 +54,14 @@ import io.vertigo.core.resource.ResourceManager;
  *
  * @author pchretien, npiedeloup
  */
-public final class EmbeddedElasticSearchConnector implements ElasticSearchConnector, Activeable {
-	private final String connectorName;
+public final class EmbeddedElasticSearchServer implements Component, Activeable {
+	public static final String DEFAULT_VERTIGO_ES_CLUSTER_NAME = "vertigo-elasticsearch-embedded";
+
 	/** url du serveur elasticSearch.  */
 	private final URL elasticSearchHomeURL;
 	private Node node;
 
+	private final String clusterName;
 	private final Integer httpPort;
 	private final Integer transportPort;
 
@@ -74,28 +76,18 @@ public final class EmbeddedElasticSearchConnector implements ElasticSearchConnec
 	 * @param configFile Fichier de configuration des indexs
 	 */
 	@Inject
-	public EmbeddedElasticSearchConnector(
-			@ParamValue("name") final Optional<String> connectorNameOpt,
+	public EmbeddedElasticSearchServer(
 			@ParamValue("home") final String elasticSearchHome,
+			@ParamValue("cluster.name") final Optional<String> clusterNameOpt,
 			@ParamValue("http.port") final Optional<Integer> httpPortOpt,
 			@ParamValue("transport.tcp.port") final Optional<Integer> transportPortOpt,
 			final ResourceManager resourceManager) {
 		Assertion.checkArgNotEmpty(elasticSearchHome);
 		//-----
-		connectorName = connectorNameOpt.orElse("main");
 		elasticSearchHomeURL = resourceManager.resolve(elasticSearchHome);
+		this.clusterName = clusterNameOpt.orElse(DEFAULT_VERTIGO_ES_CLUSTER_NAME);
 		httpPort = httpPortOpt.orElse(9200);
 		transportPort = transportPortOpt.orElse(9300);
-	}
-
-	@Override
-	public String getName() {
-		return connectorName;
-	}
-
-	@Override
-	public Client getClient() {
-		return node.client();
 	}
 
 	/** {@inheritDoc} */
@@ -147,6 +139,7 @@ public final class EmbeddedElasticSearchConnector implements ElasticSearchConnec
 				.put("http.type", "netty4")
 				.put("http.port", httpPort)
 				.put("transport.tcp.port", transportPort)
+				.put("cluster.name", clusterName)
 				.put("cluster.routing.allocation.disk.watermark.low", "1000mb")
 				.put("cluster.routing.allocation.disk.watermark.high", "500mb")
 				.put("cluster.routing.allocation.disk.watermark.flood_stage", "250mb")
