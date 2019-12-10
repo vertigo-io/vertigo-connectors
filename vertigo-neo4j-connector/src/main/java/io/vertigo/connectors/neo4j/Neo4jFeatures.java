@@ -38,7 +38,7 @@ public final class Neo4jFeatures extends Features<Neo4jFeatures> {
 	@Feature("GPL.embeddedServer")
 	public Neo4jFeatures withGPLEmbeddedServer(final Param... params) {
 		getModuleConfigBuilder()
-				.addComponent(Neo4jEmbeddedServer.class, params);
+				.addComponent(Neo4jGPLEmbeddedServer.class, params);
 		return this;
 
 	}

@@ -16,11 +16,11 @@ import io.vertigo.core.node.component.Component;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
 
-public class Neo4jEmbeddedServer implements Component, Activeable {
+public class Neo4jGPLEmbeddedServer implements Component, Activeable {
 	GraphDatabaseService graphDb;
 
 	@Inject
-	public Neo4jEmbeddedServer(
+	public Neo4jGPLEmbeddedServer(
 			@ParamValue("home") final String home,
 			final ResourceManager resourceManager) throws URISyntaxException {
 
