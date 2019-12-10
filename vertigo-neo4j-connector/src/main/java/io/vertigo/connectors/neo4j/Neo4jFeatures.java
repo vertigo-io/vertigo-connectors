@@ -35,6 +35,14 @@ public final class Neo4jFeatures extends Features<Neo4jFeatures> {
 		super("vertigo-neo4j-connector");
 	}
 
+	@Feature("GPL.embeddedServer")
+	public Neo4jFeatures withGPLEmbeddedServer(final Param... params) {
+		getModuleConfigBuilder()
+				.addComponent(Neo4jEmbeddedServer.class, params);
+		return this;
+
+	}
+
 	@Feature("neo4j")
 	public Neo4jFeatures withNeo4j(final Param... params) {
 		getModuleConfigBuilder()

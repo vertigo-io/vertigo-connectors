@@ -20,11 +20,32 @@
 			<groupId>io.vertigo</groupId>
 			<artifactId>vertigo-core</artifactId>
 			<version>${vertigo.version}</version>
-		</dependency> 
+		</dependency>
+		<dependency>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j</artifactId>
+			<version>3.5.12</version>
+			<optional>true</optional> <!-- GPLv3 Licence, make sure to comply with your obligations. For Embedded Server  --> 
+		</dependency>
+		<dependency>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j-bolt</artifactId>
+			<version>3.5.12</version>
+			<optional>true</optional> <!-- GPLv3 Licence, make sure to comply with your obligations. For Embedded Server  -->
+		</dependency>
 		<dependency>
 			<groupId>org.neo4j.driver</groupId>
 			<artifactId>neo4j-java-driver</artifactId>
 			<version>1.7.2</version>
+		</dependency>
+		
+		<!-- Tests -->
+		<dependency>
+			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-core</artifactId>
+			<version>${vertigo.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
