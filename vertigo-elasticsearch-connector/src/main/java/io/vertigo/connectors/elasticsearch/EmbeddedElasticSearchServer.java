@@ -85,7 +85,7 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 		Assertion.checkArgNotEmpty(elasticSearchHome);
 		//-----
 		elasticSearchHomeURL = resourceManager.resolve(elasticSearchHome);
-		this.clusterName = clusterNameOpt.orElse(DEFAULT_VERTIGO_ES_CLUSTER_NAME);
+		clusterName = clusterNameOpt.orElse(DEFAULT_VERTIGO_ES_CLUSTER_NAME);
 		httpPort = httpPortOpt.orElse(9200);
 		transportPort = transportPortOpt.orElse(9300);
 	}
@@ -126,6 +126,7 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 	}
 
 	protected static class MyNode extends Node {
+		//Need to extends elastic Node, to access this advanced constructor and add plugins
 		public MyNode(final Settings preparedSettings, final Collection<Class<? extends Plugin>> classpathPlugins) {
 			super(InternalSettingsPreparer.prepareEnvironment(preparedSettings, Collections.emptyMap(), null, null), classpathPlugins, true);
 		}

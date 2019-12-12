@@ -19,8 +19,6 @@
 package io.vertigo.connectors.elasticsearch;
 
 import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -29,9 +27,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.node.InternalSettingsPreparer;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import io.vertigo.core.lang.Assertion;
@@ -97,12 +92,6 @@ public class TransportElasticSearchConnector implements ElasticSearchConnector, 
 					"La déclaration du serveur doit être au format host:port ({0}", serverName);
 			final int port = Integer.parseInt(serverNameSplit[1]);
 			client.addTransportAddress(new TransportAddress(new InetSocketAddress(serverNameSplit[0], port)));
-		}
-	}
-
-	protected static class MyNode extends Node {
-		public MyNode(final Settings preparedSettings, final Collection<Class<? extends Plugin>> classpathPlugins) {
-			super(InternalSettingsPreparer.prepareEnvironment(preparedSettings, Collections.emptyMap(), null, null), classpathPlugins, true);
 		}
 	}
 

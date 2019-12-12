@@ -19,7 +19,6 @@
 package io.vertigo.connectors.elasticsearch;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -27,10 +26,10 @@ import javax.inject.Inject;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.env.Environment;
 import org.elasticsearch.node.InternalSettingsPreparer;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeValidationException;
-import org.elasticsearch.plugins.Plugin;
 
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.WrappedException;
@@ -89,17 +88,12 @@ public class NodeElasticSearchConnector implements ElasticSearchConnector, Activ
 	/** {@inheritDoc} */
 	@Override
 	public void start() {
-		node = new MyNode(buildNodeSettings(), Collections.emptyList());
+		final Environment nodeEnvironment = InternalSettingsPreparer.prepareEnvironment(buildNodeSettings(), Collections.emptyMap(), null, null);
+		node = new Node(nodeEnvironment);
 		try {
 			node.start();
 		} catch (final NodeValidationException e) {
 			throw WrappedException.wrap(e, "Error at ElasticSearch node start");
-		}
-	}
-
-	protected static class MyNode extends Node {
-		public MyNode(final Settings preparedSettings, final Collection<Class<? extends Plugin>> classpathPlugins) {
-			super(InternalSettingsPreparer.prepareEnvironment(preparedSettings, Collections.emptyMap(), null, null), classpathPlugins, true);
 		}
 	}
 
