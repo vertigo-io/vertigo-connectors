@@ -26,6 +26,12 @@
 			<artifactId>neo4j</artifactId>
 			<version>3.5.12</version>
 			<optional>true</optional> <!-- GPLv3 Licence, make sure to comply with your obligations. For Embedded Server  --> 
+			<exclusions>
+				<exclusion>
+					<groupId>jdk.tools</groupId>
+          			<artifactId>jdk.tools</artifactId>
+            	</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.neo4j</groupId>
