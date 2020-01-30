@@ -79,7 +79,7 @@ public class TransportElasticSearchConnector implements ElasticSearchConnector, 
 		connectorName = connectorNameOpt.orElse("main");
 		serversNames = serversNamesStr.split(",");
 		this.clusterName = clusterName;
-		nodeName = nodeNameOpt.orElseGet(() -> "es-client-node-" + System.currentTimeMillis());
+		nodeName = nodeNameOpt.orElseGet(() -> "es-client-transport-" + System.currentTimeMillis());
 	}
 
 	/** {@inheritDoc} */

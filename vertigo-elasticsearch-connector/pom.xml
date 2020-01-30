@@ -12,7 +12,20 @@
 	<packaging>jar</packaging>
 	<name>vertigo-elasticsearch-connector</name>
 
-
+	<repositories>
+     	<!-- add the elasticsearch repo for x-pack -->
+      <repository>
+         <id>elasticsearch-releases</id>
+         <url>https://artifacts.elastic.co/maven</url>
+         <releases>
+          	<enabled>true</enabled>
+         </releases>
+         <snapshots>
+            <enabled>false</enabled>
+         </snapshots>
+      </repository>
+   	</repositories>
+   
 	<dependencies>
 		<dependency>
 			<groupId>io.vertigo</groupId>
@@ -42,7 +55,13 @@
 		    <groupId>org.elasticsearch.client</groupId>
 		    <artifactId>elasticsearch-rest-high-level-client</artifactId>
 		    <version>7.4.1</version>
-		    <optional>true</optional> <!-- REstHighLevelElasticSearchConnector -->
+		    <optional>true</optional> <!-- RestHighLevelElasticSearchConnector -->
+		</dependency>
+		<dependency>
+		    <groupId>org.elasticsearch.client</groupId>
+		    <artifactId>x-pack-transport</artifactId>
+		    <version>7.4.1</version>
+		    <optional>true</optional> <!-- SecuredTransportSearchConnector -->
 		</dependency>
 		<dependency>
 	        <groupId>org.codelibs.elasticsearch.module</groupId>
@@ -55,7 +74,6 @@
 		    <artifactId>mapper-extras</artifactId>
 		    <version>7.4.1</version> <!-- required by ESEmbeddedSearchServicesPlugin -->
 	        <optional>true</optional>
-		</dependency>
+		</dependency>		
 	</dependencies>
-		
 </project>
