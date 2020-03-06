@@ -77,7 +77,7 @@ public class LdapConnector implements Connector<LdapContext> {
 	/**
 	 * @return LDAP resource
 	 */
-	private LdapContext createLdapContext(final String userProtectedPrincipal, final String credentials) throws NamingException {
+	public LdapContext createLdapContext(final String userProtectedPrincipal, final String credentials) throws NamingException {
 		final Hashtable<String, String> env = new Hashtable<>();
 		env.put(Context.INITIAL_CONTEXT_FACTORY, DEFAULT_CONTEXT_FACTORY_CLASS_NAME);
 		env.put(Context.REFERRAL, DEFAULT_REFERRAL);
