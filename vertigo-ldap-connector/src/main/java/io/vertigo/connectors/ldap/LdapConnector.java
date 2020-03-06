@@ -37,7 +37,7 @@ import io.vertigo.core.util.StringUtil;
 /**
  * @author npiedeloup
  */
-public class LdapConnector implements Connector {
+public class LdapConnector implements Connector<LdapContext> {
 	private static final String DEFAULT_CONTEXT_FACTORY_CLASS_NAME = "com.sun.jndi.ldap.LdapCtxFactory";
 	private static final String SIMPLE_AUTHENTICATION_MECHANISM_NAME = "simple";
 	private static final String DEFAULT_REFERRAL = "follow";
@@ -77,7 +77,7 @@ public class LdapConnector implements Connector {
 	/**
 	 * @return LDAP resource
 	 */
-	public LdapContext createLdapContext(final String userProtectedPrincipal, final String credentials) throws NamingException {
+	private LdapContext createLdapContext(final String userProtectedPrincipal, final String credentials) throws NamingException {
 		final Hashtable<String, String> env = new Hashtable<>();
 		env.put(Context.INITIAL_CONTEXT_FACTORY, DEFAULT_CONTEXT_FACTORY_CLASS_NAME);
 		env.put(Context.REFERRAL, DEFAULT_REFERRAL);
@@ -98,7 +98,7 @@ public class LdapConnector implements Connector {
 		}
 	}
 
-	public LdapContext obtainLdapContext() {
+	public LdapContext getClient() {
 		try {
 			return createLdapContext(readerLogin.get(), readerPassword.get());
 		} catch (final NamingException e) {

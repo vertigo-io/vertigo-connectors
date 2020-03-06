@@ -33,7 +33,7 @@ import redis.clients.jedis.JedisPoolConfig;
 /**
  * @author pchretien
  */
-public final class RedisConnector implements Connector, Activeable {
+public final class RedisConnector implements Connector<Jedis>, Activeable {
 	private static final int CONNECT_TIMEOUT = 2000;
 	private final JedisPool jedisPool;
 	private final String connectorName;
@@ -70,7 +70,7 @@ public final class RedisConnector implements Connector, Activeable {
 	/**
 	 * @return Redis resource
 	 */
-	public Jedis getResource() {
+	public Jedis getClient() {
 		return jedisPool.getResource();
 	}
 

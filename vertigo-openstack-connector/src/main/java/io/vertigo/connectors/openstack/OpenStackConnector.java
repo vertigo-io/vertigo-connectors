@@ -31,7 +31,7 @@ import io.vertigo.core.resource.ResourceManager;
  * @author mlaroche, tingargiola
  *
  */
-public class OpenStackConnector implements Connector {
+public class OpenStackConnector implements Connector<OSClientV3> {
 
 	/**
 	 * Max connection number for the connection pool
@@ -108,7 +108,7 @@ public class OpenStackConnector implements Connector {
 	 *
 	 * @return
 	 */
-	public OSClientV3 getOsClient() {
+	public OSClientV3 getClient() {
 		if (osClientV3.getToken().getExpires().toInstant().isBefore(Instant.now().plusSeconds(2))) {
 			synchronized (clientLock) {
 				osClientV3 = authenticateClient(

@@ -22,7 +22,7 @@ public class TestNeo4jEmbedded extends AbstractTestCaseJU5 {
 	@Test
 	public void testConnection() {
 
-		try (Session session = neo4jConnector.getNeo4jDriver().session()) {
+		try (Session session = neo4jConnector.getClient().session()) {
 			final String greeting = session.writeTransaction(new TransactionWork<String>() {
 				@Override
 				public String execute(final Transaction tx) {
@@ -36,7 +36,7 @@ public class TestNeo4jEmbedded extends AbstractTestCaseJU5 {
 			System.out.println(greeting);
 		}
 
-		try (final Session session = neo4jConnector.getNeo4jDriver().session()) {
+		try (final Session session = neo4jConnector.getClient().session()) {
 			session.writeTransaction(new TransactionWork<Void>() {
 
 				@Override

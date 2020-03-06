@@ -15,7 +15,7 @@ import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 
-public class Neo4JConnector implements Connector, Activeable {
+public class Neo4JConnector implements Connector<Driver>, Activeable {
 
 	private final Driver neo4jDriver;
 	private final String connectionName;
@@ -56,7 +56,7 @@ public class Neo4JConnector implements Connector, Activeable {
 				.toConfig();
 	}
 
-	public Driver getNeo4jDriver() {
+	public Driver getClient() {
 		return neo4jDriver;
 	}
 

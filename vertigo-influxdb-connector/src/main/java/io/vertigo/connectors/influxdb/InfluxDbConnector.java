@@ -34,7 +34,7 @@ import io.vertigo.core.param.ParamValue;
  * An InfluxDb connector to the time series database.
  * @author mlaroche
  */
-public final class InfluxDbConnector implements Connector, Activeable {
+public final class InfluxDbConnector implements Connector<InfluxDB>, Activeable {
 
 	private final String connectorName;
 	private final InfluxDB influxDB;
@@ -69,7 +69,7 @@ public final class InfluxDbConnector implements Connector, Activeable {
 	/**
 	 * @return the influxdb java client
 	 */
-	public InfluxDB getInfluxdb() {
+	public InfluxDB getClient() {
 		return influxDB;
 	}
 
