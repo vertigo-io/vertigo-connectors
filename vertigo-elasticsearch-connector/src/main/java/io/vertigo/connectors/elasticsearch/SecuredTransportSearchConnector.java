@@ -13,7 +13,6 @@ import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.xpack.client.PreBuiltXPackTransportClient;
 
 import io.vertigo.core.lang.Assertion;
-import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.param.ParamValue;
 
 /**
@@ -23,7 +22,7 @@ import io.vertigo.core.param.ParamValue;
  *
  * @author skerdudou
  */
-public final class SecuredTransportSearchConnector implements ElasticSearchConnector, Activeable {
+public final class SecuredTransportSearchConnector implements ElasticSearchConnector {
 
 	private final String connectorName;
 	/** url du serveur elasticSearch. */

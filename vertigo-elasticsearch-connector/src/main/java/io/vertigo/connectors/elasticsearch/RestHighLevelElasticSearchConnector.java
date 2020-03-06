@@ -41,7 +41,7 @@ import io.vertigo.core.param.ParamValue;
  *
  * @author npiedeloup
  */
-public class RestHighLevelElasticSearchConnector implements Connector, Activeable {
+public class RestHighLevelElasticSearchConnector implements Connector<RestHighLevelClient>, Activeable {
 
 	private final String connectorName;
 	/** url du serveur elasticSearch. */

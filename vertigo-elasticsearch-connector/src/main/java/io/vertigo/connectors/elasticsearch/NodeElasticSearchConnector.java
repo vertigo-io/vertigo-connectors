@@ -33,7 +33,6 @@ import org.elasticsearch.node.NodeValidationException;
 
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.WrappedException;
-import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.param.ParamValue;
 
 /**
@@ -41,7 +40,7 @@ import io.vertigo.core.param.ParamValue;
  *
  * @author npiedeloup
  */
-public class NodeElasticSearchConnector implements ElasticSearchConnector, Activeable {
+public class NodeElasticSearchConnector implements ElasticSearchConnector {
 
 	private final String connectorName;
 	/** url du serveur elasticSearch. */

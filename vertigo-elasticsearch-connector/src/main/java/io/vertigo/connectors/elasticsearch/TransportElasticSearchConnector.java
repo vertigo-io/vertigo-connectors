@@ -30,7 +30,6 @@ import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import io.vertigo.core.lang.Assertion;
-import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.param.ParamValue;
 
 /**
@@ -38,7 +37,7 @@ import io.vertigo.core.param.ParamValue;
  *
  * @author npiedeloup
  */
-public class TransportElasticSearchConnector implements ElasticSearchConnector, Activeable {
+public class TransportElasticSearchConnector implements ElasticSearchConnector {
 
 	private final String connectorName;
 	/** url du serveur elasticSearch. */

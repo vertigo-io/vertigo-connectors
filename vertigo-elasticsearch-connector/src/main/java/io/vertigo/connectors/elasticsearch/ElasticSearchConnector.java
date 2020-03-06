@@ -20,15 +20,12 @@ package io.vertigo.connectors.elasticsearch;
 
 import org.elasticsearch.client.Client;
 
+import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.node.component.Connector;
 
 /**
  * @author npiedeloup
  */
-public interface ElasticSearchConnector extends Connector {
-
-	@Override
-	String getName();
-
-	Client getClient();
+public interface ElasticSearchConnector extends Connector<Client>, Activeable {
+	//
 }
