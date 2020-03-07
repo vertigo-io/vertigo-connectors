@@ -37,7 +37,7 @@ import io.vertigo.core.param.ParamValue;
 /**
  * @author mlaroche
  */
-public final class MosquittoConnector implements Connector, Activeable {
+public final class MosquittoConnector implements Connector<MqttClient>, Activeable {
 
 	private final MqttClient mqttClient;
 	private final String connectionName;

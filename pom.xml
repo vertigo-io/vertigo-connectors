@@ -21,7 +21,6 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>vertigo-ldap-connector</module>
 		<module>vertigo-redis-connector</module>
 		<module>vertigo-mqtt-connector</module>
 		<module>vertigo-spring-connector</module>
@@ -30,6 +29,7 @@
 		<module>vertigo-twitter-connector</module>
 		<module>vertigo-elasticsearch-connector</module>
 		<module>vertigo-influxdb-connector</module>
+		<module>vertigo-ldap-connector</module>
 	</modules>
 
 	<scm>

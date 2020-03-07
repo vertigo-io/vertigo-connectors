@@ -18,7 +18,7 @@ import twitter4j.conf.PropertyConfiguration;
  * @author mlaroche
  *
  */
-public class Twitter4jConnector implements Connector {
+public class Twitter4jConnector implements Connector<Twitter> {
 
 	private final Twitter twitter;
 
