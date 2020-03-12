@@ -82,8 +82,7 @@ public class IftttClient implements Connector<IftttClient> {
 
 	public void sendMakerEvent(final MakerEvent event) {
 		Assertion.checkNotNull(event);
-		Assertion.checkArgNotEmpty(event.getEventName(), "A makerEvent must have a eventName");
-
+		//---
 		final String url = new StringBuilder(baseUrl)
 				.append("/")
 				.append(event.getEventName())

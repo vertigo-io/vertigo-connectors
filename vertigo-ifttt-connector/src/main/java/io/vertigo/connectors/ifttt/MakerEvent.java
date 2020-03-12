@@ -18,12 +18,16 @@
  */
 package io.vertigo.connectors.ifttt;
 
+import io.vertigo.core.lang.Assertion;
+
 public final class MakerEvent {
 
 	private final String eventName;
 	private final MakerEventMetadatas eventMetadatas = new MakerEventMetadatas();
 
 	public MakerEvent(final String eventName) {
+		Assertion.checkArgNotEmpty(eventName);
+		//---
 		this.eventName = eventName;
 	}
 
