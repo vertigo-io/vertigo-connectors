@@ -12,14 +12,7 @@
 	<packaging>jar</packaging>
 	<name>vertigo-openstack-connector</name>
 
-
 	<dependencies>
-		<dependency>
-			<groupId>io.vertigo</groupId>
-			<artifactId>vertigo-core</artifactId>
-			<version>${vertigo.version}</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.pacesys</groupId>
 			<artifactId>openstack4j</artifactId>

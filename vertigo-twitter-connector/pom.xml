@@ -14,12 +14,6 @@
 
 
 	<dependencies>
-		<dependency>
-			<groupId>io.vertigo</groupId>
-			<artifactId>vertigo-core</artifactId>
-			<version>${vertigo.version}</version>
-		</dependency>
-
 		<!-- Twitter4J -->
 		<dependency>
 			<groupId>org.twitter4j</groupId>

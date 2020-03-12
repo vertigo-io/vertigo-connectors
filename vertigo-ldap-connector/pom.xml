@@ -12,12 +12,4 @@
 	<packaging>jar</packaging>
 	<name>vertigo-ldap-connector</name>
 
-
-	<dependencies>
-		<dependency>
-			<groupId>io.vertigo</groupId>
-			<artifactId>vertigo-core</artifactId>
-			<version>${vertigo.version}</version>
-		</dependency>
-	</dependencies>
 </project>

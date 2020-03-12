@@ -31,7 +31,13 @@
 		<module>vertigo-influxdb-connector</module>
 		<module>vertigo-ldap-connector</module>
 	</modules>
-
+	<dependencies>
+		<dependency>
+			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-core</artifactId>
+			<version>${vertigo.version}</version>
+		</dependency>
+	</dependencies>
 	<scm>
 		<connection>scm:git:https://github.com/vertigo-io/vertigo-connectors.git</connection>
 		<developerConnection>scm:git:https://github.com/vertigo-io/vertigo-connectors.git</developerConnection>

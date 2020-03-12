@@ -27,12 +27,7 @@
    	</repositories>
    
 	<dependencies>
-		<dependency>
-			<groupId>io.vertigo</groupId>
-			<artifactId>vertigo-core</artifactId>
-			<version>${vertigo.version}</version>
-		</dependency>
-	
+
 	<!-- Search -->
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
