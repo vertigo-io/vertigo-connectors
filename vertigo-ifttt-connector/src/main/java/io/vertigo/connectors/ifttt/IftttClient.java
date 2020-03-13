@@ -33,34 +33,29 @@ import org.apache.logging.log4j.Logger;
 
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.VSystemException;
-import io.vertigo.core.node.component.Connector;
-import io.vertigo.core.param.ParamValue;
 
 /**
  *
  * @author dt
  */
-public class IftttClient implements Connector<IftttClient> {
-
+public final class IftttClient {
 	private static final Logger LOGGER = LogManager.getLogger(IftttClient.class);
-	private final String connectorName;
 	private final String baseUrl;
 	private final String apiKey;
 
-	public IftttClient(
-			@ParamValue("name") final Optional<String> connectorNameOpt,
-			@ParamValue("baseUrl") final String baseUrl,
-			@ParamValue("apiKey") final String apiKey,
-			@ParamValue("proxyHost") final Optional<String> proxyHostOpt,
-			@ParamValue("proxyPort") final Optional<String> proxyPortOpt) {
+	IftttClient(
+			final String baseUrl,
+			final String apiKey,
+			final Optional<String> proxyHostOpt,
+			final Optional<String> proxyPortOpt) {
+		Assertion.checkArgNotEmpty(baseUrl, "baseUrl must not be empty");
 		Assertion.checkArgNotEmpty(apiKey, "Apikey must not be empty");
 		Assertion.checkNotNull(proxyHostOpt);
 		Assertion.checkNotNull(proxyPortOpt);
 		Assertion.checkArgument(
-				proxyHostOpt.isPresent() && proxyPortOpt.isPresent() || !proxyHostOpt.isPresent() && !proxyPortOpt.isPresent(),
+				!(proxyHostOpt.isPresent() ^ proxyPortOpt.isPresent()),
 				"les deux paramètres host et port doivent être tous les deux remplis ou vides");
 		// ----
-		connectorName = connectorNameOpt.orElse("main");
 		this.baseUrl = baseUrl;
 		this.apiKey = apiKey;
 
@@ -68,16 +63,6 @@ public class IftttClient implements Connector<IftttClient> {
 			System.setProperty("https.proxyHost", proxyHostOpt.get()); // "172.20.0.9"
 			System.setProperty("https.proxyPort", proxyPortOpt.get()); // "3128"
 		}
-	}
-
-	@Override
-	public String getName() {
-		return connectorName;
-	}
-
-	@Override
-	public IftttClient getClient() {
-		return this;
 	}
 
 	public void sendMakerEvent(final MakerEvent event) {
@@ -100,5 +85,4 @@ public class IftttClient implements Connector<IftttClient> {
 			throw new VSystemException("Error while sending Ifttt maker event:" + response.getStatus());
 		}
 	}
-
 }

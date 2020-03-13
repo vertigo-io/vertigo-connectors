@@ -38,7 +38,7 @@ public final class IftttFeatures extends Features<IftttFeatures> {
 	@Feature("ifttt")
 	public IftttFeatures withIfttt(final Param... params) {
 		getModuleConfigBuilder()
-				.addConnector(IftttClient.class, params);
+				.addConnector(IftttConnector.class, params);
 		return this;
 
 	}
