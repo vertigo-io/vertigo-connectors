@@ -56,6 +56,7 @@ public class Neo4JConnector implements Connector<Driver>, Activeable {
 				.toConfig();
 	}
 
+	@Override
 	public Driver getClient() {
 		return neo4jDriver;
 	}

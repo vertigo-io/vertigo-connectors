@@ -48,6 +48,7 @@ public class Twitter4jConnector implements Connector<Twitter> {
 	 *
 	 * @return
 	 */
+	@Override
 	public Twitter getClient() {
 		return twitter;
 	}

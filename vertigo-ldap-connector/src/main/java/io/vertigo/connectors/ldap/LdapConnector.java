@@ -98,6 +98,7 @@ public final class LdapConnector implements Connector<LdapContext> {
 		}
 	}
 
+	@Override
 	public LdapContext getClient() {
 		try {
 			return createLdapContext(readerLogin.get(), readerPassword.get());

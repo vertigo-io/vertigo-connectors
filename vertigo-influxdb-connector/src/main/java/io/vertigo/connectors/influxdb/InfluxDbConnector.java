@@ -69,6 +69,7 @@ public final class InfluxDbConnector implements Connector<InfluxDB>, Activeable 
 	/**
 	 * @return the influxdb java client
 	 */
+	@Override
 	public InfluxDB getClient() {
 		return influxDB;
 	}

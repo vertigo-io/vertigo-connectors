@@ -79,6 +79,7 @@ public final class MosquittoConnector implements Connector<MqttClient>, Activeab
 
 	}
 
+	@Override
 	public MqttClient getClient() {
 		return mqttClient;
 

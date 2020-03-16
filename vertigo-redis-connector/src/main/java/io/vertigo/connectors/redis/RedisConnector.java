@@ -70,6 +70,7 @@ public final class RedisConnector implements Connector<Jedis>, Activeable {
 	/**
 	 * @return Redis resource
 	 */
+	@Override
 	public Jedis getClient() {
 		return jedisPool.getResource();
 	}
