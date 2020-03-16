@@ -20,6 +20,8 @@ package io.vertigo.connectors.ifttt;
 
 import java.util.Optional;
 
+import javax.inject.Inject;
+
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
@@ -32,6 +34,7 @@ public final class IftttConnector implements Connector<IftttClient> {
 
 	private final IftttClient iftttClient;
 
+	@Inject
 	public IftttConnector(
 			@ParamValue("name") final Optional<String> connectorNameOpt,
 			@ParamValue("baseUrl") final String baseUrl,
@@ -40,7 +43,7 @@ public final class IftttConnector implements Connector<IftttClient> {
 			@ParamValue("proxyPort") final Optional<String> proxyPortOpt) {
 		Assertion.checkNotNull(connectorNameOpt);
 		//---
-		this.connectorName = connectorNameOpt.orElse("main");
+		connectorName = connectorNameOpt.orElse("main");
 		iftttClient = new IftttClient(baseUrl, apiKey, proxyHostOpt, proxyPortOpt);
 	}
 
