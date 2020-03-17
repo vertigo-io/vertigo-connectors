@@ -86,6 +86,7 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 		return connectorName;
 	}
 
+	@Override
 	public RestHighLevelClient getClient() {
 		return client;
 	}

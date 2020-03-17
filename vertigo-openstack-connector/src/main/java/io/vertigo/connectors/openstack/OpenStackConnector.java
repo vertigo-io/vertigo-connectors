@@ -108,6 +108,7 @@ public class OpenStackConnector implements Connector<OSClientV3> {
 	 *
 	 * @return
 	 */
+	@Override
 	public OSClientV3 getClient() {
 		if (osClientV3.getToken().getExpires().toInstant().isBefore(Instant.now().plusSeconds(2))) {
 			synchronized (clientLock) {
