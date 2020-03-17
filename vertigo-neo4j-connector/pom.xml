@@ -39,15 +39,6 @@
 			<artifactId>neo4j-java-driver</artifactId>
 			<version>1.7.2</version>
 		</dependency>
-		
-		<!-- Tests -->
-		<dependency>
-			<groupId>io.vertigo</groupId>
-			<artifactId>vertigo-core</artifactId>
-			<version>${vertigo.version}</version>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 </project>
