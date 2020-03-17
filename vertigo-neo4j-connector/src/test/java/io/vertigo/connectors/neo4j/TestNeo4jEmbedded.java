@@ -68,7 +68,6 @@ public class TestNeo4jEmbedded {
 		}
 	}
 
-	@Override
 	protected NodeConfig buildNodeConfig() {
 		return NodeConfig.builder()
 				.beginBoot()
