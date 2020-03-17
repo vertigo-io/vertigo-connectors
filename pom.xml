@@ -30,6 +30,7 @@
 		<module>vertigo-elasticsearch-connector</module>
 		<module>vertigo-influxdb-connector</module>
 		<module>vertigo-ldap-connector</module>
+		<module>vertigo-ifttt-connector</module>
 	</modules>
 	<dependencies>
 		<dependency>
