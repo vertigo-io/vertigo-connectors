@@ -48,13 +48,13 @@ public final class IftttClient {
 			final String apiKey,
 			final Optional<String> proxyHostOpt,
 			final Optional<String> proxyPortOpt) {
-		Assertion.checkArgNotEmpty(baseUrl, "baseUrl must not be empty");
-		Assertion.checkArgNotEmpty(apiKey, "Apikey must not be empty");
-		Assertion.checkNotNull(proxyHostOpt);
-		Assertion.checkNotNull(proxyPortOpt);
-		Assertion.checkArgument(
-				!(proxyHostOpt.isPresent() ^ proxyPortOpt.isPresent()),
-				"les deux paramètres host et port doivent être tous les deux remplis ou vides");
+		Assertion.check()
+				.argNotEmpty(baseUrl, "baseUrl must not be empty")
+				.argNotEmpty(apiKey, "Apikey must not be empty")
+				.notNull(proxyHostOpt)
+				.notNull(proxyPortOpt)
+				.argument(!(proxyHostOpt.isPresent() ^ proxyPortOpt.isPresent()),
+						"les deux paramètres host et port doivent être tous les deux remplis ou vides");
 		// ----
 		this.baseUrl = baseUrl;
 		this.apiKey = apiKey;

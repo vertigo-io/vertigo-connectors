@@ -75,15 +75,16 @@ public class OpenStackConnector implements Connector<OSClientV3> {
 			@Named("trustorePswd") final Optional<String> trustorePswd,
 			@Named("enableSSL") final Optional<Boolean> enableSSLOpt,
 			final ResourceManager resourceManager) {
-		Assertion.checkArgNotEmpty(authenticationUrl);
-		Assertion.checkArgNotEmpty(userDomain);
-		Assertion.checkArgNotEmpty(userName);
-		Assertion.checkArgNotEmpty(userSecret);
-		Assertion.checkArgNotEmpty(projectName);
-		Assertion.checkArgNotEmpty(projectDomain);
-		Assertion.checkNotNull(trustoreFile);
-		Assertion.checkNotNull(trustorePswd);
-		Assertion.checkNotNull(resourceManager);
+		Assertion.check()
+				.argNotEmpty(authenticationUrl)
+				.argNotEmpty(userDomain)
+				.argNotEmpty(userName)
+				.argNotEmpty(userSecret)
+				.argNotEmpty(projectName)
+				.argNotEmpty(projectDomain)
+				.notNull(trustoreFile)
+				.notNull(trustorePswd)
+				.notNull(resourceManager);
 		//---
 		this.resourceManager = resourceManager;
 		myAuthenticationUrl = authenticationUrl;

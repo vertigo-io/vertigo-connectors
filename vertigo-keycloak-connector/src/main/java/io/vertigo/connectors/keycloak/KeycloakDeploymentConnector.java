@@ -33,9 +33,10 @@ public class KeycloakDeploymentConnector implements Connector<AdapterDeploymentC
 			@ParamValue("configUrl") final Optional<String> configUrlOpt,
 			@ParamValue("configResolverClass") final Optional<String> configResolverClassOpt,
 			final ResourceManager resourceManager) {
-		Assertion.checkNotNull(connectorNameOpt);
-		Assertion.checkNotNull(configUrlOpt);
-		Assertion.checkNotNull(configResolverClassOpt);
+		Assertion.check()
+				.notNull(connectorNameOpt)
+				.notNull(configUrlOpt)
+				.notNull(configResolverClassOpt);
 		//---
 		connectorName = connectorNameOpt.orElse("main");
 
