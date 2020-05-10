@@ -28,10 +28,11 @@ public class Twitter4jConnector implements Connector<Twitter> {
 			@ParamValue("oauthConsumerSecret") final String oauthConsumerSecret,
 			@ParamValue("oauthAccessToken") final String oauthAccessToken,
 			@ParamValue("oauthAccessTokenSecret") final String oauthAccessTokenSecret) {
-		Assertion.checkArgNotEmpty(oauthConsumerKey);
-		Assertion.checkArgNotEmpty(oauthConsumerSecret);
-		Assertion.checkArgNotEmpty(oauthAccessToken);
-		Assertion.checkArgNotEmpty(oauthAccessTokenSecret);
+		Assertion.check()
+				.argNotEmpty(oauthConsumerKey)
+				.argNotEmpty(oauthConsumerSecret)
+				.argNotEmpty(oauthAccessToken)
+				.argNotEmpty(oauthAccessTokenSecret);
 		//---
 		final Properties propertiesFromConstructor = new Properties();
 		propertiesFromConstructor.put("oauth.consumerKey", oauthConsumerKey);
