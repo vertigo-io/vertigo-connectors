@@ -52,10 +52,11 @@ public final class InfluxDbConnector implements Connector<InfluxDB>, Activeable 
 			@ParamValue("host") final String host,
 			@ParamValue("user") final String user,
 			@ParamValue("password") final String password) {
-		Assertion.checkNotNull(connectorNameOpt);
-		Assertion.checkArgNotEmpty(host);
-		Assertion.checkArgNotEmpty(user);
-		Assertion.checkArgNotEmpty(password);
+		Assertion.check()
+				.notNull(connectorNameOpt)
+				.argNotEmpty(host)
+				.argNotEmpty(user)
+				.argNotEmpty(password);
 		//---
 		connectorName = connectorNameOpt.orElse("main");
 		influxDB = InfluxDBFactory.connect(host, user, password);

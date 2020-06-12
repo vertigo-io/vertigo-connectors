@@ -66,7 +66,7 @@ public final class IftttClient {
 	}
 
 	public void sendMakerEvent(final MakerEvent event) {
-		Assertion.checkNotNull(event);
+		Assertion.check().notNull(event);
 		//---
 		final String url = new StringBuilder(baseUrl)
 				.append("/")

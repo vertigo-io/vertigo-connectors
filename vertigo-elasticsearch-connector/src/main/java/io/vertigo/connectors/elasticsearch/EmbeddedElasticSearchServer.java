@@ -112,7 +112,7 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 	}
 
 	protected Node createNode(final URL esHomeURL) {
-		Assertion.checkNotNull(esHomeURL);
+		Assertion.check().notNull(esHomeURL);
 		//-----
 		final File home;
 		try {
