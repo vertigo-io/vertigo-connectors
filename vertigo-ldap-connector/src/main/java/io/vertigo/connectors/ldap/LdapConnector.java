@@ -59,7 +59,7 @@ public final class LdapConnector implements Connector<LdapContext> {
 			@ParamValue("port") final int ldapServerPort,
 			@ParamValue("readerLogin") final Optional<String> ldapReaderLogin,
 			@ParamValue("readerPassword") final Optional<String> ldapReaderPassword) {
-		Assertion.checkArgNotEmpty(ldapServerHost);
+		Assertion.check().argNotEmpty(ldapServerHost);
 		Assertion.when(ldapReaderLogin.isPresent())
 				.state(() -> !StringUtil.isEmpty(ldapReaderLogin.get()), "readerLogin can't be empty")
 				.state(() -> ldapReaderPassword.isPresent() && ldapReaderPassword.get() != null, "With readerLogin, readerPassword is mandatory");

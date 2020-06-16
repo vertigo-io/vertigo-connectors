@@ -26,7 +26,7 @@ public final class MakerEvent {
 	private final MakerEventMetadatas eventMetadatas = new MakerEventMetadatas();
 
 	public MakerEvent(final String eventName) {
-		Assertion.checkArgNotEmpty(eventName);
+		Assertion.check().argNotEmpty(eventName);
 		//---
 		this.eventName = eventName;
 	}
