@@ -106,7 +106,7 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 		final List<HttpHost> httpHostList = new ArrayList<>();
 		for (final String serverName : serversNames) {
 			final String[] serverNameSplit = serverName.split(":");
-			Assertion.checkArgument(serverNameSplit.length == 2,
+			Assertion.check().argument(serverNameSplit.length == 2,
 					"La déclaration du serveur doit être au format host:port ({0})", serverName);
 			final int port = Integer.parseInt(serverNameSplit[1]);
 			httpHostList.add(new HttpHost(serverNameSplit[0], port));

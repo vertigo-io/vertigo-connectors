@@ -65,12 +65,13 @@ public final class SecuredTransportSearchConnector implements ElasticSearchConne
 			@ParamValue("security.key") final Optional<String> securityKey,
 			@ParamValue("security.key_passphrase") final Optional<String> securityKeyPassPhrase,
 			@ParamValue("security.certificate") final Optional<String> securityCertificate) {
-		Assertion.checkArgNotEmpty(serversNamesStr,
-				"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','");
-		Assertion.checkArgument(!serversNamesStr.contains(","),
-				"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','");
-		Assertion.checkArgNotEmpty(clusterName, "Cluster's name must be defined");
-		Assertion.checkArgument(!"elasticsearch".equals(clusterName), "You must define a cluster name different from the default one");
+		Assertion.check()
+				.argNotEmpty(serversNamesStr,
+						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
+				.argument(!serversNamesStr.contains(","),
+						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
+				.argNotEmpty(clusterName, "Cluster's name must be defined")
+				.argument(!"elasticsearch".equals(clusterName), "You must define a cluster name different from the default one");
 
 		Assertion.when(securityEnabled.orElse(false))
 				.state(() -> securityUser.isPresent()
@@ -106,7 +107,7 @@ public final class SecuredTransportSearchConnector implements ElasticSearchConne
 		client = new PreBuiltXPackTransportClient(settings);
 		for (final String serverName : serversNames) {
 			final String[] serverNameSplit = serverName.split(":");
-			Assertion.checkArgument(serverNameSplit.length == 2,
+			Assertion.check().argument(serverNameSplit.length == 2,
 					"La déclaration du serveur doit être au format host:port ({0}", serverName);
 			final int port = Integer.parseInt(serverNameSplit[1]);
 			client.addTransportAddress(new TransportAddress(new InetSocketAddress(serverNameSplit[0], port)));
