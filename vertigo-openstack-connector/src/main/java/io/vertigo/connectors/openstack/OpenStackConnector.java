@@ -76,12 +76,12 @@ public class OpenStackConnector implements Connector<OSClientV3> {
 			@Named("enableSSL") final Optional<Boolean> enableSSLOpt,
 			final ResourceManager resourceManager) {
 		Assertion.check()
-				.argNotEmpty(authenticationUrl)
-				.argNotEmpty(userDomain)
-				.argNotEmpty(userName)
-				.argNotEmpty(userSecret)
-				.argNotEmpty(projectName)
-				.argNotEmpty(projectDomain)
+				.isNotBlank(authenticationUrl)
+				.isNotBlank(userDomain)
+				.isNotBlank(userName)
+				.isNotBlank(userSecret)
+				.isNotBlank(projectName)
+				.isNotBlank(projectDomain)
 				.notNull(trustoreFile)
 				.notNull(trustorePswd)
 				.notNull(resourceManager);

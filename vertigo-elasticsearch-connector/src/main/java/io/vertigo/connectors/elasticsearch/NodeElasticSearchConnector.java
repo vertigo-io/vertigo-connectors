@@ -72,11 +72,11 @@ public class NodeElasticSearchConnector implements ElasticSearchConnector {
 			@ParamValue("cluster.name") final String clusterName,
 			@ParamValue("node.name") final Optional<String> nodeNameOpt) {
 		Assertion.check()
-				.argNotEmpty(serversNamesStr,
+				.isNotBlank(serversNamesStr,
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
 				.argument(!serversNamesStr.contains(";"),
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
-				.argNotEmpty(clusterName, "Cluster's name must be defined")
+				.isNotBlank(clusterName, "Cluster's name must be defined")
 				.argument(!"elasticsearch".equals(clusterName), "You have to define a cluster name different from the default one");
 		// ---------------------------------------------------------------------
 		connectorName = connectorNameOpt.orElse("main");

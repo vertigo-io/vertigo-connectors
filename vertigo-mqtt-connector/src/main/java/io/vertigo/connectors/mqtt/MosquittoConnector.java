@@ -47,7 +47,7 @@ public final class MosquittoConnector implements Connector<MqttClient>, Activeab
 			@ParamValue("name") final Optional<String> connectionNameOpt,
 			@ParamValue("host") final String brokerHost,
 			@ParamValue("clientId") final Optional<String> clientIdOpt) {
-		Assertion.check().argNotEmpty(brokerHost);
+		Assertion.check().isNotBlank(brokerHost);
 		//---
 		connectionName = connectionNameOpt.orElse("main");
 		final String clientId = clientIdOpt.orElse(Home.getApp().getNodeConfig().getNodeId());

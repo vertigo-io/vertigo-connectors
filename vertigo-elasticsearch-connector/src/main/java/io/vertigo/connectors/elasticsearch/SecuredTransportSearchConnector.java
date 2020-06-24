@@ -66,11 +66,11 @@ public final class SecuredTransportSearchConnector implements ElasticSearchConne
 			@ParamValue("security.key_passphrase") final Optional<String> securityKeyPassPhrase,
 			@ParamValue("security.certificate") final Optional<String> securityCertificate) {
 		Assertion.check()
-				.argNotEmpty(serversNamesStr,
+				.isNotBlank(serversNamesStr,
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
 				.argument(!serversNamesStr.contains(","),
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
-				.argNotEmpty(clusterName, "Cluster's name must be defined")
+				.isNotBlank(clusterName, "Cluster's name must be defined")
 				.argument(!"elasticsearch".equals(clusterName), "You must define a cluster name different from the default one");
 
 		Assertion.when(securityEnabled.orElse(false))

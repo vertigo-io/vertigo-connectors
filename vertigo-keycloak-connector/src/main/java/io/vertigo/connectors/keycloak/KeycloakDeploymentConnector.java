@@ -46,7 +46,7 @@ public class KeycloakDeploymentConnector implements Connector<AdapterDeploymentC
 		} else {
 			// single-tenant
 			final String configUrl = configUrlOpt.orElse("/keycloak.json");// in classpath by default
-			Assertion.check().argNotEmpty(configUrl);
+			Assertion.check().isNotBlank(configUrl);
 			try {
 				adapterDeploymentContext = new AdapterDeploymentContext(KeycloakDeploymentBuilder.build(resourceManager.resolve(configUrl).openStream()));
 			} catch (final IOException e) {

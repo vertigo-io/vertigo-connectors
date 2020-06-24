@@ -49,8 +49,8 @@ public final class IftttClient {
 			final Optional<String> proxyHostOpt,
 			final Optional<String> proxyPortOpt) {
 		Assertion.check()
-				.argNotEmpty(baseUrl, "baseUrl must not be empty")
-				.argNotEmpty(apiKey, "Apikey must not be empty")
+				.isNotBlank(baseUrl, "baseUrl must not be empty")
+				.isNotBlank(apiKey, "Apikey must not be empty")
 				.notNull(proxyHostOpt)
 				.notNull(proxyPortOpt)
 				.argument(!(proxyHostOpt.isPresent() ^ proxyPortOpt.isPresent()),

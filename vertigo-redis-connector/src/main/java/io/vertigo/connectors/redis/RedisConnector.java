@@ -55,7 +55,7 @@ public final class RedisConnector implements Connector<Jedis>, Activeable {
 			@ParamValue("password") final Optional<String> passwordOption) {
 		Assertion.check()
 				.notNull(connectorNameOpt)
-				.argNotEmpty(redisHost)
+				.isNotBlank(redisHost)
 				.notNull(passwordOption)
 				.argument(redisDatabase >= 0 && redisDatabase < 16, "there 16 DBs(0 - 15); your index database '{0}' is not inside this range", redisDatabase);
 		//-----

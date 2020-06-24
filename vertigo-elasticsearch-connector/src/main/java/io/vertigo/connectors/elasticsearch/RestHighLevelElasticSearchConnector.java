@@ -67,7 +67,7 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 			@ParamValue("name") final Optional<String> connectorNameOpt,
 			@ParamValue("servers.names") final String serversNamesStr) {
 		Assertion.check()
-				.argNotEmpty(serversNamesStr,
+				.isNotBlank(serversNamesStr,
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
 				.argument(!serversNamesStr.contains(","),
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','");

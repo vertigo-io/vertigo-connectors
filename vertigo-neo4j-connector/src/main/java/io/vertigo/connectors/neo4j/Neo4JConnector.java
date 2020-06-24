@@ -31,9 +31,9 @@ public class Neo4JConnector implements Connector<Driver>, Activeable {
 			@ParamValue("connectionAcquisitionTimeout") final Optional<Long> connectionAcquisitionTimeoutOpt,
 			@ParamValue("connectionPoolSize") final Optional<Integer> connectionPoolSizeOpt) {
 		Assertion.check()
-				.argNotEmpty(uri)
-				.argNotEmpty(login)
-				.argNotEmpty(password);
+				.isNotBlank(uri)
+				.isNotBlank(login)
+				.isNotBlank(password);
 		//---
 		connectionName = connectionNameOpt.orElse("main");
 		//---

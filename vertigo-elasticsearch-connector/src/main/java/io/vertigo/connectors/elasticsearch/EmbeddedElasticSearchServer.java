@@ -82,7 +82,7 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 			@ParamValue("http.port") final Optional<Integer> httpPortOpt,
 			@ParamValue("transport.tcp.port") final Optional<Integer> transportPortOpt,
 			final ResourceManager resourceManager) {
-		Assertion.check().argNotEmpty(elasticSearchHome);
+		Assertion.check().isNotBlank(elasticSearchHome);
 		//-----
 		elasticSearchHomeURL = resourceManager.resolve(elasticSearchHome);
 		clusterName = clusterNameOpt.orElse(DEFAULT_VERTIGO_ES_CLUSTER_NAME);
