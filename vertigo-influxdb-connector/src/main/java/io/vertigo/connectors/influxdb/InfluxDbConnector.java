@@ -53,7 +53,7 @@ public final class InfluxDbConnector implements Connector<InfluxDB>, Activeable 
 			@ParamValue("user") final String user,
 			@ParamValue("password") final String password) {
 		Assertion.check()
-				.notNull(connectorNameOpt)
+				.isNotNull(connectorNameOpt)
 				.isNotBlank(host)
 				.isNotBlank(user)
 				.isNotBlank(password);

@@ -82,9 +82,9 @@ public class OpenStackConnector implements Connector<OSClientV3> {
 				.isNotBlank(userSecret)
 				.isNotBlank(projectName)
 				.isNotBlank(projectDomain)
-				.notNull(trustoreFile)
-				.notNull(trustorePswd)
-				.notNull(resourceManager);
+				.isNotNull(trustoreFile)
+				.isNotNull(trustorePswd)
+				.isNotNull(resourceManager);
 		//---
 		this.resourceManager = resourceManager;
 		myAuthenticationUrl = authenticationUrl;

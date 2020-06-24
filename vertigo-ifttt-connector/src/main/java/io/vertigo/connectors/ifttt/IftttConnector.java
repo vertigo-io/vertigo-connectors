@@ -41,7 +41,7 @@ public final class IftttConnector implements Connector<IftttClient> {
 			@ParamValue("apiKey") final String apiKey,
 			@ParamValue("proxyHost") final Optional<String> proxyHostOpt,
 			@ParamValue("proxyPort") final Optional<String> proxyPortOpt) {
-		Assertion.check().notNull(connectorNameOpt);
+		Assertion.check().isNotNull(connectorNameOpt);
 		//---
 		connectorName = connectorNameOpt.orElse("main");
 		iftttClient = new IftttClient(baseUrl, apiKey, proxyHostOpt, proxyPortOpt);

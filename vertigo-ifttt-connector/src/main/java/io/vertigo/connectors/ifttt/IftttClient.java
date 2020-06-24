@@ -51,8 +51,8 @@ public final class IftttClient {
 		Assertion.check()
 				.isNotBlank(baseUrl, "baseUrl must not be empty")
 				.isNotBlank(apiKey, "Apikey must not be empty")
-				.notNull(proxyHostOpt)
-				.notNull(proxyPortOpt)
+				.isNotNull(proxyHostOpt)
+				.isNotNull(proxyPortOpt)
 				.argument(!(proxyHostOpt.isPresent() ^ proxyPortOpt.isPresent()),
 						"les deux paramètres host et port doivent être tous les deux remplis ou vides");
 		// ----
@@ -66,7 +66,7 @@ public final class IftttClient {
 	}
 
 	public void sendMakerEvent(final MakerEvent event) {
-		Assertion.check().notNull(event);
+		Assertion.check().isNotNull(event);
 		//---
 		final String url = new StringBuilder(baseUrl)
 				.append("/")
