@@ -53,7 +53,7 @@ public final class IftttClient {
 				.isNotBlank(apiKey, "Apikey must not be empty")
 				.isNotNull(proxyHostOpt)
 				.isNotNull(proxyPortOpt)
-				.isTrue(!(proxyHostOpt.isPresent() ^ proxyPortOpt.isPresent()),
+				.isFalse(proxyHostOpt.isPresent() ^ proxyPortOpt.isPresent(),
 						"les deux paramètres host et port doivent être tous les deux remplis ou vides");
 		// ----
 		this.baseUrl = baseUrl;

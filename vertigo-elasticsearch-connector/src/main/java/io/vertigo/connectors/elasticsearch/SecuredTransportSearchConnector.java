@@ -68,10 +68,11 @@ public final class SecuredTransportSearchConnector implements ElasticSearchConne
 		Assertion.check()
 				.isNotBlank(serversNamesStr,
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
-				.isTrue(!serversNamesStr.contains(","),
+				.isFalse(serversNamesStr.contains(","),
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
-				.isNotBlank(clusterName, "Cluster's name must be defined")
-				.isTrue(!"elasticsearch".equals(clusterName), "You must define a cluster name different from the default one");
+				.isNotBlank(clusterName, 
+						"Cluster's name must be defined")
+				.isFalse("elasticsearch".equals(clusterName), "You must define a cluster name different from the default one");
 
 		Assertion.when(securityEnabled.orElse(false))
 				.isTrue(() -> securityUser.isPresent()
