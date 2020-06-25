@@ -69,7 +69,7 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 		Assertion.check()
 				.isNotBlank(serversNamesStr,
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
-				.argument(!serversNamesStr.contains(","),
+				.isTrue(!serversNamesStr.contains(","),
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','");
 		// ---------------------------------------------------------------------
 		connectorName = connectorNameOpt.orElse("main");
@@ -106,7 +106,7 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 		final List<HttpHost> httpHostList = new ArrayList<>();
 		for (final String serverName : serversNames) {
 			final String[] serverNameSplit = serverName.split(":");
-			Assertion.check().argument(serverNameSplit.length == 2,
+			Assertion.check().isTrue(serverNameSplit.length == 2,
 					"La déclaration du serveur doit être au format host:port ({0})", serverName);
 			final int port = Integer.parseInt(serverNameSplit[1]);
 			httpHostList.add(new HttpHost(serverNameSplit[0], port));

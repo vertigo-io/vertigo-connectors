@@ -68,10 +68,10 @@ public final class SecuredTransportSearchConnector implements ElasticSearchConne
 		Assertion.check()
 				.isNotBlank(serversNamesStr,
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
-				.argument(!serversNamesStr.contains(","),
+				.isTrue(!serversNamesStr.contains(","),
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
 				.isNotBlank(clusterName, "Cluster's name must be defined")
-				.argument(!"elasticsearch".equals(clusterName), "You must define a cluster name different from the default one");
+				.isTrue(!"elasticsearch".equals(clusterName), "You must define a cluster name different from the default one");
 
 		Assertion.when(securityEnabled.orElse(false))
 				.isTrue(() -> securityUser.isPresent()
@@ -107,7 +107,7 @@ public final class SecuredTransportSearchConnector implements ElasticSearchConne
 		client = new PreBuiltXPackTransportClient(settings);
 		for (final String serverName : serversNames) {
 			final String[] serverNameSplit = serverName.split(":");
-			Assertion.check().argument(serverNameSplit.length == 2,
+			Assertion.check().isTrue(serverNameSplit.length == 2,
 					"La déclaration du serveur doit être au format host:port ({0}", serverName);
 			final int port = Integer.parseInt(serverNameSplit[1]);
 			client.addTransportAddress(new TransportAddress(new InetSocketAddress(serverNameSplit[0], port)));

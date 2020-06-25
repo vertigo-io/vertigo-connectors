@@ -121,8 +121,8 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 			throw WrappedException.wrap(e, "Error de parametrage du ElasticSearchHome {0}", esHomeURL);
 		}
 		Assertion.check()
-				.argument(home.exists() && home.isDirectory(), "Le ElasticSearchHome : {0} n''existe pas, ou n''est pas un répertoire.", home.getAbsolutePath())
-				.argument(home.canWrite(), "L''application n''a pas les droits d''écriture sur le ElasticSearchHome : {0}", home.getAbsolutePath());
+				.isTrue(home.exists() && home.isDirectory(), "Le ElasticSearchHome : {0} n''existe pas, ou n''est pas un répertoire.", home.getAbsolutePath())
+				.isTrue(home.canWrite(), "L''application n''a pas les droits d''écriture sur le ElasticSearchHome : {0}", home.getAbsolutePath());
 		return new MyNode(buildNodeSettings(home.getAbsolutePath()), Arrays.asList(Netty4Plugin.class, ReindexPlugin.class, CommonAnalysisPlugin.class, MapperExtrasPlugin.class));
 	}
 

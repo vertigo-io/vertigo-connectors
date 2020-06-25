@@ -74,10 +74,10 @@ public class NodeElasticSearchConnector implements ElasticSearchConnector {
 		Assertion.check()
 				.isNotBlank(serversNamesStr,
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
-				.argument(!serversNamesStr.contains(";"),
+				.isTrue(!serversNamesStr.contains(";"),
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
 				.isNotBlank(clusterName, "Cluster's name must be defined")
-				.argument(!"elasticsearch".equals(clusterName), "You have to define a cluster name different from the default one");
+				.isTrue(!"elasticsearch".equals(clusterName), "You have to define a cluster name different from the default one");
 		// ---------------------------------------------------------------------
 		connectorName = connectorNameOpt.orElse("main");
 		serversNames = serversNamesStr.split(",");

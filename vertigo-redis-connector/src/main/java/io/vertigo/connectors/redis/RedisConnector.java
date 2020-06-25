@@ -57,7 +57,7 @@ public final class RedisConnector implements Connector<Jedis>, Activeable {
 				.isNotNull(connectorNameOpt)
 				.isNotBlank(redisHost)
 				.isNotNull(passwordOption)
-				.argument(redisDatabase >= 0 && redisDatabase < 16, "there 16 DBs(0 - 15); your index database '{0}' is not inside this range", redisDatabase);
+				.isTrue(redisDatabase >= 0 && redisDatabase < 16, "there 16 DBs(0 - 15); your index database '{0}' is not inside this range", redisDatabase);
 		//-----
 		connectorName = connectorNameOpt.orElse("main");
 		final JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
