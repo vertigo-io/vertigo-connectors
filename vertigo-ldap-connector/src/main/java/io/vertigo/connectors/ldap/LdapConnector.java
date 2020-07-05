@@ -61,7 +61,7 @@ public final class LdapConnector implements Connector<LdapContext> {
 			@ParamValue("readerPassword") final Optional<String> ldapReaderPassword) {
 		Assertion.check()
 				.isNotBlank(ldapServerHost)
-				.when(ldapReaderLogin.isPresent(), () -> Assertion.test()
+				.when(ldapReaderLogin.isPresent(), () -> Assertion.check()
 						.isFalse(StringUtil.isBlank(ldapReaderLogin.get()), "readerLogin can't be empty")
 						.isTrue(ldapReaderPassword.isPresent() && ldapReaderPassword.get() != null, "With readerLogin, readerPassword is mandatory"));
 		//-----

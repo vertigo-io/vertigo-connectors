@@ -73,7 +73,7 @@ public final class SecuredTransportSearchConnector implements ElasticSearchConne
 				.isNotBlank(clusterName,
 						"Cluster's name must be defined")
 				.isFalse("elasticsearch".equals(clusterName), "You must define a cluster name different from the default one")
-				.when(securityEnabled.orElse(false), () -> Assertion.test()
+				.when(securityEnabled.orElse(false), () -> Assertion.check()
 						.isTrue(securityUser.isPresent()
 								&& securityPassword.isPresent()
 								&& securityKey.isPresent()
