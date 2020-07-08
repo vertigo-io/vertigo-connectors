@@ -44,7 +44,7 @@ public final class RedisConnector implements Connector<Jedis>, Activeable {
 	 * @param redisHost REDIS server host name
 	 * @param redisPort REDIS server port
 	 * @param redisDatabase REDIS database index
-	 * @param passwordOption password (optional)
+	 * @param passwordOpt password (optional)
 	 */
 	@Inject
 	public RedisConnector(
@@ -52,16 +52,16 @@ public final class RedisConnector implements Connector<Jedis>, Activeable {
 			@ParamValue("host") final String redisHost,
 			@ParamValue("port") final int redisPort,
 			@ParamValue("database") final int redisDatabase,
-			@ParamValue("password") final Optional<String> passwordOption) {
+			@ParamValue("password") final Optional<String> passwordOpt) {
 		Assertion.check()
 				.isNotNull(connectorNameOpt)
 				.isNotBlank(redisHost)
-				.isNotNull(passwordOption)
+				.isNotNull(passwordOpt)
 				.isTrue(redisDatabase >= 0 && redisDatabase < 16, "there 16 DBs(0 - 15); your index database '{0}' is not inside this range", redisDatabase);
 		//-----
 		connectorName = connectorNameOpt.orElse("main");
 		final JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-		jedisPool = new JedisPool(jedisPoolConfig, redisHost, redisPort, CONNECT_TIMEOUT, passwordOption.orElse(null), redisDatabase);
+		jedisPool = new JedisPool(jedisPoolConfig, redisHost, redisPort, CONNECT_TIMEOUT, passwordOpt.orElse(null), redisDatabase);
 		//test
 		try (Jedis jedis = jedisPool.getResource()) {
 			jedis.ping();

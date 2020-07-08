@@ -44,8 +44,8 @@ public final class LdapConnector implements Connector<LdapContext> {
 
 	private final String connectorName;
 	private final String ldapServer;
-	private final Optional<String> readerLogin;
-	private final Optional<String> readerPassword;
+	private final Optional<String> readerLoginOpt;
+	private final Optional<String> readerPasswordOpt;
 
 	/**
 	 * Constructor.
@@ -57,18 +57,18 @@ public final class LdapConnector implements Connector<LdapContext> {
 			@ParamValue("name") final Optional<String> connectorNameOpt,
 			@ParamValue("host") final String ldapServerHost,
 			@ParamValue("port") final int ldapServerPort,
-			@ParamValue("readerLogin") final Optional<String> ldapReaderLogin,
-			@ParamValue("readerPassword") final Optional<String> ldapReaderPassword) {
+			@ParamValue("readerLogin") final Optional<String> ldapReaderLoginOpt,
+			@ParamValue("readerPassword") final Optional<String> ldapReaderPasswordOpt) {
 		Assertion.check()
 				.isNotBlank(ldapServerHost)
-				.when(ldapReaderLogin.isPresent(), () -> Assertion.check()
-						.isFalse(StringUtil.isBlank(ldapReaderLogin.get()), "readerLogin can't be empty")
-						.isTrue(ldapReaderPassword.isPresent() && ldapReaderPassword.get() != null, "With readerLogin, readerPassword is mandatory"));
+				.when(ldapReaderLoginOpt.isPresent(), () -> Assertion.check()
+						.isFalse(StringUtil.isBlank(ldapReaderLoginOpt.get()), "readerLogin can't be empty")
+						.isTrue(ldapReaderPasswordOpt.isPresent() && ldapReaderPasswordOpt.get() != null, "With readerLogin, readerPassword is mandatory"));
 		//-----
 		connectorName = connectorNameOpt.orElse("main");
 		ldapServer = ldapServerHost + ":" + ldapServerPort;
-		readerLogin = ldapReaderLogin;
-		readerPassword = ldapReaderPassword;
+		readerLoginOpt = ldapReaderLoginOpt;
+		readerPasswordOpt = ldapReaderPasswordOpt;
 	}
 
 	@Override
@@ -103,9 +103,9 @@ public final class LdapConnector implements Connector<LdapContext> {
 	@Override
 	public LdapContext getClient() {
 		try {
-			return createLdapContext(readerLogin.get(), readerPassword.get());
+			return createLdapContext(readerLoginOpt.get(), readerPasswordOpt.get());
 		} catch (final NamingException e) {
-			throw WrappedException.wrap(e, "Can't connect user : {0} ", readerLogin);
+			throw WrappedException.wrap(e, "Can't connect user : {0} ", readerLoginOpt);
 		}
 	}
 

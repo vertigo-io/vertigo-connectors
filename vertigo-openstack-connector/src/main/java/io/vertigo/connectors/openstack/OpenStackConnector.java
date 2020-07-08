@@ -71,8 +71,8 @@ public class OpenStackConnector implements Connector<OSClientV3> {
 			@Named("userSecret") final String userSecret,
 			@Named("projectDomain") final String projectDomain,
 			@Named("projectName") final String projectName,
-			@Named("trustoreFile") final Optional<String> trustoreFile,
-			@Named("trustorePswd") final Optional<String> trustorePswd,
+			@Named("trustoreFile") final Optional<String> trustoreFileOpt,
+			@Named("trustorePswd") final Optional<String> trustorePswdOpt,
 			@Named("enableSSL") final Optional<Boolean> enableSSLOpt,
 			final ResourceManager resourceManager) {
 		Assertion.check()
@@ -82,8 +82,8 @@ public class OpenStackConnector implements Connector<OSClientV3> {
 				.isNotBlank(userSecret)
 				.isNotBlank(projectName)
 				.isNotBlank(projectDomain)
-				.isNotNull(trustoreFile)
-				.isNotNull(trustorePswd)
+				.isNotNull(trustoreFileOpt)
+				.isNotNull(trustorePswdOpt)
 				.isNotNull(resourceManager);
 		//---
 		this.resourceManager = resourceManager;
@@ -93,7 +93,7 @@ public class OpenStackConnector implements Connector<OSClientV3> {
 		myUserSecret = userSecret;
 		myProjectDomain = projectDomain;
 		myProjectName = projectName;
-		myConfig = buildConfig(trustoreFile, trustorePswd, enableSSLOpt);
+		myConfig = buildConfig(trustoreFileOpt, trustorePswdOpt, enableSSLOpt);
 		authenticateClient(
 				authenticationUrl,
 				userDomain,
@@ -143,16 +143,16 @@ public class OpenStackConnector implements Connector<OSClientV3> {
 	}
 
 	protected Config buildConfig(
-			final Optional<String> trustoreFile,
-			final Optional<String> trustorePswd,
+			final Optional<String> trustoreFileOpt,
+			final Optional<String> trustorePswdOpt,
 			final Optional<Boolean> enableSSLOpt) {
 		final boolean enableSSL = enableSSLOpt.isPresent() && enableSSLOpt.get();
 		final Config config = Config.newConfig().withMaxConnections(MAX_CONNECTION);
-		if (enableSSL && trustoreFile.isPresent()) {
+		if (enableSSL && trustoreFileOpt.isPresent()) {
 			try {
 				final KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-				try (InputStream trustStoreInputStream = resourceManager.resolve(trustoreFile.get()).openStream()) {
-					trustStore.load(trustStoreInputStream, trustorePswd.get().toCharArray());
+				try (InputStream trustStoreInputStream = resourceManager.resolve(trustoreFileOpt.get()).openStream()) {
+					trustStore.load(trustStoreInputStream, trustorePswdOpt.get().toCharArray());
 				}
 				final TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 				trustManagerFactory.init(trustStore);
