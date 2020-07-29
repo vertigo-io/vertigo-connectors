@@ -11,7 +11,7 @@ import org.neo4j.driver.v1.Transaction;
 import org.neo4j.driver.v1.TransactionWork;
 import org.neo4j.driver.v1.Values;
 
-import io.vertigo.core.node.AutoCloseableApp;
+import io.vertigo.core.node.AutoCloseableNode;
 import io.vertigo.core.node.component.di.DIInjector;
 import io.vertigo.core.node.config.BootConfig;
 import io.vertigo.core.node.config.NodeConfig;
@@ -22,18 +22,18 @@ public class TestNeo4jEmbedded {
 
 	@Inject
 	private Neo4JConnector neo4jConnector;
-	private AutoCloseableApp app;
+	private AutoCloseableNode node;
 
 	@BeforeEach
 	public final void setUp() throws Exception {
-		app = new AutoCloseableApp(buildNodeConfig());
-		DIInjector.injectMembers(this, app.getComponentSpace());
+		node = new AutoCloseableNode(buildNodeConfig());
+		DIInjector.injectMembers(this, node.getComponentSpace());
 	}
 
 	@AfterEach
 	public final void tearDown() throws Exception {
-		if (app != null) {
-			app.close();
+		if (node != null) {
+			node.close();
 		}
 	}
 

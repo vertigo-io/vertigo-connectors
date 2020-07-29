@@ -29,7 +29,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.WrappedException;
-import io.vertigo.core.node.App;
+import io.vertigo.core.node.Node;
 import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
@@ -50,7 +50,7 @@ public final class MosquittoConnector implements Connector<MqttClient>, Activeab
 		Assertion.check().isNotBlank(brokerHost);
 		//---
 		connectionName = connectionNameOpt.orElse("main");
-		final String clientId = clientIdOpt.orElse(App.getApp().getNodeConfig().getNodeId());
+		final String clientId = clientIdOpt.orElse(Node.getNode().getNodeConfig().getNodeId());
 		try {
 			mqttClient = new MqttClient(brokerHost, clientId + connectionName, new MemoryPersistence());
 			final MqttConnectOptions connOpts = new MqttConnectOptions();
