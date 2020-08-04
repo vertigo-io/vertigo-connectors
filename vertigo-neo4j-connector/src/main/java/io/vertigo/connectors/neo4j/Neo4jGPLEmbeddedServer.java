@@ -1,14 +1,18 @@
 package io.vertigo.connectors.neo4j;
 
+import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAME;
+
 import java.io.File;
 import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 
+import org.neo4j.configuration.GraphDatabaseSettings;
+import org.neo4j.configuration.connectors.BoltConnector;
+import org.neo4j.configuration.helpers.SocketAddress;
+import org.neo4j.dbms.api.DatabaseManagementService;
+import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.neo4j.graphdb.factory.GraphDatabaseSettings;
-import org.neo4j.kernel.configuration.BoltConnector;
 
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.node.component.Activeable;
@@ -17,6 +21,7 @@ import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
 
 public class Neo4jGPLEmbeddedServer implements Component, Activeable {
+	private final DatabaseManagementService managementService;
 	GraphDatabaseService graphDb;
 
 	@Inject
@@ -28,17 +33,14 @@ public class Neo4jGPLEmbeddedServer implements Component, Activeable {
 		//---
 		final File homeFile = new File(resourceManager.resolve(home).toURI());
 
-		final BoltConnector bolt = new BoltConnector("0");
-		graphDb = new GraphDatabaseFactory()
-				.newEmbeddedDatabaseBuilder(homeFile)
+		managementService = new DatabaseManagementServiceBuilder(homeFile)
 				.setConfig(GraphDatabaseSettings.pagecache_memory, "512M")
-				.setConfig(GraphDatabaseSettings.string_block_size, "60")
-				.setConfig(GraphDatabaseSettings.array_block_size, "300")
-				.setConfig(bolt.type, "BOLT")
-				.setConfig(bolt.enabled, "true")
-				.setConfig(bolt.listen_address, "localhost:7687")
-				.newGraphDatabase();
+				.setConfig(BoltConnector.enabled, true)
+				.setConfig(BoltConnector.listen_address, new SocketAddress("localhost", 7687))
+				.build();
 
+		graphDb = managementService.database(DEFAULT_DATABASE_NAME);
+		registerShutdownHook(managementService);
 	}
 
 	@Override
@@ -48,7 +50,18 @@ public class Neo4jGPLEmbeddedServer implements Component, Activeable {
 
 	@Override
 	public void stop() {
-		graphDb.shutdown();
+		managementService.shutdown();
 	}
 
+	private static void registerShutdownHook(final DatabaseManagementService managementService) {
+		// Registers a shutdown hook for the Neo4j instance so that it
+		// shuts down nicely when the VM exits (even if you "Ctrl-C" the
+		// running application).
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				managementService.shutdown();
+			}
+		});
+	}
 }

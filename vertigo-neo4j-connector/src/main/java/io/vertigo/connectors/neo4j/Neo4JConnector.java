@@ -5,10 +5,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.neo4j.driver.v1.AuthTokens;
-import org.neo4j.driver.v1.Config;
-import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.GraphDatabase;
+import org.neo4j.driver.AuthTokens;
+import org.neo4j.driver.Config;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.GraphDatabase;
 
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.node.component.Activeable;
@@ -49,12 +49,12 @@ public class Neo4JConnector implements Connector<Driver>, Activeable {
 			final Optional<Long> connectionLivenessCheckTimeoutOpt,
 			final Optional<Long> connectionAcquisitionTimeoutOpt,
 			final Optional<Integer> connectionPoolSizeOpt) {
-		return Config.build()
+		return Config.builder()
 				.withConnectionTimeout(connectionTimeoutOpt.orElse(1L), TimeUnit.MINUTES)
 				.withConnectionLivenessCheckTimeout(connectionLivenessCheckTimeoutOpt.orElse(10L), TimeUnit.MINUTES)
 				.withConnectionAcquisitionTimeout(connectionAcquisitionTimeoutOpt.orElse(1L), TimeUnit.MINUTES)
 				.withMaxConnectionPoolSize(connectionPoolSizeOpt.orElse(100))
-				.toConfig();
+				.build();
 	}
 
 	@Override
