@@ -32,6 +32,7 @@
 		<module>vertigo-ldap-connector</module>
 		<module>vertigo-ifttt-connector</module>
 		<module>vertigo-keycloak-connector</module>
+		<module>vertigo-mail-connector</module>
 	</modules>
 	<dependencies>
 		<dependency>
