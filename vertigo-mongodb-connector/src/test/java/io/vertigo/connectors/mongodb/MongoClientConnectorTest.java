@@ -58,6 +58,7 @@ public class MongoClientConnectorTest {
 
 		final InsertOneResult insertResult = personCollection.insertOne(randomGuy);
 		final BsonValue randomGuyId = insertResult.getInsertedId();
+		Assertions.assertTrue(randomGuyId != null);
 		final Person queriedPerson = personCollection.find(Filters.eq("firstName", "My")).first();
 		Assertions.assertEquals("Name", queriedPerson.getLastName());
 
