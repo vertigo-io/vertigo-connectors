@@ -37,12 +37,11 @@ public class Neo4JConnector implements Connector<Driver>, Activeable {
 		//---
 		connectionName = connectionNameOpt.orElse("main");
 		//---
-		final Driver myNeo4jDriver = GraphDatabase.driver(
+		// ---
+		neo4jDriver = GraphDatabase.driver(
 				uri,
 				AuthTokens.basic(login, password),
 				getConfig(connectionTimeoutOpt, connectionLivenessCheckTimeoutOpt, connectionAcquisitionTimeoutOpt, connectionPoolSizeOpt));
-		// ---
-		neo4jDriver = myNeo4jDriver;
 	}
 
 	protected Config getConfig(final Optional<Long> connectionTimeoutOpt,
