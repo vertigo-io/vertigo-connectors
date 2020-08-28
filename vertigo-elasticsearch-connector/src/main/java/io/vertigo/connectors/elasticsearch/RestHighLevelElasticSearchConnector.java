@@ -59,8 +59,6 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 	 * @param clusterName : nom du cluster à rejoindre
 	 * @param configFile fichier de configuration des index
 	 * @param nodeNameOpt : nom du node
-	 * @param codecManager Manager des codecs
-	 * @param resourceManager Manager d'accès aux ressources
 	 */
 	@Inject
 	public RestHighLevelElasticSearchConnector(

@@ -45,9 +45,9 @@ public class Twitter4jConnector implements Connector<Twitter> {
 	}
 
 	/**
-	 * Get an OSClientV3 from the connection pool
+	 * Gets an OSClientV3 from the connection pool
 	 *
-	 * @return
+	 * @return the twitter client
 	 */
 	@Override
 	public Twitter getClient() {

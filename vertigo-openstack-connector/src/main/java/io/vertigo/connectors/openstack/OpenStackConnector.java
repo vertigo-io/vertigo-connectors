@@ -107,7 +107,7 @@ public class OpenStackConnector implements Connector<OSClientV3> {
 	/**
 	 * Get an OSClientV3 from the connection pool
 	 *
-	 * @return
+	 * @return the OpenStack client
 	 */
 	@Override
 	public OSClientV3 getClient() {

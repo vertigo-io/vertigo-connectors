@@ -62,8 +62,6 @@ public class NodeElasticSearchConnector implements ElasticSearchConnector {
 	 * @param clusterName : nom du cluster à rejoindre
 	 * @param configFile fichier de configuration des index
 	 * @param nodeNameOpt : nom du node
-	 * @param codecManager Manager des codecs
-	 * @param resourceManager Manager d'accès aux ressources
 	 */
 	@Inject
 	public NodeElasticSearchConnector(
@@ -76,9 +74,9 @@ public class NodeElasticSearchConnector implements ElasticSearchConnector {
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
 				.isFalse(serversNamesStr.contains(";"),
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
-				.isNotBlank(clusterName, 
+				.isNotBlank(clusterName,
 						"Cluster's name must be defined")
-				.isFalse("elasticsearch".equals(clusterName), 
+				.isFalse("elasticsearch".equals(clusterName),
 						"You have to define a cluster name different from the default one");
 		// ---------------------------------------------------------------------
 		connectorName = connectorNameOpt.orElse("main");

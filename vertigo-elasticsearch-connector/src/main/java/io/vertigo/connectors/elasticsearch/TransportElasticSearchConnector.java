@@ -53,14 +53,8 @@ public class TransportElasticSearchConnector implements ElasticSearchConnector {
 	 * Constructor.
 	 *
 	 * @param serversNamesStr URL du serveur ElasticSearch avec le port de communication de cluster (9300 en général)
-	 * @param envIndex Nom de l'index de l'environment
-	 * @param envIndexIsPrefix Si Nom de l'index de l'environment est un prefix
-	 * @param rowsPerQuery Liste des indexes
 	 * @param clusterName : nom du cluster à rejoindre
-	 * @param configFile fichier de configuration des index
 	 * @param nodeNameOpt : nom du node
-	 * @param codecManager Manager des codecs
-	 * @param resourceManager Manager d'accès aux ressources
 	 */
 	@Inject
 	public TransportElasticSearchConnector(

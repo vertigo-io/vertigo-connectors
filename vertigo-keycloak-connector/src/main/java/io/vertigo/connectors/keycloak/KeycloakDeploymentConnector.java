@@ -63,7 +63,7 @@ public class KeycloakDeploymentConnector implements Connector<AdapterDeploymentC
 
 	/**
 	 * Get a AdapterDeploymentContext
-	 * @return
+	 * @return the Keycloack client
 	 */
 	@Override
 	public AdapterDeploymentContext getClient() {

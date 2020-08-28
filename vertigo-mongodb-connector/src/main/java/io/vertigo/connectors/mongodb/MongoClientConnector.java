@@ -41,8 +41,8 @@ public final class MongoClientConnector implements Connector<MongoClient>, Activ
 	private final MongoClient mongoClient;
 
 	/**
-	 * Connector to a mongodb
-	 * @param name Optional name of the connector ("main" by default)
+	 * Connector to mongodb
+	 * @param connectorNameOpt Optional name of the connector ("main" by default)
 	 * @param connectionString connectionString to connect to Mongo DB or replica set
 	 */
 	@Inject

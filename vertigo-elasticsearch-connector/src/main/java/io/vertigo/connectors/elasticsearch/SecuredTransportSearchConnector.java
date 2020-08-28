@@ -39,7 +39,6 @@ public final class SecuredTransportSearchConnector implements ElasticSearchConne
 	 * @param envIndex Nom de l'index de l'environment
 	 * @param envIndexIsPrefix Si Nom de l'index de l'environment est un prefix
 	 * @param rowsPerQuery Liste des indexes
-	 * @param codecManager Manager des codecs
 	 * @param clusterName : nom du cluster à rejoindre
 	 * @param nodeNameOpt : nom du node
 	 * @param securityEnabled active ou non la sécurité
@@ -48,7 +47,6 @@ public final class SecuredTransportSearchConnector implements ElasticSearchConne
 	 * @param securityKeyPassPhrase passphrase si clé chiffrée
 	 * @param securityCertificate le certificat
 	 * @param configFile fichier de configuration des index
-	 * @param resourceManager Manager d'accès aux ressources
 	 */
 	@Inject
 	public SecuredTransportSearchConnector(

@@ -71,7 +71,6 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 	 * @param envIndex Nom de l'index de l'environment
 	 * @param envIndexIsPrefix Si Nom de l'index de l'environment est un prefix
 	 * @param rowsPerQuery Nombre d'élément retourné par query
-	 * @param codecManager Manager des codecs
 	 * @param resourceManager Manager d'accès aux ressources
 	 * @param configFile Fichier de configuration des indexs
 	 */
