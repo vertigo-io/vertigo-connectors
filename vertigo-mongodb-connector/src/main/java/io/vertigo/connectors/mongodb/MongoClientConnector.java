@@ -35,7 +35,7 @@ import io.vertigo.core.param.ParamValue;
  *
  * @author mlaroche
  */
-public final class MongoClientConnector implements Connector<MongoClient>, Activeable {
+public class MongoClientConnector implements Connector<MongoClient>, Activeable {
 
 	private final String connectorName;
 	private final MongoClient mongoClient;

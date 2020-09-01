@@ -34,7 +34,7 @@ import io.vertigo.core.param.ParamValue;
  *
  * @author npiedeloup
  */
-public final class JndiMailSessionConnector implements MailSessionConnector {
+public class JndiMailSessionConnector implements MailSessionConnector {
 
 	private final String connectorName;
 	private final String jndiMailSession;

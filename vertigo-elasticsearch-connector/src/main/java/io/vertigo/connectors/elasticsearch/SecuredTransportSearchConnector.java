@@ -22,7 +22,7 @@ import io.vertigo.core.param.ParamValue;
  *
  * @author skerdudou
  */
-public final class SecuredTransportSearchConnector implements ElasticSearchConnector {
+public class SecuredTransportSearchConnector implements ElasticSearchConnector {
 
 	private final String connectorName;
 	/** url du serveur elasticSearch. */

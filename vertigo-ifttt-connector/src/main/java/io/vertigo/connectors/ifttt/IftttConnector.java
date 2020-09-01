@@ -29,7 +29,7 @@ import io.vertigo.core.param.ParamValue;
 /**
  * @author dt
  */
-public final class IftttConnector implements Connector<IftttClient> {
+public class IftttConnector implements Connector<IftttClient> {
 	private final String connectorName;
 
 	private final IftttClient iftttClient;

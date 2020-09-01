@@ -16,7 +16,6 @@ import twitter4j.conf.PropertyConfiguration;
  * Component to retrieve a configured twitter4j client.
  *
  * @author mlaroche
- *
  */
 public class Twitter4jConnector implements Connector<Twitter> {
 

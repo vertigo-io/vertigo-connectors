@@ -34,7 +34,7 @@ import io.vertigo.core.util.StringUtil;
  *
  * @author npiedeloup
  */
-public final class NativeMailSessionConnector implements MailSessionConnector {
+public class NativeMailSessionConnector implements MailSessionConnector {
 
 	private final String connectorName;
 	private final String mailStoreProtocol;

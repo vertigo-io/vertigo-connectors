@@ -22,7 +22,7 @@ import io.vertigo.core.resource.ResourceManager;
 
 public class Neo4jGPLEmbeddedServer implements Component, Activeable {
 	private final DatabaseManagementService managementService;
-	GraphDatabaseService graphDb;
+	protected final GraphDatabaseService graphDb;
 
 	@Inject
 	public Neo4jGPLEmbeddedServer(

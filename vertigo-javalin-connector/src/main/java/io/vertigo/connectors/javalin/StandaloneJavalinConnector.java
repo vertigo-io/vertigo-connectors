@@ -30,7 +30,7 @@ import io.vertigo.core.param.ParamValue;
 /**
  * @author npiedeloup
  */
-public final class StandaloneJavalinConnector implements JavalinConnector, Activeable {
+public class StandaloneJavalinConnector implements JavalinConnector, Activeable {
 	private final Javalin javalinApp;
 	private final String connectorName;
 

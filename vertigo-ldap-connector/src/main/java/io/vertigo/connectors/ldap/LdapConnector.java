@@ -37,7 +37,7 @@ import io.vertigo.core.util.StringUtil;
 /**
  * @author npiedeloup
  */
-public final class LdapConnector implements Connector<LdapContext> {
+public class LdapConnector implements Connector<LdapContext> {
 	private static final String DEFAULT_CONTEXT_FACTORY_CLASS_NAME = "com.sun.jndi.ldap.LdapCtxFactory";
 	private static final String SIMPLE_AUTHENTICATION_MECHANISM_NAME = "simple";
 	private static final String DEFAULT_REFERRAL = "follow";
