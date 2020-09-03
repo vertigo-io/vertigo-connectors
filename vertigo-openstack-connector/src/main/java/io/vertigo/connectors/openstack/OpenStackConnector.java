@@ -36,7 +36,7 @@ public class OpenStackConnector implements Connector<OSClientV3> {
 	/**
 	 * Max connection number for the connection pool
 	 */
-	private final static int MAX_CONNECTION = 100;
+	private static final int MAX_CONNECTION = 100;
 
 	private final Config myConfig;
 	private OSClientV3 osClientV3;
