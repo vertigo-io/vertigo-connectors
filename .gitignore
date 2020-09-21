@@ -3,10 +3,8 @@ trash/
 target/
 .classpath
 .project
-vertigo-x-release/
 mvn-release.txt
-.classpath
-*/.settings/
+.settings/
 *.prefs
 *.jar
 .factorypath
