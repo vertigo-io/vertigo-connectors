@@ -1,0 +1,13 @@
+bin/
+trash/
+target/
+.classpath
+.project
+vertigo-x-release/
+mvn-release.txt
+.classpath
+*/.settings/
+*.prefs
+*.jar
+.factorypath
+.vscode/
