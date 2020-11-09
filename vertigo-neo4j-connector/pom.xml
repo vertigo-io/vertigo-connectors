@@ -17,7 +17,7 @@
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j</artifactId>
-			<version>4.1.1</version>
+			<version>4.1.3</version>
 			<optional>true</optional> <!-- GPLv3 Licence, make sure to comply with your obligations. For Embedded Server  --> 
 			<exclusions>
 				<exclusion>
@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j-bolt</artifactId>
-			<version>4.1.1</version>
+			<version>4.1.3</version>
 			<optional>true</optional> <!-- GPLv3 Licence, make sure to comply with your obligations. For Embedded Server  -->
 		</dependency>
 		<dependency>
