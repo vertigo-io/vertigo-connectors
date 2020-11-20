@@ -43,7 +43,8 @@ public class StandaloneJavalinConnector implements JavalinConnector, Activeable 
 		Assertion.check().isNotNull(connectorNameOpt);
 		//-----
 		connectorName = connectorNameOpt.orElse("main");
-		javalinApp = Javalin.createStandalone();
+		javalinApp = Javalin.createStandalone(config -> config.ignoreTrailingSlashes = false); //javalin PR#1088 fix
+
 	}
 
 	/**

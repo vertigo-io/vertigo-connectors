@@ -1,0 +1,11 @@
+bin/
+trash/
+target/
+.classpath
+.project
+mvn-release.txt
+.settings/
+*.prefs
+*.jar
+.factorypath
+.vscode/

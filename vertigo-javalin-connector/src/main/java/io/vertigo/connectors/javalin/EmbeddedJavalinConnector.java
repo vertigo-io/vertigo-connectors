@@ -49,7 +49,7 @@ public class EmbeddedJavalinConnector implements JavalinConnector, Activeable {
 		//-----
 		connectorName = connectorNameOpt.orElse("main");
 		final String tempDir = System.getProperty("java.io.tmpdir");
-		javalinApp = Javalin.create()
+		javalinApp = Javalin.create(config -> config.ignoreTrailingSlashes = false) //javalin PR#1088 fix
 				.before(new JettyMultipartConfig(tempDir))
 				.after(new JettyMultipartCleaner());
 		port = javalinPort;
