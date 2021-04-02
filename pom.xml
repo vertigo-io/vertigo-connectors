@@ -24,6 +24,7 @@
 	<modules>
 		<module>vertigo-redis-connector</module>
 		<module>vertigo-mqtt-connector</module>
+		<module>vertigo-httpclient-connector</module>
 		<module>vertigo-spring-connector</module>
 		<module>vertigo-neo4j-connector</module>
 		<module>vertigo-openstack-connector</module>
