@@ -48,10 +48,12 @@ public class HttpClientConnector implements Connector<HttpClient> {
 			@ParamValue("connectTimeoutSecond") final Optional<Integer> connectTimeoutOpt,
 			@ParamValue("proxy") final Optional<String> proxyHostOpt,
 			@ParamValue("proxyPort") final Optional<Integer> proxyPortOpt) {
-		Assertion.check().isNotBlank(urlPrefix);
-		Assertion.check().isTrue(urlPrefix.startsWith("http"), "urlPrefix ({0}) must include protocol http or https", urlPrefix);
-		Assertion.check().isFalse(urlPrefix.endsWith("/"), "urlPrefix ({0}) mustn't end with /", urlPrefix);
-		Assertion.check().when(proxyHostOpt.isPresent(), () -> Assertion.check().isTrue(proxyPortOpt.isPresent(), "ProxyPort is mandatory if proxy was set"));
+		Assertion.check()
+				.isNotBlank(urlPrefix)
+				.isTrue(urlPrefix.startsWith("http"), "urlPrefix ({0}) must include protocol http or https", urlPrefix)
+				.isFalse(urlPrefix.endsWith("/"), "urlPrefix ({0}) mustn't end with /", urlPrefix)
+				.when(proxyHostOpt.isPresent(),
+						() -> Assertion.check().isTrue(proxyPortOpt.isPresent(), "ProxyPort is mandatory if proxy was set"));
 		//---
 		connectionName = connectionNameOpt.orElse("main");
 		this.urlPrefix = urlPrefix;
