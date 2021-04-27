@@ -21,8 +21,8 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.influxdb.InfluxDB;
-import org.influxdb.InfluxDBFactory;
+import com.influxdb.client.InfluxDBClient;
+import com.influxdb.client.InfluxDBClientFactory;
 
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.node.component.Activeable;
@@ -33,32 +33,34 @@ import io.vertigo.core.param.ParamValue;
  * An InfluxDb connector to the time series database.
  * @author mlaroche
  */
-public class InfluxDbConnector implements Connector<InfluxDB>, Activeable {
+public class InfluxDbConnector implements Connector<InfluxDBClient>, Activeable {
 
 	private final String connectorName;
-	private final InfluxDB influxDB;
+	private final InfluxDBClient influxDB;
+	private final String orgId;
 
 	/**
 	 * Constructor of an InfluxDb connector to the time series database
 	 * @param connectorNameOpt
 	 * @param host Host of the influxdb database
-	 * @param user user to user
-	 * @param password password secret for connection
+	 * @param token token to use for authentication
+	 * @param org org to connect to
 	 */
 	@Inject
 	public InfluxDbConnector(
 			@ParamValue("name") final Optional<String> connectorNameOpt,
 			@ParamValue("host") final String host,
-			@ParamValue("user") final String user,
-			@ParamValue("password") final String password) {
+			@ParamValue("token") final String token,
+			@ParamValue("org") final String org) {
 		Assertion.check()
 				.isNotNull(connectorNameOpt)
 				.isNotBlank(host)
-				.isNotBlank(user)
-				.isNotBlank(password);
+				.isNotBlank(token)
+				.isNotBlank(org);
 		//---
 		connectorName = connectorNameOpt.orElse("main");
-		influxDB = InfluxDBFactory.connect(host, user, password);
+		influxDB = InfluxDBClientFactory.create(host, token.toCharArray(), org);
+		orgId = influxDB.getOrganizationsApi().findOrganizations().stream().filter(organization -> organization.getName().equals(org)).findFirst().get().getId();
 	}
 
 	@Override
@@ -70,8 +72,12 @@ public class InfluxDbConnector implements Connector<InfluxDB>, Activeable {
 	 * @return the influxdb java client
 	 */
 	@Override
-	public InfluxDB getClient() {
+	public InfluxDBClient getClient() {
 		return influxDB;
+	}
+
+	public String getOrgId() {
+		return orgId;
 	}
 
 	/** {@inheritDoc} */
