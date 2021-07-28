@@ -35,7 +35,6 @@ import twitter4j.conf.PropertyConfiguration;
  * @author mlaroche
  */
 public class Twitter4jConnector implements Connector<Twitter> {
-
 	private final Twitter twitter;
 
 	@Inject
@@ -57,12 +56,11 @@ public class Twitter4jConnector implements Connector<Twitter> {
 		propertiesFromConstructor.put("oauth.accessTokenSecret", oauthAccessTokenSecret);
 		// this is the basic conf from vertigo
 		final Configuration configuration = new PropertyConfiguration(propertiesFromConstructor, "/");// get default config from twitter4j.properties file is classpath
-		twitter = new TwitterFactory(configuration).getInstance();
+		twitter = new TwitterFactory(configuration)
+				.getInstance();
 	}
 
 	/**
-	 * Gets an OSClientV3 from the connection pool
-	 *
 	 * @return the twitter client
 	 */
 	@Override

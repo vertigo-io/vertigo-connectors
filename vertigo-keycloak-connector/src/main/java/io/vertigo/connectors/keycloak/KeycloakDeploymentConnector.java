@@ -37,10 +37,8 @@ import io.vertigo.core.util.ClassUtil;
  * Component to retrieve a configured KeycloakDeployment client.
  *
  * @author mlaroche
- *
  */
 public class KeycloakDeploymentConnector implements Connector<AdapterDeploymentContext> {
-
 	private final AdapterDeploymentContext adapterDeploymentContext;
 	private final String connectorName;
 
@@ -79,7 +77,7 @@ public class KeycloakDeploymentConnector implements Connector<AdapterDeploymentC
 	}
 
 	/**
-	 * Get a AdapterDeploymentContext
+	 * Gets the AdapterDeploymentContext
 	 * @return the Keycloack client
 	 */
 	@Override

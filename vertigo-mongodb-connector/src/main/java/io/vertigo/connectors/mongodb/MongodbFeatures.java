@@ -22,8 +22,9 @@ import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
 
 /**
- * Defines commons module.
- * @author pchretien
+ * MongoDb features
+ * 
+ * @author mlaroche
  */
 public final class MongodbFeatures extends Features<MongodbFeatures> {
 
