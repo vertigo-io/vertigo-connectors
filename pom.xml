@@ -22,6 +22,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>vertigo-azure-connector</module>
 		<module>vertigo-redis-connector</module>
 		<module>vertigo-mqtt-connector</module>
 		<module>vertigo-httpclient-connector</module>
