@@ -55,7 +55,7 @@ public class RedisConnectorTest {
 		}
 	}
 
-	private NodeConfig buildNodeConfig() {
+	private static NodeConfig buildNodeConfig() {
 		return NodeConfig.builder()
 				.addModule(new RedisFeatures()
 						.withJedis(
