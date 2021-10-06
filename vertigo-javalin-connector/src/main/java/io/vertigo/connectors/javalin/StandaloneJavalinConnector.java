@@ -23,13 +23,12 @@ import javax.inject.Inject;
 
 import io.javalin.Javalin;
 import io.vertigo.core.lang.Assertion;
-import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.param.ParamValue;
 
 /**
  * @author npiedeloup
  */
-public class StandaloneJavalinConnector implements JavalinConnector, Activeable {
+public class StandaloneJavalinConnector implements JavalinConnector {
 	private final Javalin javalinApp;
 	private final String connectorName;
 
@@ -59,17 +58,4 @@ public class StandaloneJavalinConnector implements JavalinConnector, Activeable 
 	public String getName() {
 		return connectorName;
 	}
-
-	/** {@inheritDoc} */
-	@Override
-	public void start() {
-		//
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public void stop() {
-		//
-	}
-
 }
