@@ -24,6 +24,16 @@
             <enabled>false</enabled>
          </snapshots>
       </repository>
+      <repository>
+         <id>codelibs.elasticsearch-releases</id>
+         <url>https://maven.codelibs.org/</url>
+         <releases>
+            <enabled>true</enabled>
+         </releases>
+         <snapshots>
+            <enabled>false</enabled>
+         </snapshots>
+      </repository>
    	</repositories>
    
 	<dependencies>
@@ -32,7 +42,7 @@
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
-			<version>7.10.2</version>
+			<version>7.16.3</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.logging.log4j</groupId>
@@ -43,31 +53,31 @@
 		<dependency>
 		    <groupId>org.elasticsearch.client</groupId>
 		    <artifactId>transport</artifactId>
-		    <version>7.10.2</version>
+		    <version>7.16.3</version>
 		    <optional>true</optional> <!-- TransportSearchServicesPlugin -->
 		</dependency>
 		<dependency>
 		    <groupId>org.elasticsearch.client</groupId>
 		    <artifactId>elasticsearch-rest-high-level-client</artifactId>
-		    <version>7.10.2</version>
+		    <version>7.16.3</version>
 		    <optional>true</optional> <!-- RestHighLevelElasticSearchConnector -->
 		</dependency>
 		<dependency>
 		    <groupId>org.elasticsearch.client</groupId>
 		    <artifactId>x-pack-transport</artifactId>
-		    <version>7.10.2</version>
+		    <version>7.16.3</version>
 		    <optional>true</optional> <!-- SecuredTransportSearchConnector -->
 		</dependency>
 		<dependency>
 	        <groupId>org.codelibs.elasticsearch.module</groupId>
 	        <artifactId>analysis-common</artifactId> 
-	        <version>7.10.2</version> <!-- required by EmbeddedSearchServicesPlugin -->
+	        <version>7.16.3</version> <!-- required by EmbeddedSearchServicesPlugin -->
 	        <optional>true</optional>
 	    </dependency>
 	   	<dependency>
 		    <groupId>org.codelibs.elasticsearch.module</groupId>
 		    <artifactId>mapper-extras</artifactId>
-		    <version>7.10.2</version> <!-- required by ESEmbeddedSearchServicesPlugin -->
+		    <version>7.16.3</version> <!-- required by ESEmbeddedSearchServicesPlugin -->
 	        <optional>true</optional>
 		</dependency>		
 	</dependencies>

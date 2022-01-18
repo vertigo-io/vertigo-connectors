@@ -33,11 +33,11 @@ import javax.inject.Inject;
 import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.mapper.MapperExtrasPlugin;
-import org.elasticsearch.index.reindex.ReindexPlugin;
 import org.elasticsearch.node.InternalSettingsPreparer;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeValidationException;
 import org.elasticsearch.plugins.Plugin;
+import org.elasticsearch.reindex.ReindexPlugin;
 import org.elasticsearch.transport.Netty4Plugin;
 
 import io.vertigo.core.lang.Assertion;
