@@ -52,5 +52,18 @@
 		<url>scm:git:https://github.com/vertigo-io/vertigo-connectors.git</url>
 		<tag>vertigo-connectors</tag>
 	</scm>
+	
+	<profiles>
+		<profile>
+			<id>Github</id>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>github</id>
+					<name>GitHub Vertigo-io Apache Maven Packages</name>
+					<url>https://maven.pkg.github.com/vertigo-io/vertigo-connectors</url>
+				</snapshotRepository>
+			</distributionManagement>
+		</profile>
+	</profiles>
 
 </project>
