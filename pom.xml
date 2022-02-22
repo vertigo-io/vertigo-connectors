@@ -56,12 +56,15 @@
 	<profiles>
 		<profile>
 			<id>Github</id>
-			<distributionManagement>
+			<repositories>
 				<repository>
 					<id>github</id>
 					<name>GitHub Vertigo-io Apache Maven Packages</name>
 					<url>https://maven.pkg.github.com/vertigo-io/vertigo</url>
+					<snapshots><enabled>true</enabled></snapshots>
 				</repository>
+			</repositories>
+			<distributionManagement>
 				<snapshotRepository>
 					<id>github</id>
 					<name>GitHub Vertigo-io Apache Maven Packages</name>
