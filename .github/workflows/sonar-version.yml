@@ -1,6 +1,6 @@
 name: SonarCloud Vertigo version
 on:
-  workflow_dispatch
+  workflow_dispatch:
     inputs: 
       version-tag: 
         required: true
