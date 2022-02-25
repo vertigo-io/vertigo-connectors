@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Initialize MY_BRANCH_NAME variable
         run: |
-        echo "MY_BRANCH_NAME=${${{ github.event.ref }}##/*}  >> $GITHUB_ENV
+        echo "MY_BRANCH_NAME=$(basename ${{ github.event.ref }} )" >> $GITHUB_ENV
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
