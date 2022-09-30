@@ -18,16 +18,16 @@ public class SAML2SpKeyFilePlugin extends SAML2SpKeyStringPlugin {
 	public SAML2SpKeyFilePlugin(
 			@ParamValue("myPublicKeyFile") final String myPublicKey,
 			@ParamValue("myPrivateKeyFile") final String myPrivateKey,
-			@ParamValue("myPublicKey2File") final Optional<String> myPublicKey2Opt,
-			@ParamValue("myPrivateKey2File") final Optional<String> myPrivateKey2Opt,
+			@ParamValue("myNextPublicKeyFile") final Optional<String> myNextPublicKeyFileOpt,
+			@ParamValue("myNextPrivateKeyFile") final Optional<String> myNextPrivateKeyFileOpt,
 			final ResourceManager resourceManager) {
 
 		super(readFileContent(resourceManager, myPublicKey),
 				readFileContent(resourceManager, myPrivateKey),
-				myPublicKey2Opt
+				myNextPublicKeyFileOpt
 						.filter(Predicate.not(StringUtil::isBlank))
 						.map(keyFile -> readFileContent(resourceManager, keyFile)),
-				myPrivateKey2Opt
+				myNextPrivateKeyFileOpt
 						.filter(Predicate.not(StringUtil::isBlank))
 						.map(keyFile -> readFileContent(resourceManager, keyFile)));
 	}

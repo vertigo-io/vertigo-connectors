@@ -19,12 +19,12 @@ public class SAML2IpConfigFilePlugin extends SAML2IpConfigStringPlugin {
 			@ParamValue("loginUrl") final String loginUrl,
 			@ParamValue("logoutUrl") final String logoutUrl,
 			@ParamValue("publicKeyFile") final String publicKey,
-			@ParamValue("publicKey2File") final Optional<String> publicKey2Opt,
+			@ParamValue("nextPublicKeyFile") final Optional<String> nextPublicKeyFileOpt,
 			final ResourceManager resourceManager) {
 
 		super(loginUrl, logoutUrl,
 				readFileContent(resourceManager, publicKey),
-				publicKey2Opt
+				nextPublicKeyFileOpt
 						.filter(Predicate.not(StringUtil::isBlank))
 						.map(keyFile -> readFileContent(resourceManager, keyFile)));
 	}

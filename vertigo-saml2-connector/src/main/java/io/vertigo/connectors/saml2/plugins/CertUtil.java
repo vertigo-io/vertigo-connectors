@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.opensaml.security.credential.BasicCredential;
 import org.opensaml.security.credential.Credential;
+import org.opensaml.security.x509.BasicX509Credential;
 
 import io.vertigo.core.lang.VSystemException;
 import io.vertigo.core.lang.WrappedException;
@@ -33,6 +34,28 @@ import io.vertigo.core.lang.WrappedException;
 public class CertUtil {
 	private CertUtil() {
 		// util
+	}
+
+	public static Credential getCredentialFromString(final String publicKeyString, final String privateKeyString) {
+		final var privKey = privateKeyFromPem(privateKeyString);
+
+		if (publicKeyString.startsWith("-----BEGIN CERTIFICATE-----")) {
+			final var pubKey = readX509FromString(publicKeyString);
+			return new BasicX509Credential(pubKey, privKey);
+		}
+
+		final var pubKey = publicKeyFromPem(publicKeyString);
+		return new BasicCredential(pubKey, privKey);
+	}
+
+	public static Credential getCredentialFromString(final String publicKeyString) {
+		if (publicKeyString.startsWith("-----BEGIN CERTIFICATE-----")) {
+			final var pubKey = readX509FromString(publicKeyString);
+			return new BasicX509Credential(pubKey);
+		}
+
+		final var pubKey = publicKeyFromPem(publicKeyString);
+		return new BasicCredential(pubKey);
 	}
 
 	public static X509Certificate readX509FromString(final String source) {
@@ -45,7 +68,7 @@ public class CertUtil {
 		}
 	}
 
-	public static PublicKey publicKeyFromPem(final String pemString) {
+	private static PublicKey publicKeyFromPem(final String pemString) {
 		final var keySpec = getKeySpecFromPemString(pemString, X509EncodedKeySpec::new);
 		try {
 			return getRsaKeyFactory().generatePublic(keySpec);
@@ -54,7 +77,7 @@ public class CertUtil {
 		}
 	}
 
-	public static PrivateKey privateKeyFromPem(final String pemString) {
+	private static PrivateKey privateKeyFromPem(final String pemString) {
 		final var keySpec = getKeySpecFromPemString(pemString, PKCS8EncodedKeySpec::new);
 		try {
 			return getRsaKeyFactory().generatePrivate(keySpec);

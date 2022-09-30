@@ -32,6 +32,7 @@ import org.opensaml.xmlsec.config.impl.DefaultSecurityConfigurationBootstrap;
 
 import io.vertigo.connectors.saml2.OpenSAMLHelper;
 import io.vertigo.connectors.saml2.SAML2IpConfigPlugin;
+import io.vertigo.connectors.saml2.plugins.CertUtil;
 import io.vertigo.core.lang.VSystemException;
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.param.ParamValue;
@@ -51,7 +52,8 @@ public class SAML2IpConfigMetadataPlugin implements SAML2IpConfigPlugin {
 	@Inject
 	public SAML2IpConfigMetadataPlugin(
 			@ParamValue("metadataFile") final String metadataFilePath,
-			@ParamValue("metadata2File") final Optional<String> metadataFile2PathOpt,
+			@ParamValue("nextMetadataFile") final Optional<String> nextMetadataFileOpt,
+			@ParamValue("nextCertFile") final Optional<String> alternateCertFileOpt,
 			@ParamValue("simpleLogoutUrl") final Optional<String> simpleLogoutUrl,
 			final ResourceManager resourceManager) {
 
@@ -68,11 +70,15 @@ public class SAML2IpConfigMetadataPlugin implements SAML2IpConfigPlugin {
 		signingCredentials = new ArrayList<>();
 		signingCredentials.add(resolveIdpCredential(metadataResolver, idpEntityDescriptor));
 
-		if (metadataFile2PathOpt.isPresent() && !StringUtil.isBlank(metadataFile2PathOpt.get())) {
-			final var metadataFile2Url = resourceManager.resolve(metadataFile2PathOpt.get());
+		if (nextMetadataFileOpt.isPresent() && !StringUtil.isBlank(nextMetadataFileOpt.get())) {
+			final var metadataFile2Url = resourceManager.resolve(nextMetadataFileOpt.get());
 			final var metadataResolver2 = getMetadataResolver(metadataFile2Url, parserPool);
 			final var idpEntityDescriptor2 = getEntityDescriptor(metadataResolver);
 			signingCredentials.add(resolveIdpCredential(metadataResolver2, idpEntityDescriptor2));
+		}
+
+		if (alternateCertFileOpt.isPresent() && !StringUtil.isBlank(alternateCertFileOpt.get())) {
+			signingCredentials.add(CertUtil.getCredentialFromString(alternateCertFileOpt.get()));
 		}
 	}
 
@@ -174,5 +180,4 @@ public class SAML2IpConfigMetadataPlugin implements SAML2IpConfigPlugin {
 	public List<Credential> getPublicCredentials() {
 		return signingCredentials;
 	}
-
 }

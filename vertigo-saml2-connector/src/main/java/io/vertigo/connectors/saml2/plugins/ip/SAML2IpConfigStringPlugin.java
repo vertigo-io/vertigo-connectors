@@ -8,9 +8,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.opensaml.security.credential.BasicCredential;
 import org.opensaml.security.credential.Credential;
-import org.opensaml.security.x509.BasicX509Credential;
 
 import io.vertigo.connectors.saml2.SAML2IpConfigPlugin;
 import io.vertigo.connectors.saml2.plugins.CertUtil;
@@ -28,7 +26,7 @@ public class SAML2IpConfigStringPlugin implements SAML2IpConfigPlugin {
 			@ParamValue("loginUrl") final String loginUrl,
 			@ParamValue("logoutUrl") final String logoutUrl,
 			@ParamValue("publicKey") final String publicKey,
-			@ParamValue("publicKey2") final Optional<String> publicKey2Opt) {
+			@ParamValue("nextPublicKey") final Optional<String> nextPublicKeyOpt) {
 
 		Security.addProvider(new BouncyCastleProvider()); //PKCS1 support
 
@@ -37,21 +35,11 @@ public class SAML2IpConfigStringPlugin implements SAML2IpConfigPlugin {
 		this.loginUrl = loginUrl;
 		this.logoutUrl = logoutUrl;
 
-		credentials.add(getCredentialFromString(publicKey));
-		if (publicKey2Opt.isPresent() && !StringUtil.isBlank(publicKey2Opt.get())) {
-			credentials.add(getCredentialFromString(publicKey2Opt.get()));
+		credentials.add(CertUtil.getCredentialFromString(publicKey));
+		if (nextPublicKeyOpt.isPresent() && !StringUtil.isBlank(nextPublicKeyOpt.get())) {
+			credentials.add(CertUtil.getCredentialFromString(nextPublicKeyOpt.get()));
 		}
 
-	}
-
-	private static Credential getCredentialFromString(final String publicKeyString) {
-		if (publicKeyString.startsWith("-----BEGIN CERTIFICATE-----")) {
-			final var pubKey = CertUtil.readX509FromString(publicKeyString);
-			return new BasicX509Credential(pubKey);
-		}
-
-		final var pubKey = CertUtil.publicKeyFromPem(publicKeyString);
-		return new BasicCredential(pubKey);
 	}
 
 	@Override
