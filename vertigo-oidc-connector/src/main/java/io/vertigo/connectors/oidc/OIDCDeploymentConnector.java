@@ -130,47 +130,47 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 			this.dontFailAtStartup = dontFailAtStartup;
 		}
 
-		public String getOidcClientName() {
+		public final String getOidcClientName() {
 			return oidcClientName;
 		}
 
-		public Optional<String> getOidcClientSecret() {
+		public final Optional<String> getOidcClientSecret() {
 			return oidcClientSecret;
 		}
 
-		public String getOidcURL() {
+		public final String getOidcURL() {
 			return oidcURL;
 		}
 
-		public int getHttpConnectTimeout() {
+		public final int getHttpConnectTimeout() {
 			return httpConnectTimeout;
 		}
 
-		public int getHttpReadTimeout() {
+		public final int getHttpReadTimeout() {
 			return httpReadTimeout;
 		}
 
-		public String[] getRequestedScopes() {
+		public final String[] getRequestedScopes() {
 			return requestedScopes;
 		}
 
-		public Optional<URL> getLocalOIDCMetadataOp() {
+		public final Optional<URL> getLocalOIDCMetadataOp() {
 			return localOIDCMetadataOp;
 		}
 
-		public String getJwsAlgorithm() {
+		public final String getJwsAlgorithm() {
 			return jwsAlgorithm;
 		}
 
-		public Boolean getSkipIdTokenValidation() {
+		public final Boolean getSkipIdTokenValidation() {
 			return skipIdTokenValidation;
 		}
 
-		public Optional<String> getExternalUrlOpt() {
+		public final Optional<String> getExternalUrlOpt() {
 			return externalUrlOpt;
 		}
 
-		public boolean isDontFailAtStartup() {
+		public final boolean isDontFailAtStartup() {
 			return dontFailAtStartup;
 		}
 
