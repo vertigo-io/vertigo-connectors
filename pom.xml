@@ -38,6 +38,9 @@
 		<module>vertigo-mail-connector</module>
 		<module>vertigo-mongodb-connector</module>
 		<module>vertigo-javalin-connector</module>
+		<module>vertigo-jsch-connector</module>
+		<module>vertigo-saml2-connector</module>
+		<module>vertigo-oidc-connector</module>
 	</modules>
 	<dependencies>
 		<dependency>
