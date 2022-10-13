@@ -66,7 +66,7 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 		Assertion.check()
 				.isNotBlank(serversNamesStr,
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','")
-				.isFalse(serversNamesStr.contains(","),
+				.isFalse(serversNamesStr.contains(";"),
 						"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','");
 		// ---------------------------------------------------------------------
 		connectorName = connectorNameOpt.orElse("main");

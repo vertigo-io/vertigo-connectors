@@ -18,7 +18,7 @@
 	
 	<artifactId>vertigo-connectors</artifactId>
 	<name>vertigo-connectors</name>
-	<version>4.0.0-SNAPSHOT</version>
+	<version>3.5.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -38,6 +38,9 @@
 		<module>vertigo-mail-connector</module>
 		<module>vertigo-mongodb-connector</module>
 		<module>vertigo-javalin-connector</module>
+		<module>vertigo-jsch-connector</module>
+		<module>vertigo-saml2-connector</module>
+		<module>vertigo-oidc-connector</module>
 	</modules>
 	<dependencies>
 		<dependency>
