@@ -5,20 +5,19 @@
 	<parent>
 		<groupId>io.vertigo</groupId>
 		<artifactId>vertigo-connectors</artifactId>
-		<version>4.0.0-SNAPSHOT</version>
+		<version>3.5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>vertigo-mqtt-connector</artifactId>
+	<artifactId>vertigo-openstack-connector</artifactId>
 	<packaging>jar</packaging>
-	<name>vertigo-mqtt-connector</name>
-
+	<name>vertigo-openstack-connector</name>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.eclipse.paho</groupId>
-			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-			<version>1.2.5</version>
+			<groupId>org.pacesys</groupId>
+			<artifactId>openstack4j</artifactId>
+			<version>3.2.0</version>
 		</dependency>
-	</dependencies>
+	</dependencies> 
 
 </project>
