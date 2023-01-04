@@ -5,20 +5,15 @@
 	<parent>
 		<groupId>io.vertigo</groupId>
 		<artifactId>vertigo-connectors</artifactId>
-		<version>3.5.0-SNAPSHOT</version>
+		<version>3.3.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>vertigo-mqtt-connector</artifactId>
+	<artifactId>vertigo-httpclient-connector</artifactId>
 	<packaging>jar</packaging>
-	<name>vertigo-mqtt-connector</name>
+	<name>vertigo-httpclient-connector</name>
 
 
 	<dependencies>
-		<dependency>
-			<groupId>org.eclipse.paho</groupId>
-			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-			<version>1.2.5</version>
-		</dependency>
 	</dependencies>
 
 </project>
