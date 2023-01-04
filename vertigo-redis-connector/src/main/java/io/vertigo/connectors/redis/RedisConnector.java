@@ -20,6 +20,7 @@ package io.vertigo.connectors.redis;
 import java.net.URL;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -73,7 +74,9 @@ public class RedisConnector implements Connector<Jedis>, Activeable {
 			@ParamValue("mastername") final Optional<String> masternameOpt,
 			@ParamValue("sentinels") final Optional<String> sentinelsOpt,
 			@ParamValue("trustStoreUrl") final Optional<String> trustStoreUrlOpt,
-			@ParamValue("trustStorePassword") final Optional<String> trustStorePasswordOpt) {
+			@ParamValue("trustStorePassword") final Optional<String> trustStorePasswordOpt,
+			@ParamValue("maxTotal") final Optional<Integer> maxTotalOpt,
+			@ParamValue("minIdle") final Optional<Integer> minIdleOpt) {
 		Assertion.check()
 				.isNotNull(connectorNameOpt)
 				.isNotBlank(redisHost)
@@ -83,6 +86,12 @@ public class RedisConnector implements Connector<Jedis>, Activeable {
 		connectorName = connectorNameOpt.orElse("main");
 
 		final var jedisPoolConfig = new JedisPoolConfig();
+		maxTotalOpt.ifPresent(maxTotal -> {
+			jedisPoolConfig.setMaxTotal(maxTotal);
+			jedisPoolConfig.setMaxIdle(maxTotal);
+		});
+		minIdleOpt.ifPresent(jedisPoolConfig::setMinIdle);
+		jedisPoolConfig.setMaxWait(Duration.ofSeconds(5));
 
 		final var jedisClientConfigBuilder = DefaultJedisClientConfig.builder()
 				.connectionTimeoutMillis(CONNECT_TIMEOUT)
@@ -111,7 +120,7 @@ public class RedisConnector implements Connector<Jedis>, Activeable {
 		final JedisClientConfig jedisClientConfig = jedisClientConfigBuilder.build();
 		if (sentinelsOpt.isPresent()) {
 			final Set<HostAndPort> sentinels = Set.of(sentinelsOpt.get().split(";")).stream().map(HostAndPort::from).collect(Collectors.toSet());
-			jedisPool = new JedisSentinelPool(masternameOpt.get(), sentinels, jedisClientConfig, sentinelConfigBuilder.build());
+			jedisPool = new JedisSentinelPool(masternameOpt.get(), sentinels, jedisPoolConfig, jedisClientConfig, sentinelConfigBuilder.build());
 		} else {
 			jedisPool = new JedisPool(jedisPoolConfig, new HostAndPort(redisHost, redisPort), jedisClientConfig);
 		}
