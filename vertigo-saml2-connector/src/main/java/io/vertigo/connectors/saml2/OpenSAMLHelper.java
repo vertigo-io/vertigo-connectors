@@ -93,14 +93,14 @@ public class OpenSAMLHelper {
 	}
 
 	private static ParserPool buildParserPool() {
-		final var parserPool = new BasicParserPool();
-		parserPool.setMaxPoolSize(100);
-		parserPool.setCoalescing(true);
-		parserPool.setIgnoreComments(true);
-		parserPool.setIgnoreElementContentWhitespace(true);
-		parserPool.setNamespaceAware(true);
-		parserPool.setExpandEntityReferences(false);
-		parserPool.setXincludeAware(false);
+		final var locParserPool = new BasicParserPool();
+		locParserPool.setMaxPoolSize(100);
+		locParserPool.setCoalescing(true);
+		locParserPool.setIgnoreComments(true);
+		locParserPool.setIgnoreElementContentWhitespace(true);
+		locParserPool.setNamespaceAware(true);
+		locParserPool.setExpandEntityReferences(false);
+		locParserPool.setXincludeAware(false);
 
 		final Map<String, Boolean> features = new HashMap<>();
 		features.put("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
@@ -109,15 +109,15 @@ public class OpenSAMLHelper {
 		features.put("http://apache.org/xml/features/validation/schema/normalized-value", Boolean.FALSE);
 		features.put("http://javax.xml.XMLConstants/feature/secure-processing", Boolean.TRUE);
 
-		parserPool.setBuilderFeatures(features);
-		parserPool.setBuilderAttributes(new HashMap<>());
+		locParserPool.setBuilderFeatures(features);
+		locParserPool.setBuilderAttributes(new HashMap<>());
 
 		try {
-			parserPool.initialize();
+			locParserPool.initialize();
 		} catch (final ComponentInitializationException e) {
 			throw WrappedException.wrap(e);
 		}
-		return parserPool;
+		return locParserPool;
 	}
 
 	public static NameIDPolicy buildNameIdPolicy() {
