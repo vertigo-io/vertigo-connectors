@@ -188,7 +188,7 @@ public class OpenSAMLHelper {
 	public static Map<String, Object> extractAttributes(final Assertion assertion) {
 		return assertion.getAttributeStatements().stream()
 				.flatMap(a -> a.getAttributes().stream())
-				.collect(Collectors.toMap(Attribute::getName, OpenSAMLHelper::resolveAttributeValue));
+				.collect(HashMap::new, (m, v) -> m.put(v.getName(), resolveAttributeValue(v)), HashMap::putAll);
 	}
 
 	private static Object resolveAttributeValue(final Attribute attribute) {
