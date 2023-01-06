@@ -109,7 +109,7 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 		}
 	}
 
-	protected Node createNode(final URL esHomeURL) {
+	private Node createNode(final URL esHomeURL) {
 		Assertion.check().isNotNull(esHomeURL);
 		//-----
 		final File home;
@@ -124,14 +124,14 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 		return new MyNode(buildNodeSettings(home.getAbsolutePath()), Arrays.asList(Netty4Plugin.class, ReindexPlugin.class, CommonAnalysisPlugin.class, MapperExtrasPlugin.class));
 	}
 
-	protected static class MyNode extends Node {
+	private static class MyNode extends Node {
 		//Need to extends elastic Node, to access this advanced constructor and add plugins
 		public MyNode(final Settings preparedSettings, final Collection<Class<? extends Plugin>> classpathPlugins) {
 			super(InternalSettingsPreparer.prepareEnvironment(preparedSettings, Collections.emptyMap(), null, null), classpathPlugins, true);
 		}
 	}
 
-	protected Settings buildNodeSettings(final String homePath) {
+	private Settings buildNodeSettings(final String homePath) {
 		//Build settings
 		return Settings.builder()
 				.put("node.name", "es-embedded-node-" + System.currentTimeMillis())
