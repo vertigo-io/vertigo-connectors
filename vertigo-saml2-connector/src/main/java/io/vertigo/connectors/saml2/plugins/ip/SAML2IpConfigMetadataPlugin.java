@@ -47,6 +47,7 @@ import org.opensaml.security.credential.UsageType;
 import org.opensaml.security.criteria.UsageCriterion;
 import org.opensaml.xmlsec.config.impl.DefaultSecurityConfigurationBootstrap;
 
+import io.vertigo.connectors.saml2.OpenSAMLUtil;
 import io.vertigo.connectors.saml2.SAML2IpConfigPlugin;
 import io.vertigo.connectors.saml2.plugins.CertUtil;
 import io.vertigo.core.lang.VSystemException;
