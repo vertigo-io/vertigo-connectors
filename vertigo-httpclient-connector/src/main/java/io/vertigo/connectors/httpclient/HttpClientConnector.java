@@ -36,6 +36,7 @@ import io.vertigo.core.param.ParamValue;
  */
 public class HttpClientConnector implements Connector<HttpClient> {
 
+	private static final int DEFAULT_CONNECT_TIMEOUT = 20; //20 seconds
 	private final String connectionName;
 	private final Optional<ProxySelector> proxyOpt;
 	private final String urlPrefix;
@@ -57,7 +58,7 @@ public class HttpClientConnector implements Connector<HttpClient> {
 		//---
 		connectionName = connectionNameOpt.orElse("main");
 		this.urlPrefix = urlPrefix;
-		connectTimeout = connectTimeoutOpt.orElse(20);
+		connectTimeout = connectTimeoutOpt.orElse(DEFAULT_CONNECT_TIMEOUT);
 		proxyOpt = proxyHostOpt.map(proxy -> ProxySelector.of(new InetSocketAddress(proxy, proxyPortOpt.get())));
 	}
 

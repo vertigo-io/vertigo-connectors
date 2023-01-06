@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.vertigo.connectors.saml2;
+package io.vertigo.connectors.saml2.plugins.ip;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -63,13 +63,13 @@ import net.shibboleth.utilities.java.support.security.impl.RandomIdentifierGener
 import net.shibboleth.utilities.java.support.xml.BasicParserPool;
 import net.shibboleth.utilities.java.support.xml.ParserPool;
 
-public class OpenSAMLHelper {
+public final class OpenSAMLUtil {
 
 	private static RandomIdentifierGenerationStrategy secureRandomIdGenerator = new RandomIdentifierGenerationStrategy();
 
 	private static ParserPool parserPool;
 
-	private OpenSAMLHelper() {
+	private OpenSAMLUtil() {
 		// helper
 	}
 

@@ -47,7 +47,6 @@ import org.opensaml.security.credential.UsageType;
 import org.opensaml.security.criteria.UsageCriterion;
 import org.opensaml.xmlsec.config.impl.DefaultSecurityConfigurationBootstrap;
 
-import io.vertigo.connectors.saml2.OpenSAMLHelper;
 import io.vertigo.connectors.saml2.SAML2IpConfigPlugin;
 import io.vertigo.connectors.saml2.plugins.CertUtil;
 import io.vertigo.core.lang.VSystemException;
@@ -74,7 +73,7 @@ public class SAML2IpConfigMetadataPlugin implements SAML2IpConfigPlugin {
 			@ParamValue("simpleLogoutUrl") final Optional<String> simpleLogoutUrl,
 			final ResourceManager resourceManager) {
 
-		final var parserPool = OpenSAMLHelper.initOpenSamlIfNeeded();
+		final var parserPool = OpenSAMLUtil.initOpenSamlIfNeeded();
 
 		final var metadataFileUrl = resourceManager.resolve(metadataFilePath);
 		final var metadataResolver = getMetadataResolver(metadataFileUrl, parserPool);
