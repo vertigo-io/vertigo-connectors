@@ -28,7 +28,6 @@ import java.time.Instant;
 import java.util.Optional;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
@@ -40,13 +39,13 @@ import org.openstack4j.openstack.OSFactory;
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.node.component.Connector;
+import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
 
 /**
  * Component to handle the authentification and the connection to any OpenStack service.
  *
  * @author mlaroche, tingargiola
- *
  */
 public class OpenStackConnector implements Connector<OSClientV3> {
 
@@ -73,7 +72,7 @@ public class OpenStackConnector implements Connector<OSClientV3> {
 	 * Inject constructor.
 	 *
 	 * @param authenticationUrl Url of the identity api (ex:
-	 *        https://keystone.openstack.klee.lan.net:5000/v3/)
+	 * https://keystone.openstack.klee.lan.net:5000/v3/)
 	 * @param userDomain Domain of the user.
 	 * @param userName Name of the user
 	 * @param userSecret Password of the user
@@ -82,15 +81,15 @@ public class OpenStackConnector implements Connector<OSClientV3> {
 	 */
 	@Inject
 	public OpenStackConnector(
-			@Named("authenticationUrl") final String authenticationUrl,
-			@Named("userDomain") final String userDomain,
-			@Named("userName") final String userName,
-			@Named("userSecret") final String userSecret,
-			@Named("projectDomain") final String projectDomain,
-			@Named("projectName") final String projectName,
-			@Named("trustoreFile") final Optional<String> trustoreFileOpt,
-			@Named("trustorePswd") final Optional<String> trustorePswdOpt,
-			@Named("enableSSL") final Optional<Boolean> enableSSLOpt,
+			@ParamValue("authenticationUrl") final String authenticationUrl,
+			@ParamValue("userDomain") final String userDomain,
+			@ParamValue("userName") final String userName,
+			@ParamValue("userSecret") final String userSecret,
+			@ParamValue("projectDomain") final String projectDomain,
+			@ParamValue("projectName") final String projectName,
+			@ParamValue("trustoreFile") final Optional<String> trustoreFileOpt,
+			@ParamValue("trustorePswd") final Optional<String> trustorePswdOpt,
+			@ParamValue("enableSSL") final Optional<Boolean> enableSSLOpt,
 			final ResourceManager resourceManager) {
 		Assertion.check()
 				.isNotBlank(authenticationUrl)

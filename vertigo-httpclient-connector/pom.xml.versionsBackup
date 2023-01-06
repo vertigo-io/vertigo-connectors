@@ -5,20 +5,15 @@
 	<parent>
 		<groupId>io.vertigo</groupId>
 		<artifactId>vertigo-connectors</artifactId>
-		<version>3.5.0-SNAPSHOT</version>
+		<version>3.3.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>vertigo-influxdb-connector</artifactId>
+	<artifactId>vertigo-httpclient-connector</artifactId>
 	<packaging>jar</packaging>
-	<name>vertigo-influxdb-connector</name>
+	<name>vertigo-httpclient-connector</name>
 
 
 	<dependencies>
-		<dependency>
-			<groupId>com.influxdb</groupId>
-			<artifactId>influxdb-client-java</artifactId>
-			<version>6.7.0</version>
-		</dependency>
 	</dependencies>
 
 </project>

@@ -5,20 +5,26 @@
 	<parent>
 		<groupId>io.vertigo</groupId>
 		<artifactId>vertigo-connectors</artifactId>
-		<version>3.5.0-SNAPSHOT</version>
+		<version>3.3.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>vertigo-influxdb-connector</artifactId>
+	<artifactId>vertigo-ifttt-connector</artifactId>
 	<packaging>jar</packaging>
-	<name>vertigo-influxdb-connector</name>
+	<name>vertigo-ifttt-connector</name>
 
 
 	<dependencies>
+		<!-- Jersey 2 for ifttt-->
 		<dependency>
-			<groupId>com.influxdb</groupId>
-			<artifactId>influxdb-client-java</artifactId>
-			<version>6.7.0</version>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>3.0.8</version>
 		</dependency>
-	</dependencies>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>3.0.8</version>
+		</dependency>
+	</dependencies> 
 
 </project>

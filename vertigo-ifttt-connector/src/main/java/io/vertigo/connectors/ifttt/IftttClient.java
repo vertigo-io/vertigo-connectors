@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.VSystemException;
+import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation.Builder;
@@ -72,15 +73,17 @@ public final class IftttClient {
 				.append("/with/key/")
 				.append(apiKey)
 				.toString();
-		final WebTarget resource = ClientBuilder.newClient().target(url);
-		final Builder request = resource.request().accept(MediaType.APPLICATION_JSON);
-		final Response response = request.post(Entity.<MakerEventMetadatas> entity(event.getEventMetadatas(), MediaType.APPLICATION_JSON));
+		try (Client client = ClientBuilder.newClient()) {
+			final WebTarget resource = client.target(url);
+			final Builder request = resource.request().accept(MediaType.APPLICATION_JSON);
+			final Response response = request.post(Entity.<MakerEventMetadatas> entity(event.getEventMetadatas(), MediaType.APPLICATION_JSON));
 
-		if (response.getStatusInfo().getFamily() == Family.SUCCESSFUL) {
-			LOGGER.info("Success! {}", response.getStatus());
-		} else {
-			LOGGER.error("Error! {}", response.getStatus());
-			throw new VSystemException("Error while sending Ifttt maker event:" + response.getStatus());
+			if (response.getStatusInfo().getFamily() == Family.SUCCESSFUL) {
+				LOGGER.info("Success! {}", response.getStatus());
+			} else {
+				LOGGER.error("Error! {}", response.getStatus());
+				throw new VSystemException("Error while sending Ifttt maker event:" + response.getStatus());
+			}
 		}
 	}
 }
