@@ -22,7 +22,6 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
@@ -52,8 +51,8 @@ public class MosquittoConnector implements Connector<MqttClient>, Activeable {
 		final String clientId = clientIdOpt.orElseGet(() -> Node.getNode().getNodeConfig().nodeId());
 		try {
 			mqttClient = new MqttClient(brokerHost, clientId + connectionName, new MemoryPersistence());
-			final MqttConnectOptions connOpts = new MqttConnectOptions();
-			connOpts.setCleanSession(true);
+			//final MqttConnectOptions connOpts = new MqttConnectOptions();
+			//connOpts.setCleanSession(true);
 			//mqttClient.connect(connOpts);
 		} catch (final MqttException e) {
 			throw WrappedException.wrap(e);

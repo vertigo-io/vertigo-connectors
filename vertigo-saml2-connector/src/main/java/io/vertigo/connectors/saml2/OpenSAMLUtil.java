@@ -63,13 +63,13 @@ import net.shibboleth.utilities.java.support.security.impl.RandomIdentifierGener
 import net.shibboleth.utilities.java.support.xml.BasicParserPool;
 import net.shibboleth.utilities.java.support.xml.ParserPool;
 
-public class OpenSAMLHelper {
+public final class OpenSAMLUtil {
 
 	private static RandomIdentifierGenerationStrategy secureRandomIdGenerator = new RandomIdentifierGenerationStrategy();
 
 	private static ParserPool parserPool;
 
-	private OpenSAMLHelper() {
+	private OpenSAMLUtil() {
 		// helper
 	}
 
@@ -188,7 +188,7 @@ public class OpenSAMLHelper {
 	public static Map<String, Object> extractAttributes(final Assertion assertion) {
 		return assertion.getAttributeStatements().stream()
 				.flatMap(a -> a.getAttributes().stream())
-				.collect(Collectors.toMap(Attribute::getName, OpenSAMLHelper::resolveAttributeValue));
+				.collect(HashMap::new, (m, v) -> m.put(v.getName(), resolveAttributeValue(v)), HashMap::putAll);
 	}
 
 	private static Object resolveAttributeValue(final Attribute attribute) {

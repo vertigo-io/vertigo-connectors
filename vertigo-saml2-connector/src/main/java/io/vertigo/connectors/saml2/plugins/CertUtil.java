@@ -48,7 +48,8 @@ import org.opensaml.security.x509.BasicX509Credential;
 import io.vertigo.core.lang.VSystemException;
 import io.vertigo.core.lang.WrappedException;
 
-public class CertUtil {
+public final class CertUtil {
+
 	private CertUtil() {
 		// util
 	}

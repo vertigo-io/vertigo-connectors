@@ -46,7 +46,7 @@ public class JSchKeyAuthConnector implements JSchConnector {
 			@ParamValue("privateKeyAlias") final String privateKeyAlias,
 			@ParamValue("knownHostUrlOpt") final Optional<String> knownHostUrlOpt) {
 		try {
-			final var locjSch = new JSch();
+			final var createdJSch = new JSch();
 			final var keyStoreResolvedUrl = resourceManager.resolve(keyStoreUrl);
 			final var jks = KeyStore.getInstance("PKCS12");
 			jks.load(keyStoreResolvedUrl.openStream(), keyStorePassword.toCharArray());
@@ -57,12 +57,12 @@ public class JSchKeyAuthConnector implements JSchConnector {
 			pemWriter.close();
 			final var privateKeyPEM = stringWriter.toString().getBytes(StandardCharsets.UTF_8);
 
-			locjSch.addIdentity(username, privateKeyPEM, null, null);
+			createdJSch.addIdentity(username, privateKeyPEM, null, null);
 
 			if (knownHostUrlOpt.isPresent()) {
-				locjSch.setKnownHosts(knownHostUrlOpt.get());
+				createdJSch.setKnownHosts(knownHostUrlOpt.get());
 			}
-			this.jSch = locjSch;
+			this.jSch = createdJSch;
 		} catch (final Exception e) {
 			throw WrappedException.wrap(e);
 		}
