@@ -34,7 +34,6 @@
 		<module>vertigo-influxdb-connector</module>
 		<module>vertigo-ldap-connector</module>
 		<module>vertigo-ifttt-connector</module>
-		<module>vertigo-keycloak-connector</module>
 		<module>vertigo-mail-connector</module>
 		<module>vertigo-mongodb-connector</module>
 		<module>vertigo-javalin-connector</module>
