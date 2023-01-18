@@ -31,13 +31,13 @@ import io.javalin.http.Handler;
  * @author npiedeloup
  */
 public final class JettyMultipartCleaner implements Handler {
-	private static final String JETTY_MULTIPARTS = org.eclipse.jetty.server.Request.MULTIPARTS;//"org.eclipse.multipartConfig";
+	private static final String JETTY_MULTIPARTS = org.eclipse.jetty.server.Request.__MULTIPART_CONFIG_ELEMENT;//"org.eclipse.multipartConfig";
 	private static final Logger LOG = LogManager.getLogger(JettyMultipartCleaner.class);
 
 	/** {@inheritDoc} */
 	@Override
 	public void handle(final Context ctx) {
-		final MultiParts multiParts = (MultiParts) ctx.req.getAttribute(JETTY_MULTIPARTS);
+		final MultiParts multiParts = (MultiParts) ctx.req().getAttribute(JETTY_MULTIPARTS);
 		if (multiParts != null && !multiParts.isEmpty()) {
 			try {
 				// a multipart request to a servlet will have the parts cleaned up correctly, but

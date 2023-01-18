@@ -17,10 +17,9 @@
  */
 package io.vertigo.connectors.javalin;
 
-import javax.servlet.MultipartConfigElement;
-
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
+import jakarta.servlet.MultipartConfigElement;
 
 /**
  * Filter to configure MultipartConfigElement for Jetty Request.
@@ -30,7 +29,7 @@ public final class JettyMultipartConfig implements Handler {
 	private static final long MAX_PARTS_SIZE = 30 * 1024 * 1024L;
 	private static final int MAX_NB_PARTS = 5;
 	private static final int MAX_PART_SIZE_IN_MEMORY = 50 * 1024;
-	private static final String JETTY_CONFIG_ATTRIBUTE = org.eclipse.jetty.server.Request.MULTIPART_CONFIG_ELEMENT;//"org.eclipse.multipartConfig";
+	private static final String JETTY_CONFIG_ATTRIBUTE = org.eclipse.jetty.server.Request.__MULTIPART_CONFIG_ELEMENT;//"org.eclipse.multipartConfig";
 	private final MultipartConfigElement multipartConfigElement;
 
 	/**
@@ -44,7 +43,7 @@ public final class JettyMultipartConfig implements Handler {
 	/** {@inheritDoc} */
 	@Override
 	public void handle(final Context ctx) throws Exception {
-		ctx.req.setAttribute(JETTY_CONFIG_ATTRIBUTE, multipartConfigElement);
+		ctx.req().setAttribute(JETTY_CONFIG_ATTRIBUTE, multipartConfigElement);
 	}
 
 }
