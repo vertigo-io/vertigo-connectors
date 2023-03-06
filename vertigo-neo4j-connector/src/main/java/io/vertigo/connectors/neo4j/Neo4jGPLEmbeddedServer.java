@@ -30,6 +30,7 @@ import org.neo4j.configuration.helpers.SocketAddress;
 import org.neo4j.dbms.api.DatabaseManagementService;
 import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.io.ByteUnit;
 
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.node.component.Activeable;
@@ -51,8 +52,8 @@ public class Neo4jGPLEmbeddedServer implements Component, Activeable {
 		final File homeFile = new File(resourceManager.resolve(home).toURI());
 
 		managementService = new DatabaseManagementServiceBuilder(homeFile.toPath())
-				.setConfig(GraphDatabaseSettings.pagecache_memory, "512M")
-				//.setConfig(GraphDatabaseSettings.pagecache_memory, ByteUnit.mebiBytes(512))
+				//.setConfig(GraphDatabaseSettings.pagecache_memory, "512M")
+				.setConfig(GraphDatabaseSettings.pagecache_memory, ByteUnit.mebiBytes(512))
 				.setConfig(BoltConnector.enabled, true)
 				.setConfig(BoltConnector.listen_address, new SocketAddress("localhost", 7687))
 				.build();
