@@ -17,21 +17,23 @@
  */
 package io.vertigo.connectors.ifttt;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.gson.Gson;
+
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.VSystemException;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.client.Invocation.Builder;
-import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status.Family;
+import io.vertigo.core.lang.WrappedException;
 
 /**
  *
@@ -39,6 +41,7 @@ import jakarta.ws.rs.core.Response.Status.Family;
  */
 public final class IftttClient {
 	private static final Logger LOGGER = LogManager.getLogger(IftttClient.class);
+	private static final Gson GSON = new Gson();
 	private final String baseUrl;
 	private final String apiKey;
 
@@ -73,17 +76,26 @@ public final class IftttClient {
 				.append("/with/key/")
 				.append(apiKey)
 				.toString();
-		try (Client client = ClientBuilder.newClient()) {
-			final WebTarget resource = client.target(url);
-			final Builder request = resource.request().accept(MediaType.APPLICATION_JSON);
-			final Response response = request.post(Entity.<MakerEventMetadatas> entity(event.getEventMetadatas(), MediaType.APPLICATION_JSON));
 
-			if (response.getStatusInfo().getFamily() == Family.SUCCESSFUL) {
-				LOGGER.info("Success! {}", response.getStatus());
+		final HttpClient client = HttpClient.newBuilder().build();
+		final HttpRequest request = HttpRequest.newBuilder()
+				.uri(URI.create(url))
+				.setHeader("Content-Type", "application/json;charset=UTF-8")
+				.setHeader("Accept", "application/json")
+				.POST(BodyPublishers.ofString(GSON.toJson(event.getEventMetadatas(), MakerEventMetadatas.class)))
+				.build();
+
+		try {
+			final HttpResponse<?> response = client.send(request, BodyHandlers.discarding());
+			if (response.statusCode() / 100 != 2) {
+				LOGGER.info("Success! {}", response.statusCode());
 			} else {
-				LOGGER.error("Error! {}", response.getStatus());
-				throw new VSystemException("Error while sending Ifttt maker event:" + response.getStatus());
+				LOGGER.error("Error! {}", response.statusCode());
+				throw new VSystemException("Error while sending Ifttt maker event:" + response.statusCode());
 			}
+		} catch (IOException | InterruptedException e) {
+			throw WrappedException.wrap(e);
 		}
+
 	}
 }
