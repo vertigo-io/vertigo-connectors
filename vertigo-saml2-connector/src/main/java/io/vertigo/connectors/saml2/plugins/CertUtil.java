@@ -1,7 +1,7 @@
 /**
  * vertigo - application development platform
  *
- * Copyright (C) 2013-2022, Vertigo.io, team@vertigo.io
+ * Copyright (C) 2013-2023, Vertigo.io, team@vertigo.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.opensaml.security.credential.BasicCredential;
@@ -49,6 +50,7 @@ import io.vertigo.core.lang.VSystemException;
 import io.vertigo.core.lang.WrappedException;
 
 public final class CertUtil {
+	private static final Pattern HEADERS_REMOVE_PATTERN = Pattern.compile("(-----.*?-----)|(\\r?\\n|\\r)");
 
 	private CertUtil() {
 		// util
@@ -105,7 +107,7 @@ public final class CertUtil {
 	}
 
 	private static KeySpec getKeySpecFromPemString(final String pemString, final Function<byte[], ? extends KeySpec> constructor) {
-		final var key = pemString.replaceAll("(-----.*?-----)|(\\r?\\n|\\r)", "");
+		final var key = HEADERS_REMOVE_PATTERN.matcher(pemString).replaceAll("");
 		final var publicBytes = Base64.getDecoder().decode(key);
 		return constructor.apply(publicBytes);
 	}
