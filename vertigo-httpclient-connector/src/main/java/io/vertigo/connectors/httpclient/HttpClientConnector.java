@@ -17,12 +17,14 @@
  */
 package io.vertigo.connectors.httpclient;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ProxySelector;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Builder;
 import java.net.http.HttpClient.Redirect;
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.time.Duration;
@@ -107,7 +109,7 @@ public class HttpClientConnector implements Connector<HttpClient> {
 		return connectionName;
 	}
 
-	private static SSLContext createTrustStoreSslContext(final URL trustStoreUrl, final String trustStorePassword) throws Exception {
+	private static SSLContext createTrustStoreSslContext(final URL trustStoreUrl, final String trustStorePassword) throws GeneralSecurityException, IOException {
 		final var trustStore = KeyStore.getInstance("pkcs12");
 		try (var inputStream = trustStoreUrl.openStream()) {
 			trustStore.load(inputStream, trustStorePassword.toCharArray());

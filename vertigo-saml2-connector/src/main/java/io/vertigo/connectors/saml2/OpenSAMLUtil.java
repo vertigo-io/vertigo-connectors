@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
@@ -66,6 +67,7 @@ import net.shibboleth.utilities.java.support.xml.ParserPool;
 public final class OpenSAMLUtil {
 
 	private static RandomIdentifierGenerationStrategy secureRandomIdGenerator = new RandomIdentifierGenerationStrategy();
+	private static final Pattern NORMALIZER_PATTERN = Pattern.compile("[\\-\\s]");
 
 	private static ParserPool parserPool;
 
@@ -129,7 +131,8 @@ public final class OpenSAMLUtil {
 	}
 
 	public static String resolveSignatureType(final String type) {
-		final var normalizedType = type.replaceAll("[\\-\\s]", "").toLowerCase();
+		final var normalizedType = NORMALIZER_PATTERN.matcher(type).replaceAll("")
+				.toLowerCase();
 		switch (normalizedType) {
 			case "rsasha1":
 				return SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA1;
