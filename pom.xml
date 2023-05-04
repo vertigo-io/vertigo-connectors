@@ -19,7 +19,7 @@
 	<artifactId>vertigo-connectors</artifactId>
 	<name>vertigo-connectors</name>
 	<packaging>pom</packaging>
-	<version>3.5.1-SNAPSHOT</version>
+	<version>3.6.0</version>
 
 	<modules>
 		<module>vertigo-azure-connector</module>
@@ -53,7 +53,7 @@
 		<connection>scm:git:https://github.com/vertigo-io/vertigo-connectors.git</connection>
 		<developerConnection>scm:git:https://github.com/vertigo-io/vertigo-connectors.git</developerConnection>
 		<url>scm:git:https://github.com/vertigo-io/vertigo-connectors.git</url>
-		<tag>vertigo-connectors</tag>
+		<tag>vertigo-3.6.0</tag>
 	</scm>
 
 </project>
