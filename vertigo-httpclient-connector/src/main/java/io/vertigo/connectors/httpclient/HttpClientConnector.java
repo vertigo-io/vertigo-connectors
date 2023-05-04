@@ -1,7 +1,7 @@
 /**
  * vertigo - application development platform
  *
- * Copyright (C) 2013-2022, Vertigo.io, team@vertigo.io
+ * Copyright (C) 2013-2023, Vertigo.io, team@vertigo.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,28 @@
  */
 package io.vertigo.connectors.httpclient;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ProxySelector;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Builder;
 import java.net.http.HttpClient.Redirect;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 import io.vertigo.core.lang.Assertion;
+import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
+import io.vertigo.core.resource.ResourceManager;
 
 /**
  * @author npiedeloup
@@ -41,6 +50,7 @@ public class HttpClientConnector implements Connector<HttpClient> {
 	private final Optional<ProxySelector> proxyOpt;
 	private final String urlPrefix;
 	private final int connectTimeout;
+	private Optional<SSLContext> sslContextOpt;
 
 	@Inject
 	public HttpClientConnector(
@@ -48,7 +58,10 @@ public class HttpClientConnector implements Connector<HttpClient> {
 			@ParamValue("urlPrefix") final String urlPrefix,
 			@ParamValue("connectTimeoutSecond") final Optional<Integer> connectTimeoutOpt,
 			@ParamValue("proxy") final Optional<String> proxyHostOpt,
-			@ParamValue("proxyPort") final Optional<Integer> proxyPortOpt) {
+			@ParamValue("proxyPort") final Optional<Integer> proxyPortOpt,
+			@ParamValue("trustStoreUrl") final Optional<String> trustStoreUrlOpt,
+			@ParamValue("trustStorePassword") final Optional<String> trustStorePasswordOpt,
+			final ResourceManager resourceManager) {
 		Assertion.check()
 				.isNotBlank(urlPrefix)
 				.isTrue(urlPrefix.startsWith("http"), "urlPrefix ({0}) must include protocol http or https", urlPrefix)
@@ -60,6 +73,16 @@ public class HttpClientConnector implements Connector<HttpClient> {
 		this.urlPrefix = urlPrefix;
 		connectTimeout = connectTimeoutOpt.orElse(DEFAULT_CONNECT_TIMEOUT);
 		proxyOpt = proxyHostOpt.map(proxy -> ProxySelector.of(new InetSocketAddress(proxy, proxyPortOpt.get())));
+
+		if (trustStoreUrlOpt.isPresent()) {
+			try {
+				sslContextOpt = Optional.of(createTrustStoreSslContext(resourceManager.resolve(trustStoreUrlOpt.get()), trustStorePasswordOpt.get()));
+			} catch (final Exception e) {
+				throw WrappedException.wrap(e);
+			}
+		} else {
+			sslContextOpt = Optional.empty();
+		}
 	}
 
 	@Override
@@ -73,6 +96,7 @@ public class HttpClientConnector implements Connector<HttpClient> {
 				.ifPresent((cookieManager) -> builder.cookieHandler(cookieManager));
 
 		proxyOpt.ifPresent((proxy) -> builder.proxy(proxy));
+		sslContextOpt.ifPresent(builder::sslContext);
 		return builder.build();
 	}
 
@@ -83,6 +107,20 @@ public class HttpClientConnector implements Connector<HttpClient> {
 	@Override
 	public String getName() {
 		return connectionName;
+	}
+
+	private static SSLContext createTrustStoreSslContext(final URL trustStoreUrl, final String trustStorePassword) throws GeneralSecurityException, IOException {
+		final var trustStore = KeyStore.getInstance("pkcs12");
+		try (var inputStream = trustStoreUrl.openStream()) {
+			trustStore.load(inputStream, trustStorePassword.toCharArray());
+		}
+
+		final var trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+		trustManagerFactory.init(trustStore);
+		final var trustManagers = trustManagerFactory.getTrustManagers();
+		final var sslContext = SSLContext.getInstance("TLSv1.2");
+		sslContext.init(null, trustManagers, new SecureRandom());
+		return sslContext;
 	}
 
 }

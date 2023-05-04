@@ -1,7 +1,7 @@
 /**
  * vertigo - application development platform
  *
- * Copyright (C) 2013-2022, Vertigo.io, team@vertigo.io
+ * Copyright (C) 2013-2023, Vertigo.io, team@vertigo.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,10 @@ import io.vertigo.core.resource.ResourceManager;
  * @author pchretien, npiedeloup
  */
 public final class EmbeddedElasticSearchServer implements Component, Activeable {
+	private static final int DEFAULT_TRANSPORT_PORT = 9300;
+
+	private static final int DEFAULT_HTTP_PORT = 9200;
+
 	public static final String DEFAULT_VERTIGO_ES_CLUSTER_NAME = "vertigo-elasticsearch-embedded";
 
 	/** url du serveur elasticSearch.  */
@@ -84,8 +88,8 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 		//-----
 		elasticSearchHomeURL = resourceManager.resolve(elasticSearchHome);
 		clusterName = clusterNameOpt.orElse(DEFAULT_VERTIGO_ES_CLUSTER_NAME);
-		httpPort = httpPortOpt.orElse(9200);
-		transportPort = transportPortOpt.orElse(9300);
+		httpPort = httpPortOpt.orElse(DEFAULT_HTTP_PORT);
+		transportPort = transportPortOpt.orElse(DEFAULT_TRANSPORT_PORT);
 	}
 
 	/** {@inheritDoc} */
