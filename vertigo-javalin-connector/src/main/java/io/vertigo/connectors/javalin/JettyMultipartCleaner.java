@@ -22,7 +22,6 @@ import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.jetty.server.MultiPartInputStreamParser.MultiPart;
 
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
@@ -47,7 +46,7 @@ public final class JettyMultipartCleaner implements Handler {
 					try {
 						// a multipart request to a servlet will have the parts cleaned up correctly, but
 						// the repeated call to deleteParts() here will safely do nothing.
-						((MultiPart) part).cleanUp();
+						part.delete();
 					} catch (final IOException e) {
 						LOG.warn("Error while deleting multipart request parts", e);
 					}
