@@ -38,12 +38,15 @@ public class StandaloneJavalinConnector implements JavalinConnector {
 	 */
 	@Inject
 	public StandaloneJavalinConnector(
-			@ParamValue("name") final Optional<String> connectorNameOpt) {
+			@ParamValue("name") final Optional<String> connectorNameOpt,
+			@ParamValue("maxRequestSize") final Optional<Long> maxRequestSizeOpt) {
 		Assertion.check().isNotNull(connectorNameOpt);
 		//-----
 		connectorName = connectorNameOpt.orElse("main");
-		javalinApp = Javalin.createStandalone(config -> config.routing.ignoreTrailingSlashes = false); //javalin PR#1088 fix
-
+		javalinApp = Javalin.createStandalone(config -> {
+			config.ignoreTrailingSlashes = false; //javalin PR#1088 fix
+			config.maxRequestSize = maxRequestSizeOpt.orElse(10 * 1024L); //limit request size
+		});
 	}
 
 	/**
