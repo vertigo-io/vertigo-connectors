@@ -52,6 +52,7 @@ public class EmbeddedJavalinConnector implements JavalinConnector, Activeable {
 	 * @param connectorNameOpt name of the connector (main by default)
 	 * @param javalinPort Jetty server port
 	 * @param sslOpt true is ssl needs to be enabled false by default
+	 * @param sniHostCheckOpt true if serverName/cert CN is check (true by defaut) : use only in SSL context
 	 * @param keyStoreUrlOpt keyStore to use when ssl enabled
 	 * @param keyStorePasswordOpt keyStore password
 	 * @param sslKeyAliasOpt alias of the server to use when ssl enabled
@@ -62,6 +63,7 @@ public class EmbeddedJavalinConnector implements JavalinConnector, Activeable {
 			@ParamValue("name") final Optional<String> connectorNameOpt,
 			@ParamValue("port") final int javalinPort,
 			@ParamValue("ssl") final Optional<Boolean> sslOpt,
+			@ParamValue("sniHostCheck") final Optional<Boolean> sniHostCheckOpt,
 			@ParamValue("keyStoreUrl") final Optional<String> keyStoreUrlOpt,
 			@ParamValue("keyStorePassword") final Optional<String> keyStorePasswordOpt,
 			@ParamValue("sslKeyAlias") final Optional<String> sslKeyAliasOpt) {
@@ -81,11 +83,15 @@ public class EmbeddedJavalinConnector implements JavalinConnector, Activeable {
 			javalinApp = Javalin.create(
 					config -> {
 						config.routing.ignoreTrailingSlashes = false; //javalin PR#1088 fix
+
 						config.jetty.server(() -> {
 							final Server server = new Server();
 							final HttpConfiguration httpConfig = new HttpConfiguration();
+
 							// Add the SecureRequestCustomizer because we are using TLS.
-							httpConfig.addCustomizer(new SecureRequestCustomizer());
+							final SecureRequestCustomizer secureRequestCustomizer = new SecureRequestCustomizer();
+							secureRequestCustomizer.setSniHostCheck(sniHostCheckOpt.orElse(Boolean.TRUE));
+							httpConfig.addCustomizer(secureRequestCustomizer);
 
 							// The ConnectionFactory for HTTP/1.1.
 							final HttpConnectionFactory http11 = new HttpConnectionFactory(httpConfig);
@@ -93,7 +99,9 @@ public class EmbeddedJavalinConnector implements JavalinConnector, Activeable {
 							final SslConnectionFactory tls = new SslConnectionFactory(
 									getSslContextFactory(resourceManager.resolve(keyStoreUrlOpt.get()), keyStorePasswordOpt.get(), sslKeyAliasOpt.get()),
 									http11.getProtocol());
+
 							final ServerConnector sslConnector = new ServerConnector(server, tls, http11);
+
 							sslConnector.setPort(javalinPort);
 							server.setConnectors(new Connector[] { sslConnector });
 							return server;
