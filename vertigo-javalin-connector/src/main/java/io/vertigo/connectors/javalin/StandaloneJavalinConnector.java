@@ -23,13 +23,12 @@ import javax.inject.Inject;
 
 import io.javalin.Javalin;
 import io.vertigo.core.lang.Assertion;
-import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.param.ParamValue;
 
 /**
  * @author npiedeloup
  */
-public class StandaloneJavalinConnector implements JavalinConnector, Activeable {
+public class StandaloneJavalinConnector implements JavalinConnector {
 	private final Javalin javalinApp;
 	private final String connectorName;
 
@@ -39,12 +38,15 @@ public class StandaloneJavalinConnector implements JavalinConnector, Activeable 
 	 */
 	@Inject
 	public StandaloneJavalinConnector(
-			@ParamValue("name") final Optional<String> connectorNameOpt) {
+			@ParamValue("name") final Optional<String> connectorNameOpt,
+			@ParamValue("maxRequestSize") final Optional<Long> maxRequestSizeOpt) {
 		Assertion.check().isNotNull(connectorNameOpt);
 		//-----
 		connectorName = connectorNameOpt.orElse("main");
-		javalinApp = Javalin.createStandalone(config -> config.ignoreTrailingSlashes = false); //javalin PR#1088 fix
-
+		javalinApp = Javalin.createStandalone(config -> {
+			config.routing.ignoreTrailingSlashes = false; //javalin PR#1088 fix
+			config.http.maxRequestSize = maxRequestSizeOpt.orElse(10 * 1024L); //limit request size
+		});
 	}
 
 	/**
@@ -59,17 +61,4 @@ public class StandaloneJavalinConnector implements JavalinConnector, Activeable 
 	public String getName() {
 		return connectorName;
 	}
-
-	/** {@inheritDoc} */
-	@Override
-	public void start() {
-		//
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public void stop() {
-		//
-	}
-
 }

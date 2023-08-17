@@ -63,12 +63,10 @@ public class JndiMailSessionConnector implements MailSessionConnector {
 
 	@Override
 	public Session getClient() {
-		Session mailSession;
 		try {
-			mailSession = (Session) new InitialContext().lookup(jndiMailSession);
+			return (Session) new InitialContext().lookup(jndiMailSession);
 		} catch (final NamingException e) {
 			throw WrappedException.wrap(e, "Can't obtain MailResource : {0}", jndiMailSession);
 		}
-		return mailSession;
 	}
 }

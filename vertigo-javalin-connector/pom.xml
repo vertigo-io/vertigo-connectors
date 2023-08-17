@@ -16,7 +16,7 @@
 		<dependency>
 		    <groupId>io.javalin</groupId>
 		    <artifactId>javalin</artifactId>
-		    <version>4.6.7</version>
+		    <version>5.6.1</version>
 			<exclusions> <!-- jetty is optional in project -->
 				<exclusion>
 					<groupId>org.eclipse.jetty</groupId>
@@ -28,7 +28,7 @@
 				</exclusion>
                 <exclusion>
                     <groupId>org.eclipse.jetty.websocket</groupId>
-                    <artifactId>websocket-server</artifactId>
+                    <artifactId>websocket-jetty-server</artifactId>
                 </exclusion>
 			</exclusions>
 		</dependency>
@@ -37,13 +37,13 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>9.4.51.v20230217</version>
+			<version>11.0.15</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty.websocket</groupId>
-			<artifactId>websocket-server</artifactId>
-			<version>9.4.51.v20230217</version>
+			<artifactId>websocket-jetty-server</artifactId>
+			<version>11.0.15</version>
 			<optional>true</optional>
 		</dependency>
 	</dependencies>

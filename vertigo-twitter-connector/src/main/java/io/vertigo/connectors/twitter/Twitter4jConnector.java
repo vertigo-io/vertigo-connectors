@@ -30,7 +30,6 @@ import twitter4j.Twitter;
  * @author mlaroche
  */
 public class Twitter4jConnector implements Connector<Twitter> {
-
 	private final Twitter twitter;
 
 	@Inject
@@ -52,8 +51,6 @@ public class Twitter4jConnector implements Connector<Twitter> {
 	}
 
 	/**
-	 * Gets an OSClientV3 from the connection pool
-	 *
 	 * @return the twitter client
 	 */
 	@Override

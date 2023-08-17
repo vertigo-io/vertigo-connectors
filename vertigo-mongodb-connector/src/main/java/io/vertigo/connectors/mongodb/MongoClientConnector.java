@@ -30,12 +30,11 @@ import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 
 /**
- * Connector to a mongodb
+ * Connector to mongodb
  *
  * @author mlaroche
  */
 public class MongoClientConnector implements Connector<MongoClient>, Activeable {
-
 	private final String connectorName;
 	private final MongoClient mongoClient;
 
@@ -51,9 +50,8 @@ public class MongoClientConnector implements Connector<MongoClient>, Activeable 
 		Assertion.check()
 				.isNotNull(connectorNameOpt)
 				.isNotBlank(connectionString);
-		//-----
+		//---
 		connectorName = connectorNameOpt.orElse(DEFAULT_CONNECTOR_NAME);
-		//-----
 		mongoClient = MongoClients.create(connectionString);
 	}
 
@@ -76,6 +74,5 @@ public class MongoClientConnector implements Connector<MongoClient>, Activeable 
 	@Override
 	public void stop() {
 		mongoClient.close();
-
 	}
 }

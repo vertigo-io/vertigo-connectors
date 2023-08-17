@@ -11,20 +11,4 @@
 	<artifactId>vertigo-ifttt-connector</artifactId>
 	<packaging>jar</packaging>
 	<name>vertigo-ifttt-connector</name>
-
-
-	<dependencies>
-		<!-- Jersey 2 for ifttt-->
-		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-client</artifactId>
-			<version>3.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>3.1.0</version>
-		</dependency>
-	</dependencies> 
-
 </project>

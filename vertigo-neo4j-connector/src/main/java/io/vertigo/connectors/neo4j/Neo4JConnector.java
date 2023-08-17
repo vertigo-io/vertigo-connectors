@@ -33,7 +33,6 @@ import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 
 public class Neo4JConnector implements Connector<Driver>, Activeable {
-
 	private final Driver neo4jDriver;
 	private final String connectionName;
 
@@ -54,7 +53,6 @@ public class Neo4JConnector implements Connector<Driver>, Activeable {
 		//---
 		connectionName = connectionNameOpt.orElse("main");
 		//---
-		// ---
 		neo4jDriver = GraphDatabase.driver(
 				uri,
 				AuthTokens.basic(login, password),

@@ -24,8 +24,12 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import io.javalin.Javalin;
@@ -48,6 +52,7 @@ public class EmbeddedJavalinConnector implements JavalinConnector, Activeable {
 	 * @param connectorNameOpt name of the connector (main by default)
 	 * @param javalinPort Jetty server port
 	 * @param sslOpt true is ssl needs to be enabled false by default
+	 * @param sniHostCheckOpt true if serverName/cert CN is check (true by defaut) : use only in SSL context
 	 * @param keyStoreUrlOpt keyStore to use when ssl enabled
 	 * @param keyStorePasswordOpt keyStore password
 	 * @param sslKeyAliasOpt alias of the server to use when ssl enabled
@@ -58,6 +63,7 @@ public class EmbeddedJavalinConnector implements JavalinConnector, Activeable {
 			@ParamValue("name") final Optional<String> connectorNameOpt,
 			@ParamValue("port") final int javalinPort,
 			@ParamValue("ssl") final Optional<Boolean> sslOpt,
+			@ParamValue("sniHostCheck") final Optional<Boolean> sniHostCheckOpt,
 			@ParamValue("keyStoreUrl") final Optional<String> keyStoreUrlOpt,
 			@ParamValue("keyStorePassword") final Optional<String> keyStorePasswordOpt,
 			@ParamValue("sslKeyAlias") final Optional<String> sslKeyAliasOpt) {
@@ -76,10 +82,26 @@ public class EmbeddedJavalinConnector implements JavalinConnector, Activeable {
 			//---
 			javalinApp = Javalin.create(
 					config -> {
-						config.ignoreTrailingSlashes = false; //javalin PR#1088 fix
-						config.server(() -> {
+						config.routing.ignoreTrailingSlashes = false; //javalin PR#1088 fix
+
+						config.jetty.server(() -> {
 							final Server server = new Server();
-							final ServerConnector sslConnector = new ServerConnector(server, getSslContextFactory(resourceManager.resolve(keyStoreUrlOpt.get()), keyStorePasswordOpt.get(), sslKeyAliasOpt.get()));
+							final HttpConfiguration httpConfig = new HttpConfiguration();
+
+							// Add the SecureRequestCustomizer because we are using TLS.
+							final SecureRequestCustomizer secureRequestCustomizer = new SecureRequestCustomizer();
+							secureRequestCustomizer.setSniHostCheck(sniHostCheckOpt.orElse(Boolean.TRUE));
+							httpConfig.addCustomizer(secureRequestCustomizer);
+
+							// The ConnectionFactory for HTTP/1.1.
+							final HttpConnectionFactory http11 = new HttpConnectionFactory(httpConfig);
+							// The ConnectionFactory for TLS.
+							final SslConnectionFactory tls = new SslConnectionFactory(
+									getSslContextFactory(resourceManager.resolve(keyStoreUrlOpt.get()), keyStorePasswordOpt.get(), sslKeyAliasOpt.get()),
+									http11.getProtocol());
+
+							final ServerConnector sslConnector = new ServerConnector(server, tls, http11);
+
 							sslConnector.setPort(javalinPort);
 							server.setConnectors(new Connector[] { sslConnector });
 							return server;
@@ -88,18 +110,18 @@ public class EmbeddedJavalinConnector implements JavalinConnector, Activeable {
 					.before(new JettyMultipartConfig(tempDir))
 					.after(new JettyMultipartCleaner());
 		} else {
-			javalinApp = Javalin.create(config -> config.ignoreTrailingSlashes = false) //javalin PR#1088 fix
+			javalinApp = Javalin.create(config -> config.routing.ignoreTrailingSlashes = false) //javalin PR#1088 fix
 					.before(new JettyMultipartConfig(tempDir))
 					.after(new JettyMultipartCleaner());
 		}
 		port = javalinPort;
 	}
 
-	private static SslContextFactory getSslContextFactory(final URL keyStoreUrl, final String keyStorePassword, final String sslKeyAlias) {
+	private static SslContextFactory.Server getSslContextFactory(final URL keyStoreUrl, final String keyStorePassword, final String sslKeyAlias) {
 		try {
 			final var jks = KeyStore.getInstance("PKCS12");
 			jks.load(keyStoreUrl.openStream(), keyStorePassword.toCharArray());
-			final SslContextFactory sslContextFactory = new SslContextFactory.Server();
+			final SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
 			sslContextFactory.setKeyStore(jks);
 			sslContextFactory.setKeyStoreType("PKCS12");
 			sslContextFactory.setCertAlias(sslKeyAlias);

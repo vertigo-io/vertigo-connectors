@@ -18,34 +18,42 @@
 package io.vertigo.connectors.javalin;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.jetty.server.MultiParts;
 
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Part;
 
 /**
  * Filter to configure MultipartConfigElement for Jetty Request.
  * @author npiedeloup
  */
 public final class JettyMultipartCleaner implements Handler {
-	private static final String JETTY_MULTIPARTS = org.eclipse.jetty.server.Request.MULTIPARTS;//"org.eclipse.multipartConfig";
 	private static final Logger LOG = LogManager.getLogger(JettyMultipartCleaner.class);
 
 	/** {@inheritDoc} */
 	@Override
 	public void handle(final Context ctx) {
-		final MultiParts multiParts = (MultiParts) ctx.req.getAttribute(JETTY_MULTIPARTS);
-		if (multiParts != null && !multiParts.isEmpty()) {
-			try {
-				// a multipart request to a servlet will have the parts cleaned up correctly, but
-				// the repeated call to deleteParts() here will safely do nothing.
-				multiParts.close();
-			} catch (final IOException e) {
-				LOG.warn("Error while deleting multipart request parts", e);
+		Collection<Part> multiParts;
+		try {
+			multiParts = ctx.req().getParts();
+			if (multiParts != null && !multiParts.isEmpty()) {
+				for (final Part part : multiParts) {
+					try {
+						// a multipart request to a servlet will have the parts cleaned up correctly, but
+						// the repeated call to deleteParts() here will safely do nothing.
+						part.delete();
+					} catch (final IOException e) {
+						LOG.warn("Error while deleting multipart request parts", e);
+					}
+				}
 			}
+		} catch (IOException | ServletException errorParts) {
+			LOG.warn("Error while deleting multipart request parts", errorParts);
 		}
 	}
 }

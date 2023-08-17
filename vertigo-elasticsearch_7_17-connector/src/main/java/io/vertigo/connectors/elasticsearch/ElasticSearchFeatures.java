@@ -15,39 +15,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.vertigo.connectors.redis;
+package io.vertigo.connectors.elasticsearch;
 
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
 
 /**
- * Defines commons module.
- * @author pchretien
+ * Defines ElasticSearchConnector module.
+ * @author npiedeloup
  */
-public final class RedisFeatures extends Features<RedisFeatures> {
+public final class ElasticSearchFeatures extends Features<ElasticSearchFeatures> {
 
 	/**
 	 * Constructor.
 	 */
-	public RedisFeatures() {
-		super("vertigo-redis-connector");
+	public ElasticSearchFeatures() {
+		super("vertigo-elasticsearch-connector");
 	}
 
-	@Feature("jedis")
-	public RedisFeatures withJedis(final Param... params) {
+	@Feature("embeddedServer")
+	public ElasticSearchFeatures withEmbeddedServer(final Param... params) {
 		getModuleConfigBuilder()
-				.addConnector(RedisConnector.class, params);
+				.addComponent(EmbeddedElasticSearchServer.class, params);
 		return this;
-
 	}
 
-	@Feature("jedis-unified")
-	public RedisFeatures withJedisUnified(final Param... params) {
+	@Feature("transport")
+	public ElasticSearchFeatures withTransport(final Param... params) {
 		getModuleConfigBuilder()
-				.addConnector(RedisUnifiedConnector.class, params);
+				.addConnector(TransportElasticSearchConnector.class, params);
 		return this;
+	}
 
+	@Feature("node")
+	public ElasticSearchFeatures withNode(final Param... params) {
+		getModuleConfigBuilder()
+				.addConnector(NodeElasticSearchConnector.class, params);
+		return this;
+	}
+
+	@Feature("restHL")
+	public ElasticSearchFeatures withRestHL(final Param... params) {
+		getModuleConfigBuilder()
+				.addConnector(RestHighLevelElasticSearchConnector.class, params);
+		return this;
 	}
 
 	/** {@inheritDoc} */

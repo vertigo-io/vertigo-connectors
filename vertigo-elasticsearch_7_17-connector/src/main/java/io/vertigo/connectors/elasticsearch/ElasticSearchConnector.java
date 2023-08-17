@@ -15,36 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.vertigo.connectors.keycloak;
+package io.vertigo.connectors.elasticsearch;
 
-import io.vertigo.core.node.config.Feature;
-import io.vertigo.core.node.config.Features;
-import io.vertigo.core.param.Param;
+import org.elasticsearch.client.Client;
+
+import io.vertigo.core.node.component.Activeable;
+import io.vertigo.core.node.component.Connector;
 
 /**
- * Defines commons module.
- * @author pchretien
+ * @author npiedeloup
  */
-public final class KeycloakFeatures extends Features<KeycloakFeatures> {
-
-	/**
-	 * Constructor.
-	 */
-	public KeycloakFeatures() {
-		super("vertigo-keycloak-connector");
-	}
-
-	@Feature("deployment")
-	public KeycloakFeatures withKeycloakDeployment(final Param... params) {
-		getModuleConfigBuilder()
-				.addConnector(KeycloakDeploymentConnector.class, params);
-		return this;
-
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	protected void buildFeatures() {
-		//
-	}
+public interface ElasticSearchConnector extends Connector<Client>, Activeable {
+	//
 }
