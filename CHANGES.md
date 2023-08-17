@@ -6,6 +6,23 @@ Running 4.0.0
 
 more to come :)
 
+Release 3.6.0 - 2023/05/04
+----------------------
+[Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-350-to-360)
+* [http-client] support custom trust store
+* Updated libs
+  - msal4j : 1.13.3 -> 1.13.8
+  - elasticsearch : 7.17.8 -> 7.17.9
+  - influxdb-client-java : 6.7.0 -> 6.8.0
+  - keycloak-servlet-filter-adapter :  20.0.2 -> 21.1.1
+  - mongodb : 4.8.1 -> 4.9.1
+  - neo4j : 4.4.16 -> 4.4.20
+  - oauth2-oidc-sdk : 10.4 -> 10.8
+  - jedis : 4.3.1 -> 4.3.2
+  - opensaml-saml-impl : 4.2.0 -> 4.3.0
+  - spring : 5.3.24 -> 5.3.27
+ 
+
 Release 3.5.0 - 2023/01/06
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-340-to-350)
