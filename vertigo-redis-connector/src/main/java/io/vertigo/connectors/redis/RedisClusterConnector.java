@@ -51,9 +51,9 @@ import redis.clients.jedis.util.JedisClusterCRC16;
 /**
  * @author pchretien, npiedeloup
  */
-public class RedisUnifiedConnector implements Connector<JedisCluster>, Activeable {
+public class RedisClusterConnector implements Connector<JedisCluster>, Activeable {
 
-	private static final Logger LOG = LogManager.getLogger(RedisUnifiedConnector.class);
+	private static final Logger LOG = LogManager.getLogger(RedisClusterConnector.class);
 
 	private static final int MAX_ATTEMPTS = 5;
 	private static final int CONNECT_TIMEOUT = 2000;
@@ -69,7 +69,7 @@ public class RedisUnifiedConnector implements Connector<JedisCluster>, Activeabl
 	 * @param passwordOpt password (optional)
 	 */
 	@Inject
-	public RedisUnifiedConnector(
+	public RedisClusterConnector(
 			final ResourceManager resourceManager,
 			@ParamValue("name") final Optional<String> connectorNameOpt,
 			@ParamValue("clusterNodes") final String clusterNodesStr,

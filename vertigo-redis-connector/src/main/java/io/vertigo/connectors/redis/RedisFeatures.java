@@ -42,10 +42,10 @@ public final class RedisFeatures extends Features<RedisFeatures> {
 
 	}
 
-	@Feature("jedis-unified")
-	public RedisFeatures withJedisUnified(final Param... params) {
+	@Feature("jedis-cluster")
+	public RedisFeatures withJedisCluster(final Param... params) {
 		getModuleConfigBuilder()
-				.addConnector(RedisUnifiedConnector.class, params);
+				.addConnector(RedisClusterConnector.class, params);
 		return this;
 
 	}
