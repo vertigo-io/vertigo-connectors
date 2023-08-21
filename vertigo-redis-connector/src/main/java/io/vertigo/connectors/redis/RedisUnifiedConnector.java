@@ -1,4 +1,4 @@
-/*
+/**
  * vertigo - application development platform
  *
  * Copyright (C) 2013-2023, Vertigo.io, team@vertigo.io
@@ -31,6 +31,9 @@ import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.node.component.Activeable;
@@ -40,17 +43,21 @@ import io.vertigo.core.resource.ResourceManager;
 import redis.clients.jedis.ConnectionPoolConfig;
 import redis.clients.jedis.DefaultJedisClientConfig;
 import redis.clients.jedis.HostAndPort;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisClientConfig;
 import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.UnifiedJedis;
+import redis.clients.jedis.util.JedisClusterCRC16;
 
 /**
  * @author pchretien, npiedeloup
  */
-public class RedisUnifiedConnector implements Connector<UnifiedJedis>, Activeable {
+public class RedisUnifiedConnector implements Connector<JedisCluster>, Activeable {
+
+	private static final Logger LOG = LogManager.getLogger(RedisUnifiedConnector.class);
+
 	private static final int MAX_ATTEMPTS = 5;
 	private static final int CONNECT_TIMEOUT = 2000;
-	private final UnifiedJedis unifiedJedis;
+	private final JedisCluster jedisCluster;
 	private final String connectorName;
 
 	/**
@@ -108,18 +115,34 @@ public class RedisUnifiedConnector implements Connector<UnifiedJedis>, Activeabl
 		}
 		final JedisClientConfig jedisClientConfig = jedisClientConfigBuilder.build();
 		final Set<HostAndPort> clusterNodes = Set.of(clusterNodesStr.split(";")).stream().map(HostAndPort::from).collect(Collectors.toSet());
-		unifiedJedis = new JedisCluster(clusterNodes, jedisClientConfig, MAX_ATTEMPTS, connectionPoolConfig);
+		jedisCluster = new JedisCluster(clusterNodes, jedisClientConfig, MAX_ATTEMPTS, connectionPoolConfig);
 
 		//test
-		unifiedJedis.ping();
+		jedisCluster.ping();
 	}
 
 	/**
-	 * @return jedis client
+	 * @return jedisCluster client (DON't USE try-with-ressource pattern)
 	 */
 	@Override
-	public UnifiedJedis getClient() {
-		return unifiedJedis;
+	public JedisCluster getClient() {
+		if (jedisCluster.getClusterNodes().isEmpty()) {
+			LOG.warn("JedisCluster : no nodes found. JedisCluster shouldn't be close manually (watch out try-with-ressource pattern), it can't be reused after that. it will be close correctly at app closing. Try to rediscover nodes (cost a lot)");
+			jedisCluster.getConnectionFromSlot(0);
+		}
+
+		return jedisCluster;
+	}
+
+	/**
+	 * @param key Key used to find slot, may use Hash-tags of Redis and use partition key between {}.
+	 * Ex: myPrefix-{myPartioningKey}-myFonctionalKey. Warning : only first {} is used !
+	 * @see https://redis.io/docs/reference/cluster-spec/#hash-tags
+	 * @return jedis client for one node (use try-with-resource pattern)
+	 */
+	public Jedis getClient(final String key) {
+		final int slot = JedisClusterCRC16.getSlot(key);
+		return new Jedis(jedisCluster.getConnectionFromSlot(slot));
 	}
 
 	@Override
@@ -136,7 +159,7 @@ public class RedisUnifiedConnector implements Connector<UnifiedJedis>, Activeabl
 	/** {@inheritDoc} */
 	@Override
 	public void stop() {
-		unifiedJedis.close();
+		jedisCluster.close();
 	}
 
 	private static SSLSocketFactory createTrustStoreSslSocketFactory(final URL trustStoreUrl, final String trustStorePassword) throws Exception {
