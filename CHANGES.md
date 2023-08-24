@@ -12,11 +12,11 @@ Release 4.0.0 - 2023/08/17
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-360-to-400)
 * [keycloak] remove deprecated connector (https://www.keycloak.org/2022/02/adapter-deprecation)
-* [ui, vega] Update jakarta namespace ( Spring 6, Javalin 5, Jetty 11 )
+* **[ui, vega] Update jakarta namespace ( Spring 6, Javalin 5, Jetty 11 )**
 * [http-client] support custom trust store
 * [ifttt] remove jersey dependency
-* [Javalin] Add security limit of request size to javalin maxRequestSize (default 10Ko)
-* [Javalin] Add sniHostCheck param for embedded server (active by default with jetty but need to inactivate when behind a proxy)
+* **[Javalin] Add security limit of request size to javalin maxRequestSize (default 10Ko)**
+* **[Javalin] Add sniHostCheck param** for embedded server (active by default with jetty but need to inactivate when behind a proxy)
 * [Redis] Add Redis Unified connector (for cluster)
 * [Elastic] Add LTS connector for v7.17 (prepare update to 8.x)
 * Updated libs
