@@ -1,11 +1,37 @@
 Version history
 ===============
 
-Running 4.0.0
+Running 4.1.0
 ----------------------
+* [Redis] Extends Redis Unified connector to all mode : single, sentinels and cluster
+* [Redis] Support ssl and custom truststore
 
 more to come :)
 
+Release 4.0.0 - 2023/08/17
+----------------------
+[Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-360-to-400)
+* [keycloak] remove deprecated connector (https://www.keycloak.org/2022/02/adapter-deprecation)
+* [ui, vega] Update jakarta namespace ( Spring 6, Javalin 5, Jetty 11 )
+* [http-client] support custom trust store
+* [ifttt] remove jersey dependency
+* [Javalin] Add security limit of request size to javalin maxRequestSize (default 10Ko)
+* [Javalin] Add sniHostCheck param for embedded server (active by default with jetty but need to inactivate when behind a proxy)
+* [Redis] Add Redis Unified connector (for cluster)
+* [Elastic] Add LTS connector for v7.17 (prepare update to 8.x)
+* Updated libs
+  - azure 1.13.8 -> 1.13.9
+  - elasticsearch 7.17.6 -> 7.17.12
+  - influxdb 6.8.0 -> 6.9.0
+  - javalin 5.4.2 -> 5.6.1
+  - jetty-server 9.4.51 -> 11.0.15
+  - mongodb 4.9.1 -> 4.10.2
+  - neo4j 4.4.16 -> 5.10.0 (jdk17)
+  - woodstox 6.5.0 -> 6.5.1
+  - spring-context 5.3.27 -> 6.0.11
+  - oauth2-oidc-sdk : 10.8 -> 10.11
+  - jedis : 4.3.2 -> 4.4.3
+  - 
 Release 3.6.0 - 2023/05/04
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-350-to-360)
