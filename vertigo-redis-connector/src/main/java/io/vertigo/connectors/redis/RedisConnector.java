@@ -1,4 +1,4 @@
-/*
+/**
  * vertigo - application development platform
  *
  * Copyright (C) 2013-2023, Vertigo.io, team@vertigo.io
@@ -31,27 +31,47 @@ import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
+import redis.clients.jedis.ConnectionPoolConfig;
 import redis.clients.jedis.DefaultJedisClientConfig;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisClientConfig;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.JedisSentinelPool;
-import redis.clients.jedis.util.Pool;
+import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.JedisPooled;
+import redis.clients.jedis.JedisSentineled;
+import redis.clients.jedis.UnifiedJedis;
+import redis.clients.jedis.providers.ClusterConnectionProvider;
+import redis.clients.jedis.providers.ConnectionProvider;
+import redis.clients.jedis.providers.PooledConnectionProvider;
+import redis.clients.jedis.providers.SentineledConnectionProvider;
+import redis.clients.jedis.util.JedisClusterCRC16;
 
 /**
- * @author pchretien
+ * @author pchretien, npiedeloup
  */
-public class RedisConnector implements Connector<Jedis>, Activeable {
+public class RedisConnector implements Connector<UnifiedJedis>, Activeable {
+
+	private static final Logger LOG = LogManager.getLogger(RedisConnector.class);
+
+	private enum JedisMode {
+		SINGLE, SENTINEL, CLUSTER
+	}
+
+	private final JedisMode mode;
+
+	private static final int MAX_ATTEMPTS = 5;
 	private static final int CONNECT_TIMEOUT = 2000;
-	private final Pool<Jedis> jedisPool;
+	private final UnifiedJedis unifiedJedis;
+	private final ConnectionProvider connectionProvider;
 	private final String connectorName;
 
 	/**
@@ -66,39 +86,49 @@ public class RedisConnector implements Connector<Jedis>, Activeable {
 	public RedisConnector(
 			final ResourceManager resourceManager,
 			@ParamValue("name") final Optional<String> connectorNameOpt,
-			@ParamValue("host") final String redisHost,
-			@ParamValue("port") final int redisPort,
+			@ParamValue("host") final Optional<String> redisHost,
+			@ParamValue("port") final Optional<Integer> redisPort,
+			@ParamValue("mastername") final Optional<String> masternameOpt,
+			@ParamValue("sentinels") final Optional<String> sentinelsOpt,
+			@ParamValue("clusterNodes") final Optional<String> clusterNodesOpt,
 			@ParamValue("database") final int redisDatabase,
 			@ParamValue("password") final Optional<String> passwordOpt,
 			@ParamValue("ssl") final boolean ssl,
-			@ParamValue("mastername") final Optional<String> masternameOpt,
-			@ParamValue("sentinels") final Optional<String> sentinelsOpt,
 			@ParamValue("trustStoreUrl") final Optional<String> trustStoreUrlOpt,
 			@ParamValue("trustStorePassword") final Optional<String> trustStorePasswordOpt,
 			@ParamValue("maxTotal") final Optional<Integer> maxTotalOpt,
 			@ParamValue("minIdle") final Optional<Integer> minIdleOpt) {
 		Assertion.check()
 				.isNotNull(connectorNameOpt)
-				.isNotBlank(redisHost)
-				.isNotNull(passwordOpt)
+				.when(redisHost.isPresent(), () -> Assertion.check()
+						.isTrue(redisPort.isPresent(),
+								"When Redis connect to single host node, port is mandatory")
+						.isTrue(masternameOpt.isEmpty() && sentinelsOpt.isEmpty() && clusterNodesOpt.isEmpty(),
+								"Redis single mode is exclusive, don't use sentinel nor cluster"))
+				.when(sentinelsOpt.isPresent(), () -> Assertion.check()
+						.isTrue(masternameOpt.isPresent(),
+								"When Redis connect to sentinels, mastername is mandatory")
+						.isTrue(redisHost.isEmpty() && redisPort.isEmpty() && clusterNodesOpt.isEmpty(),
+								"Redis sentinel mode is exclusive, don't use single host nor cluster"))
+				.when(clusterNodesOpt.isPresent(), () -> Assertion.check()
+						.isTrue(masternameOpt.isEmpty() && sentinelsOpt.isEmpty() && redisHost.isEmpty() && redisPort.isEmpty(),
+								"Redis cluster mode is exclusive, don't use single host nor sentinels and mastername")
+						.isTrue(redisDatabase == 0, "When Redis connect to cluster, redis database must be 0"))
 				.isTrue(redisDatabase >= 0 && redisDatabase < 16, "there is 16 DBs(0 - 15); your index database '{0}' is not inside this range", redisDatabase);
 		//-----
 		connectorName = connectorNameOpt.orElse("main");
 
-		final var jedisPoolConfig = new JedisPoolConfig();
+		final var connectionPoolConfig = new ConnectionPoolConfig();
 		maxTotalOpt.ifPresent(maxTotal -> {
-			jedisPoolConfig.setMaxTotal(maxTotal);
-			jedisPoolConfig.setMaxIdle(maxTotal);
+			connectionPoolConfig.setMaxTotal(maxTotal);
+			connectionPoolConfig.setMaxIdle(maxTotal);
 		});
-		minIdleOpt.ifPresent(jedisPoolConfig::setMinIdle);
-		jedisPoolConfig.setMaxWait(Duration.ofSeconds(5));
+		minIdleOpt.ifPresent(connectionPoolConfig::setMinIdle);
+		connectionPoolConfig.setMaxWait(Duration.ofSeconds(5));
 
 		final var jedisClientConfigBuilder = DefaultJedisClientConfig.builder()
 				.connectionTimeoutMillis(CONNECT_TIMEOUT)
 				.database(redisDatabase)
-				.ssl(ssl);
-		final var sentinelConfigBuilder = DefaultJedisClientConfig.builder()
-				.connectionTimeoutMillis(CONNECT_TIMEOUT)
 				.ssl(ssl);
 		passwordOpt.ifPresent(jedisClientConfigBuilder::password);
 
@@ -109,33 +139,79 @@ public class RedisConnector implements Connector<Jedis>, Activeable {
 				jedisClientConfigBuilder
 						.sslParameters(sslParameters)
 						.sslSocketFactory(sslSocketFactory);
-
-				sentinelConfigBuilder
-						.sslParameters(sslParameters)
-						.sslSocketFactory(sslSocketFactory);
 			} catch (final Exception e) {
 				throw WrappedException.wrap(e);
 			}
 		}
 		final JedisClientConfig jedisClientConfig = jedisClientConfigBuilder.build();
+
 		if (sentinelsOpt.isPresent()) {
-			final Set<HostAndPort> sentinels = Set.of(sentinelsOpt.get().split(";")).stream().map(HostAndPort::from).collect(Collectors.toSet());
-			jedisPool = new JedisSentinelPool(masternameOpt.get(), sentinels, jedisPoolConfig, jedisClientConfig, sentinelConfigBuilder.build());
+			final var sentinelClientConfig = DefaultJedisClientConfig.builder()
+					.connectionTimeoutMillis(CONNECT_TIMEOUT)
+					.ssl(ssl).build();
+			final Set<HostAndPort> sentinels = Set.of(sentinelsOpt.get().split(";")).stream().map(String::trim).map(HostAndPort::from).collect(Collectors.toSet());
+			final var sentineledConnectionProvider = new SentineledConnectionProvider(masternameOpt.get(), jedisClientConfig, connectionPoolConfig, sentinels, sentinelClientConfig);
+			connectionProvider = sentineledConnectionProvider;
+			unifiedJedis = new JedisSentineled(sentineledConnectionProvider);
+			mode = JedisMode.SENTINEL;
+		} else if (clusterNodesOpt.isPresent()) {
+			final Set<HostAndPort> clusterNodes = Set.of(clusterNodesOpt.get().split(";")).stream().map(String::trim).map(HostAndPort::from).collect(Collectors.toSet());
+			final var clusterConnectionProvider = new ClusterConnectionProvider(clusterNodes, jedisClientConfig, connectionPoolConfig);
+			connectionProvider = clusterConnectionProvider;
+			unifiedJedis = new JedisCluster(clusterConnectionProvider, MAX_ATTEMPTS, Duration.ofMillis((long) CONNECT_TIMEOUT * MAX_ATTEMPTS));
+			mode = JedisMode.CLUSTER;
 		} else {
-			jedisPool = new JedisPool(jedisPoolConfig, new HostAndPort(redisHost, redisPort), jedisClientConfig);
+			final var pooledConnectionProvider = new PooledConnectionProvider(new HostAndPort(redisHost.get().trim(), redisPort.get()), jedisClientConfig, connectionPoolConfig);
+			connectionProvider = pooledConnectionProvider;
+			unifiedJedis = new JedisPooled(pooledConnectionProvider);
+			mode = JedisMode.SINGLE;
 		}
 		//test
-		try (var jedis = jedisPool.getResource()) {
-			jedis.ping();
-		}
+		unifiedJedis.ping();
 	}
 
 	/**
-	 * @return jedis client
+	 * @return unifiedJedis client (DON't USE try-with-ressource pattern)
 	 */
 	@Override
-	public Jedis getClient() {
-		return jedisPool.getResource();
+	public UnifiedJedis getClient() {
+		if (mode == JedisMode.CLUSTER && ((JedisCluster) unifiedJedis).getClusterNodes().isEmpty()) {
+			LOG.warn("JedisCluster : no nodes found. JedisCluster shouldn't be close manually (watch out try-with-ressource pattern), it can't be reused after that. it will be close correctly at app closing. Try to rediscover nodes (cost a lot)");
+			((JedisCluster) unifiedJedis).getConnectionFromSlot(0); //this will force refresh nodes cache
+		}
+		return unifiedJedis;
+	}
+
+	/**
+	 * @param key Key used to find slot, may use Hash-tags of Redis and use partition key between {}.
+	 * Ex: myPrefix-{myPartioningKey}-myFonctionalKey. Warning : only first {} is used !
+	 * @see https://redis.io/docs/reference/cluster-spec/#hash-tags
+	 *
+	 * Must be use with try-with-ressource pattern
+	 * @return jedis client for one node (use try-with-resource pattern)
+	 */
+	public Jedis getClient(final String key) {
+		if (mode == JedisMode.CLUSTER) {
+			final int slot = JedisClusterCRC16.getSlot(key);
+			return new Jedis(((JedisCluster) unifiedJedis).getConnectionFromSlot(slot));
+		} else {
+			return new Jedis(connectionProvider.getConnection());
+		}
+	}
+
+	/*public List<Jedis> getAllClients() {
+		if (mode == JedisMode.CLUSTER) {
+			return ((JedisCluster) unifiedJedis).getClusterNodes()
+					.values()
+					.stream().map(pool -> new Jedis(pool.getResource()))
+					.collect(Collectors.toList());
+		} else {
+			return List.of(new Jedis(connectionProvider.getConnection()));
+		}
+	}*/
+
+	public boolean isMultiNodes() {
+		return mode == JedisMode.CLUSTER;
 	}
 
 	@Override
@@ -152,7 +228,7 @@ public class RedisConnector implements Connector<Jedis>, Activeable {
 	/** {@inheritDoc} */
 	@Override
 	public void stop() {
-		jedisPool.close();
+		unifiedJedis.close();
 	}
 
 	private static SSLSocketFactory createTrustStoreSslSocketFactory(final URL trustStoreUrl, final String trustStorePassword) throws Exception {

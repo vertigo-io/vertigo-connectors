@@ -27,12 +27,12 @@ import io.vertigo.core.node.AutoCloseableNode;
 import io.vertigo.core.node.component.di.DIInjector;
 import io.vertigo.core.node.config.NodeConfig;
 import io.vertigo.core.param.Param;
-import redis.clients.jedis.UnifiedJedis;
+import redis.clients.jedis.Jedis;
 
-public class RedisConnectorTest {
+public class RedisSingleConnectorTest {
 
 	@Inject
-	private RedisConnector redisConnector;
+	private RedisSingleConnector redisConnector;
 	private AutoCloseableNode node;
 
 	@BeforeEach
@@ -50,7 +50,7 @@ public class RedisConnectorTest {
 
 	@Test
 	public void testConnection() {
-		try (final UnifiedJedis jedis = redisConnector.getClient()) {
+		try (final Jedis jedis = redisConnector.getClient()) {
 			jedis.ping();
 		}
 	}

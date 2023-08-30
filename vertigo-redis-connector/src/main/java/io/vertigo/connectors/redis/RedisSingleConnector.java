@@ -1,4 +1,4 @@
-/**
+/*
  * vertigo - application development platform
  *
  * Copyright (C) 2013-2023, Vertigo.io, team@vertigo.io
@@ -31,33 +31,28 @@ import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
-import redis.clients.jedis.ConnectionPoolConfig;
 import redis.clients.jedis.DefaultJedisClientConfig;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisClientConfig;
-import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.util.JedisClusterCRC16;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.JedisSentinelPool;
+import redis.clients.jedis.util.Pool;
 
 /**
- * @author pchretien, npiedeloup
+ * @author pchretien
  */
-public class RedisClusterConnector implements Connector<JedisCluster>, Activeable {
-
-	private static final Logger LOG = LogManager.getLogger(RedisClusterConnector.class);
-
-	private static final int MAX_ATTEMPTS = 5;
+@Deprecated
+public class RedisSingleConnector implements Connector<Jedis>, Activeable {
 	private static final int CONNECT_TIMEOUT = 2000;
-	private final JedisCluster jedisCluster;
+	private final Pool<Jedis> jedisPool;
 	private final String connectorName;
 
 	/**
@@ -69,36 +64,42 @@ public class RedisClusterConnector implements Connector<JedisCluster>, Activeabl
 	 * @param passwordOpt password (optional)
 	 */
 	@Inject
-	public RedisClusterConnector(
+	public RedisSingleConnector(
 			final ResourceManager resourceManager,
 			@ParamValue("name") final Optional<String> connectorNameOpt,
-			@ParamValue("clusterNodes") final String clusterNodesStr,
+			@ParamValue("host") final String redisHost,
+			@ParamValue("port") final int redisPort,
 			@ParamValue("database") final int redisDatabase,
 			@ParamValue("password") final Optional<String> passwordOpt,
 			@ParamValue("ssl") final boolean ssl,
+			@ParamValue("mastername") final Optional<String> masternameOpt,
+			@ParamValue("sentinels") final Optional<String> sentinelsOpt,
 			@ParamValue("trustStoreUrl") final Optional<String> trustStoreUrlOpt,
 			@ParamValue("trustStorePassword") final Optional<String> trustStorePasswordOpt,
 			@ParamValue("maxTotal") final Optional<Integer> maxTotalOpt,
 			@ParamValue("minIdle") final Optional<Integer> minIdleOpt) {
 		Assertion.check()
 				.isNotNull(connectorNameOpt)
-				.isNotBlank(clusterNodesStr)
+				.isNotBlank(redisHost)
 				.isNotNull(passwordOpt)
 				.isTrue(redisDatabase >= 0 && redisDatabase < 16, "there is 16 DBs(0 - 15); your index database '{0}' is not inside this range", redisDatabase);
 		//-----
 		connectorName = connectorNameOpt.orElse("main");
 
-		final var connectionPoolConfig = new ConnectionPoolConfig();
+		final var jedisPoolConfig = new JedisPoolConfig();
 		maxTotalOpt.ifPresent(maxTotal -> {
-			connectionPoolConfig.setMaxTotal(maxTotal);
-			connectionPoolConfig.setMaxIdle(maxTotal);
+			jedisPoolConfig.setMaxTotal(maxTotal);
+			jedisPoolConfig.setMaxIdle(maxTotal);
 		});
-		minIdleOpt.ifPresent(connectionPoolConfig::setMinIdle);
-		connectionPoolConfig.setMaxWait(Duration.ofSeconds(5));
+		minIdleOpt.ifPresent(jedisPoolConfig::setMinIdle);
+		jedisPoolConfig.setMaxWait(Duration.ofSeconds(5));
 
 		final var jedisClientConfigBuilder = DefaultJedisClientConfig.builder()
 				.connectionTimeoutMillis(CONNECT_TIMEOUT)
 				.database(redisDatabase)
+				.ssl(ssl);
+		final var sentinelConfigBuilder = DefaultJedisClientConfig.builder()
+				.connectionTimeoutMillis(CONNECT_TIMEOUT)
 				.ssl(ssl);
 		passwordOpt.ifPresent(jedisClientConfigBuilder::password);
 
@@ -109,40 +110,33 @@ public class RedisClusterConnector implements Connector<JedisCluster>, Activeabl
 				jedisClientConfigBuilder
 						.sslParameters(sslParameters)
 						.sslSocketFactory(sslSocketFactory);
+
+				sentinelConfigBuilder
+						.sslParameters(sslParameters)
+						.sslSocketFactory(sslSocketFactory);
 			} catch (final Exception e) {
 				throw WrappedException.wrap(e);
 			}
 		}
 		final JedisClientConfig jedisClientConfig = jedisClientConfigBuilder.build();
-		final Set<HostAndPort> clusterNodes = Set.of(clusterNodesStr.split(";")).stream().map(HostAndPort::from).collect(Collectors.toSet());
-		jedisCluster = new JedisCluster(clusterNodes, jedisClientConfig, MAX_ATTEMPTS, connectionPoolConfig);
-
+		if (sentinelsOpt.isPresent()) {
+			final Set<HostAndPort> sentinels = Set.of(sentinelsOpt.get().split(";")).stream().map(HostAndPort::from).collect(Collectors.toSet());
+			jedisPool = new JedisSentinelPool(masternameOpt.get(), sentinels, jedisPoolConfig, jedisClientConfig, sentinelConfigBuilder.build());
+		} else {
+			jedisPool = new JedisPool(jedisPoolConfig, new HostAndPort(redisHost, redisPort), jedisClientConfig);
+		}
 		//test
-		jedisCluster.ping();
+		try (var jedis = jedisPool.getResource()) {
+			jedis.ping();
+		}
 	}
 
 	/**
-	 * @return jedisCluster client (DON't USE try-with-ressource pattern)
+	 * @return jedis client
 	 */
 	@Override
-	public JedisCluster getClient() {
-		if (jedisCluster.getClusterNodes().isEmpty()) {
-			LOG.warn("JedisCluster : no nodes found. JedisCluster shouldn't be close manually (watch out try-with-ressource pattern), it can't be reused after that. it will be close correctly at app closing. Try to rediscover nodes (cost a lot)");
-			jedisCluster.getConnectionFromSlot(0);
-		}
-
-		return jedisCluster;
-	}
-
-	/**
-	 * @param key Key used to find slot, may use Hash-tags of Redis and use partition key between {}.
-	 * Ex: myPrefix-{myPartioningKey}-myFonctionalKey. Warning : only first {} is used !
-	 * @see https://redis.io/docs/reference/cluster-spec/#hash-tags
-	 * @return jedis client for one node (use try-with-resource pattern)
-	 */
-	public Jedis getClient(final String key) {
-		final int slot = JedisClusterCRC16.getSlot(key);
-		return new Jedis(jedisCluster.getConnectionFromSlot(slot));
+	public Jedis getClient() {
+		return jedisPool.getResource();
 	}
 
 	@Override
@@ -159,7 +153,7 @@ public class RedisClusterConnector implements Connector<JedisCluster>, Activeabl
 	/** {@inheritDoc} */
 	@Override
 	public void stop() {
-		jedisCluster.close();
+		jedisPool.close();
 	}
 
 	private static SSLSocketFactory createTrustStoreSslSocketFactory(final URL trustStoreUrl, final String trustStorePassword) throws Exception {
