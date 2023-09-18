@@ -149,13 +149,24 @@ public class RedisConnector implements Connector<UnifiedJedis>, Activeable {
 			final var sentinelClientConfig = DefaultJedisClientConfig.builder()
 					.connectionTimeoutMillis(CONNECT_TIMEOUT)
 					.ssl(ssl).build();
-			final Set<HostAndPort> sentinels = Set.of(sentinelsOpt.get().split(";")).stream().map(String::trim).map(HostAndPort::from).collect(Collectors.toSet());
+			final Set<HostAndPort> sentinels = Set.of(sentinelsOpt.get().split(";")).stream().map(String::trim)
+					.filter(node -> {
+						Assertion.check().isTrue(node.indexOf(':') == node.lastIndexOf(':'), "nodeName format must match : hostname:port ({}", node);
+						return !node.isBlank();
+					})
+					.map(HostAndPort::from).collect(Collectors.toSet());
 			final var sentineledConnectionProvider = new SentineledConnectionProvider(masternameOpt.get(), jedisClientConfig, connectionPoolConfig, sentinels, sentinelClientConfig);
 			connectionProvider = sentineledConnectionProvider;
 			unifiedJedis = new JedisSentineled(sentineledConnectionProvider);
 			mode = JedisMode.SENTINEL;
 		} else if (clusterNodesOpt.isPresent()) {
-			final Set<HostAndPort> clusterNodes = Set.of(clusterNodesOpt.get().split(";")).stream().map(String::trim).map(HostAndPort::from).collect(Collectors.toSet());
+			//detect si ; manquant et accept ; vide
+			final Set<HostAndPort> clusterNodes = Set.of(clusterNodesOpt.get().split(";")).stream().map(String::trim)
+					.filter(node -> {
+						Assertion.check().isTrue(node.indexOf(':') == node.lastIndexOf(':'), "nodeName format must match : hostname:port ({}", node);
+						return !node.isBlank();
+					})
+					.map(HostAndPort::from).collect(Collectors.toSet());
 			final var clusterConnectionProvider = new ClusterConnectionProvider(clusterNodes, jedisClientConfig, connectionPoolConfig);
 			connectionProvider = clusterConnectionProvider;
 			unifiedJedis = new JedisCluster(clusterConnectionProvider, MAX_ATTEMPTS, Duration.ofMillis((long) CONNECT_TIMEOUT * MAX_ATTEMPTS));
