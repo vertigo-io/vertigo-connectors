@@ -58,7 +58,7 @@ public class RedisSingleConnectorTest {
 	private static NodeConfig buildNodeConfig() {
 		return NodeConfig.builder()
 				.addModule(new RedisFeatures()
-						.withJedis(
+						.withJedisSingle(
 								Param.of("host", "docker-vertigo.part.klee.lan.net"),
 								Param.of("port", "6379"),
 								Param.of("ssl", "false"),
