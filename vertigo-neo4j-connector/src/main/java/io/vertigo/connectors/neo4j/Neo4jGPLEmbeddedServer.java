@@ -19,8 +19,9 @@ package io.vertigo.connectors.neo4j;
 
 import static org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAME;
 
-import java.io.File;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.inject.Inject;
 
@@ -50,9 +51,9 @@ public class Neo4jGPLEmbeddedServer implements Component, Activeable {
 
 		Assertion.check().isNotBlank(home);
 		//---
-		final File homeFile = new File(resourceManager.resolve(home).toURI());
+		final Path homeFile = Paths.get(resourceManager.resolve(home).toURI());
 
-		managementService = new DatabaseManagementServiceBuilder(homeFile.toPath())
+		managementService = new DatabaseManagementServiceBuilder(homeFile)
 				//.setConfig(GraphDatabaseSettings.pagecache_memory, "512M")
 				.setConfig(GraphDatabaseSettings.pagecache_memory, ByteUnit.mebiBytes(512))
 				.setConfig(BoltConnector.enabled, true)

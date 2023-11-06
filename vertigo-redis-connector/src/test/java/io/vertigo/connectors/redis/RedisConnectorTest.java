@@ -36,13 +36,13 @@ public class RedisConnectorTest {
 	private AutoCloseableNode node;
 
 	@BeforeEach
-	public final void setUp() throws Exception {
+	public final void setUp() {
 		node = new AutoCloseableNode(buildNodeConfig());
 		DIInjector.injectMembers(this, node.getComponentSpace());
 	}
 
 	@AfterEach
-	public final void tearDown() throws Exception {
+	public final void tearDown() {
 		if (node != null) {
 			node.close();
 		}
