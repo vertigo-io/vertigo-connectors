@@ -215,7 +215,7 @@ public class RedisConnector implements Connector<UnifiedJedis>, Activeable {
 			return ((JedisCluster) unifiedJedis).getClusterNodes()
 					.values()
 					.stream().map(pool -> new Jedis(pool.getResource()))
-					.collect(Collectors.toList());
+					.toList();
 		} else {
 			return List.of(new Jedis(connectionProvider.getConnection()));
 		}

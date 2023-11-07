@@ -204,7 +204,7 @@ public final class OpenSAMLUtil {
 		}
 		return values.stream()
 				.map(o -> o.getDOM().getTextContent())
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	public static void addKeyDescriptor(final SPSSODescriptor spSSODescriptor, final Credential credential, final UsageType usageType, final boolean isExtractPublicKeyFromCertificate) {
