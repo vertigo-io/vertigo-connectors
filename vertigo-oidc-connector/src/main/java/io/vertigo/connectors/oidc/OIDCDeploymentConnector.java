@@ -32,7 +32,6 @@ import io.vertigo.core.resource.ResourceManager;
  * Component to configure OIDC authentication handler.
  *
  * @author skerdudou
- *
  */
 public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 
@@ -51,6 +50,7 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 			@ParamValue("metadataFile") final Optional<String> localOIDCMetadataOpt,
 			@ParamValue("jwsAlgorithm") final Optional<String> jwsAlgorithmOpt,
 			@ParamValue("skipIdTokenValidation") final Optional<Boolean> skipIdTokenValidationOpt,
+			@ParamValue("usePKCE") final Optional<Boolean> usePKCEOpt,
 			@ParamValue("externalUrl") final Optional<String> externalUrlOpt,
 			@ParamValue("dontFailAtStartup") final Optional<Boolean> dontFailAtStartupOpt,
 			final ResourceManager resourceManager) {
@@ -66,6 +66,7 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 				.isNotNull(localOIDCMetadataOpt)
 				.isNotNull(jwsAlgorithmOpt)
 				.isNotNull(skipIdTokenValidationOpt)
+				.isNotNull(usePKCEOpt)
 				.isNotNull(externalUrlOpt)
 				.isNotNull(dontFailAtStartupOpt);
 		//---
@@ -80,6 +81,7 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 				localOIDCMetadataOpt.map(resourceManager::resolve),
 				jwsAlgorithmOpt.orElse("RS256"),
 				skipIdTokenValidationOpt.orElse(Boolean.FALSE),
+				usePKCEOpt.orElse(Boolean.TRUE),
 				externalUrlOpt,
 				dontFailAtStartupOpt.orElse(Boolean.FALSE));
 	}
@@ -91,6 +93,7 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 
 	/**
 	 * Get config value object
+	 *
 	 * @return the config
 	 */
 	@Override
@@ -108,6 +111,7 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 		private final Optional<URL> localOIDCMetadataOp;
 		private final String jwsAlgorithm;
 		private final Boolean skipIdTokenValidation;
+		private final Boolean usePKCE;
 
 		private final Optional<String> externalUrlOpt;
 
@@ -115,7 +119,7 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 
 		public OIDCParameters(final String oidcClientName, final Optional<String> oidcClientSecret, final String oidcURL, final int httpConnectTimeout,
 				final int httpReadTimeout, final String[] requestedScopes, final Optional<URL> localOIDCMetadataOp, final String jwsAlgorithm,
-				final Boolean skipIdTokenValidation, final Optional<String> externalUrlOpt, final boolean dontFailAtStartup) {
+				final Boolean skipIdTokenValidation, final Boolean usePKCE, final Optional<String> externalUrlOpt, final boolean dontFailAtStartup) {
 
 			this.oidcClientName = oidcClientName;
 			this.oidcClientSecret = oidcClientSecret;
@@ -126,6 +130,7 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 			this.localOIDCMetadataOp = localOIDCMetadataOp;
 			this.jwsAlgorithm = jwsAlgorithm;
 			this.skipIdTokenValidation = skipIdTokenValidation;
+			this.usePKCE = usePKCE;
 			this.externalUrlOpt = externalUrlOpt;
 			this.dontFailAtStartup = dontFailAtStartup;
 		}
@@ -164,6 +169,10 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 
 		public final Boolean getSkipIdTokenValidation() {
 			return skipIdTokenValidation;
+		}
+
+		public final Boolean getUsePKCE() {
+			return usePKCE;
 		}
 
 		public final Optional<String> getExternalUrlOpt() {

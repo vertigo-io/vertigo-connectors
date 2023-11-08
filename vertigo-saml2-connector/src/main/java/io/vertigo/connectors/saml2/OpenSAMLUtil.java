@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -204,7 +203,7 @@ public final class OpenSAMLUtil {
 		}
 		return values.stream()
 				.map(o -> o.getDOM().getTextContent())
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	public static void addKeyDescriptor(final SPSSODescriptor spSSODescriptor, final Credential credential, final UsageType usageType, final boolean isExtractPublicKeyFromCertificate) {

@@ -34,20 +34,19 @@ public final class RedisFeatures extends Features<RedisFeatures> {
 		super("vertigo-redis-connector");
 	}
 
+	@Feature("jedis-single")
+	public RedisFeatures withJedisSingle(final Param... params) {
+		getModuleConfigBuilder()
+				.addConnector(RedisSingleConnector.class, params);
+		return this;
+
+	}
+
 	@Feature("jedis")
 	public RedisFeatures withJedis(final Param... params) {
 		getModuleConfigBuilder()
 				.addConnector(RedisConnector.class, params);
 		return this;
-
-	}
-
-	@Feature("jedis-unified")
-	public RedisFeatures withJedisUnified(final Param... params) {
-		getModuleConfigBuilder()
-				.addConnector(RedisUnifiedConnector.class, params);
-		return this;
-
 	}
 
 	/** {@inheritDoc} */

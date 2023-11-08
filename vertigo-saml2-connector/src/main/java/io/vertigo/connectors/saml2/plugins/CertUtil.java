@@ -40,7 +40,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.opensaml.security.credential.BasicCredential;
 import org.opensaml.security.credential.Credential;
@@ -123,7 +122,7 @@ public final class CertUtil {
 	public static List<Credential> getCredentialsFromKeystore(final URL ksUrl, final String[] aliases, final char[] keystorePassword, final boolean withPrivateKey, final String keystoreType) {
 		return Arrays.stream(aliases)
 				.map(alias -> getCredentialFromKeystore(ksUrl, alias, keystorePassword, withPrivateKey, keystoreType))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	public static Credential getCredentialFromKeystore(final URL ksUrl, final String alias, final char[] keystorePassword, final boolean withPrivateKey, final String keystoreType) {
