@@ -13,12 +13,11 @@
 	<parent>
 		<groupId>io.vertigo</groupId>
 		<artifactId>vertigo-parent</artifactId>
-		<version>4.1.0</version>
+		<version>4.2.0-SNAPSHOT</version>
 	</parent>
-	
+
 	<artifactId>vertigo-connectors</artifactId>
 	<name>vertigo-connectors</name>
-	<version>4.2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -49,13 +48,62 @@
 			<version>${vertigo.version}</version>
 		</dependency>
 	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.elasticsearch.client</groupId>
+				<artifactId>transport</artifactId>
+				<version>7.17.14</version> <!-- TransportSearchServicesPlugin -->
+			</dependency>
+			<dependency>
+				<groupId>org.elasticsearch.client</groupId>
+				<artifactId>elasticsearch-rest-high-level-client</artifactId>
+				<version>7.17.14</version> <!-- RestHighLevelElasticSearchConnector -->
+			</dependency>
+			<dependency>
+				<groupId>org.elasticsearch.client</groupId>
+				<artifactId>x-pack-transport</artifactId>
+				<version>7.17.14</version> <!-- SecuredTransportSearchConnector -->
+			</dependency>
+			<dependency>
+				<groupId>org.codelibs.elasticsearch.module</groupId>
+				<artifactId>analysis-common</artifactId>
+				<version>7.17.9</version> <!-- required by EmbeddedSearchServicesPlugin -->
+			</dependency>
+			<dependency>
+				<groupId>org.codelibs.elasticsearch.module</groupId>
+				<artifactId>mapper-extras</artifactId>
+				<version>7.17.9</version> <!-- required by ESEmbeddedSearchServicesPlugin -->
+			</dependency>
+
+			<!-- For javalin embedded -->
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-server</artifactId>
+				<version>11.0.18</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-annotations</artifactId>
+				<version>11.0.18</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>websocket-jetty-server</artifactId>
+				<version>11.0.18</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
 	<scm>
 		<connection>scm:git:https://github.com/vertigo-io/vertigo-connectors.git</connection>
 		<developerConnection>scm:git:https://github.com/vertigo-io/vertigo-connectors.git</developerConnection>
 		<url>scm:git:https://github.com/vertigo-io/vertigo-connectors.git</url>
 		<tag>vertigo-connectors</tag>
 	</scm>
-	
+
 	<profiles>
 		<profile>
 			<id>Github</id>
@@ -64,7 +112,9 @@
 					<id>github</id>
 					<name>GitHub Vertigo-io Apache Maven Packages</name>
 					<url>https://maven.pkg.github.com/vertigo-io/vertigo</url>
-					<snapshots><enabled>true</enabled></snapshots>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
 				</repository>
 			</repositories>
 			<distributionManagement>
