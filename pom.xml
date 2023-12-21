@@ -111,7 +111,7 @@
 				<repository>
 					<id>github</id>
 					<name>GitHub Vertigo-io Apache Maven Packages</name>
-					<url>https://maven.pkg.github.com/vertigo-io/vertigo</url>
+					<url>https://maven.pkg.github.com/vertigo-io/vertigo-core</url>
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>
