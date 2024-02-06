@@ -9,7 +9,7 @@ Running 4.2.0
 more to come :)
 
 
-Release 4.1.0 -2023/11/09
+Release 4.1.0 - 2023/11/09
 ----------------------
 * [Redis] Extends Redis Unified connector to all mode : single, sentinels and cluster
 * [Redis] Support ssl and custom truststore
