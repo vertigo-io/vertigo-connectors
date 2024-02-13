@@ -1,12 +1,34 @@
 Version history
 ===============
 
-Running 4.1.0
+Running 4.2.0
+----------------------
+[Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-410-to-420)
+  
+more to come :)
+
+
+Release 4.1.0 - 2023/11/09
 ----------------------
 * [Redis] Extends Redis Unified connector to all mode : single, sentinels and cluster
 * [Redis] Support ssl and custom truststore
+* [Redis] Add util for lock using redis
+* [Elastic] Add security to RHL ES connector (username/password ; apiKeyId/apiKeySecret ; ssl + truststore/truststorePassword)
+* [Javalin] Protect jetty mutlipart cleaner
+* [OIDC] Add support for PKCE (enabled by default)
+* Update libs 
+  - azure 1.13.9 -> 1.14.0
+  - elasticsearch 7.17.12 -> 7.17.14
+  - influxdb 6.9.0 -> 6.10.0
+  - javalin 5.6.1 -> 5.6.3
+  - jetty 11.0.15 -> 11.0.18
+  - mongodb 4.10.2 -> 4.11.0
+  - neo4j 5.10.0 -> 5.13.0
+  - oidc 10.11 -> 11.5
+  - redis 4.4.3 -> 4.4.3
+  - spring 6.0.11 -> 6.0.13
+  - keycloak 21.1.1 -> 22.0.5
 
-more to come :)
 
 Release 4.0.0 - 2023/08/17
 ----------------------
@@ -31,7 +53,8 @@ Release 4.0.0 - 2023/08/17
   - spring-context 5.3.27 -> 6.0.11
   - oauth2-oidc-sdk : 10.8 -> 10.11
   - jedis : 4.3.2 -> 4.4.3
-  - 
+
+
 Release 3.6.0 - 2023/05/04
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-350-to-360)
