@@ -19,7 +19,9 @@ package io.vertigo.connectors.redis;
 
 import java.util.List;
 
+import io.vertigo.core.analytics.AnalyticsManager;
 import io.vertigo.core.lang.Assertion;
+import io.vertigo.core.node.Node;
 import redis.clients.jedis.UnifiedJedis;
 import redis.clients.jedis.params.SetParams;
 
@@ -61,7 +63,11 @@ public final class RedisConnectorUtil {
 				.isTrue(lockName.endsWith(".lock"), "Lock name, must ends with '.lock' ({0})", lockName);
 		//----
 		final String lock = jedis.set(lockName, String.valueOf(System.currentTimeMillis()), new SetParams().nx().ex(lockTimeOutSecond));
-		return "OK".equals(lock); //check if we've got lock ( Redis.SET with NX params return null or "OK", @see https://redis.io/commands/set/ )
+		final boolean hasLock = "OK".equals(lock); //check if we've got lock ( Redis.SET with NX params return null or "OK", @see https://redis.io/commands/set/ )
+		Node.getNode().getComponentSpace().resolve(AnalyticsManager.class).getCurrentTracer().ifPresent(tracer -> {
+			tracer.setTag("hasLock", hasLock ? "true" : "false");
+		});
+		return hasLock;
 	}
 
 	public static void releaseLock(final UnifiedJedis jedis, final String lockName) {
