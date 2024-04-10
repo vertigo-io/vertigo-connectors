@@ -76,7 +76,7 @@ public class HttpClientConnector implements Connector<HttpClient> {
 
 		if (trustStoreUrlOpt.isPresent()) {
 			try {
-				sslContextOpt = Optional.of(createTrustStoreSslContext(resourceManager.resolve(trustStoreUrlOpt.get()), trustStorePasswordOpt.get()));
+				sslContextOpt = Optional.of(createTrustStoreSslContext(resourceManager.resolve(trustStoreUrlOpt.get()), trustStorePasswordOpt.orElseGet(() -> null)));
 			} catch (final Exception e) {
 				throw WrappedException.wrap(e);
 			}

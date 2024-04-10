@@ -46,13 +46,15 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 			@ParamValue("url") final String oidcUrl,
 			@ParamValue("httpConnectTimeout") final Optional<Integer> httpConnectTimeoutOpt,
 			@ParamValue("httpReadTimeout") final Optional<Integer> httpReadTimeoutOpt,
-			@ParamValue("scopes") final String requestedScopes,
+			@ParamValue("scopes") final Optional<String> requestedScopesOpt,
 			@ParamValue("metadataFile") final Optional<String> localOIDCMetadataOpt,
 			@ParamValue("jwsAlgorithm") final Optional<String> jwsAlgorithmOpt,
 			@ParamValue("skipIdTokenValidation") final Optional<Boolean> skipIdTokenValidationOpt,
 			@ParamValue("usePKCE") final Optional<Boolean> usePKCEOpt,
 			@ParamValue("externalUrl") final Optional<String> externalUrlOpt,
 			@ParamValue("dontFailAtStartup") final Optional<Boolean> dontFailAtStartupOpt,
+			@ParamValue("trustStoreUrl") final Optional<String> trustStoreUrlOpt,
+			@ParamValue("trustStorePassword") final Optional<String> trustStorePasswordOpt,
 			final ResourceManager resourceManager) {
 
 		Assertion.check()
@@ -62,7 +64,6 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 				.isNotBlank(oidcUrl)
 				.isNotNull(httpConnectTimeoutOpt)
 				.isNotNull(httpReadTimeoutOpt)
-				.isNotBlank(requestedScopes)
 				.isNotNull(localOIDCMetadataOpt)
 				.isNotNull(jwsAlgorithmOpt)
 				.isNotNull(skipIdTokenValidationOpt)
@@ -77,13 +78,14 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 				oidcUrl,
 				httpConnectTimeoutOpt.orElseGet(() -> 1000),
 				httpReadTimeoutOpt.orElseGet(() -> 1000),
-				requestedScopes.split("\\s+"),
+				requestedScopesOpt.map(s -> s.split("\\s+")).orElse(new String[0]),
 				localOIDCMetadataOpt.map(resourceManager::resolve),
 				jwsAlgorithmOpt.orElse("RS256"),
 				skipIdTokenValidationOpt.orElse(Boolean.FALSE),
 				usePKCEOpt.orElse(Boolean.TRUE),
 				externalUrlOpt,
-				dontFailAtStartupOpt.orElse(Boolean.FALSE));
+				dontFailAtStartupOpt.orElse(Boolean.FALSE),
+				trustStoreUrlOpt, trustStorePasswordOpt);
 	}
 
 	@Override
@@ -117,9 +119,13 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 
 		private final boolean dontFailAtStartup;
 
+		private final Optional<String> trustStoreUrlOpt;
+		private final Optional<String> trustStorePasswordOpt;
+
 		public OIDCParameters(final String oidcClientName, final Optional<String> oidcClientSecret, final String oidcURL, final int httpConnectTimeout,
 				final int httpReadTimeout, final String[] requestedScopes, final Optional<URL> localOIDCMetadataOp, final String jwsAlgorithm,
-				final Boolean skipIdTokenValidation, final Boolean usePKCE, final Optional<String> externalUrlOpt, final boolean dontFailAtStartup) {
+				final Boolean skipIdTokenValidation, final Boolean usePKCE, final Optional<String> externalUrlOpt, final boolean dontFailAtStartup, final Optional<String> trustStoreUrlOpt,
+				final Optional<String> trustStorePasswordOpt) {
 
 			this.oidcClientName = oidcClientName;
 			this.oidcClientSecret = oidcClientSecret;
@@ -133,6 +139,8 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 			this.usePKCE = usePKCE;
 			this.externalUrlOpt = externalUrlOpt;
 			this.dontFailAtStartup = dontFailAtStartup;
+			this.trustStoreUrlOpt = trustStoreUrlOpt;
+			this.trustStorePasswordOpt = trustStorePasswordOpt;
 		}
 
 		public final String getOidcClientName() {
@@ -181,6 +189,14 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 
 		public final boolean isDontFailAtStartup() {
 			return dontFailAtStartup;
+		}
+
+		public Optional<String> getTrustStoreUrlOpt() {
+			return trustStoreUrlOpt;
+		}
+
+		public Optional<String> getTrustStorePasswordOpt() {
+			return trustStorePasswordOpt;
 		}
 
 	}
