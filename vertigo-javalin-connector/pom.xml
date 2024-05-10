@@ -11,8 +11,9 @@
 	<artifactId>vertigo-javalin-connector</artifactId>
 	<packaging>jar</packaging>
 	<name>vertigo-javalin-connector</name>
-
-	<dependencies>
+	
+	<dependencyManagement>
+		<dependencies>
 		<dependency>
 		    <groupId>io.javalin</groupId>
 		    <artifactId>javalin</artifactId>
@@ -33,6 +34,31 @@
 			</exclusions>
 		</dependency>
 		
+		<!-- For javalin embedded -->
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>11.0.18</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.websocket</groupId>
+			<artifactId>websocket-jetty-server</artifactId>
+			<version>11.0.18</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-annotations</artifactId>
+			<version>11.0.18</version>
+		</dependency>
+
+	</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+		    <groupId>io.javalin</groupId>
+		    <artifactId>javalin</artifactId>
+		</dependency>
 		<!-- For javalin embedded -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>

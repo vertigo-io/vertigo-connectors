@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -12,30 +13,44 @@
 	<packaging>jar</packaging>
 	<name>vertigo-neo4j-connector</name>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.neo4j</groupId>
+				<artifactId>neo4j</artifactId>
+				<version>5.13.0</version> <!-- GPLv3 Licence, make sure to comply with your obligations. For Embedded Server  -->
+				<exclusions>
+					<exclusion>
+						<groupId>jdk.tools</groupId>
+						<artifactId>jdk.tools</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.neo4j</groupId>
+				<artifactId>neo4j-bolt</artifactId>
+				<version>5.13.0</version><!-- GPLv3 Licence, make sure to comply with your obligations. For Embedded Server  -->
+			</dependency>
+			<dependency>
+				<groupId>org.neo4j.driver</groupId>
+				<artifactId>neo4j-java-driver</artifactId>
+				<version>5.14.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j</artifactId>
-			<version>5.13.0</version>
-			<optional>true</optional> <!-- GPLv3 Licence, make sure to comply with your obligations. For Embedded Server  --> 
-			<exclusions>
-				<exclusion>
-					<groupId>jdk.tools</groupId>
-          			<artifactId>jdk.tools</artifactId>
-            	</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.neo4j</groupId>
-			<artifactId>neo4j-bolt</artifactId>
-			<version>5.13.0</version>
-			<optional>true</optional> <!-- GPLv3 Licence, make sure to comply with your obligations. For Embedded Server  -->
+			<artifactId>neo4j-bolt</artifactId><!-- GPLv3 Licence, make sure to comply with your obligations. For Embedded Server  -->
 		</dependency>
 		<dependency>
 			<groupId>org.neo4j.driver</groupId>
 			<artifactId>neo4j-java-driver</artifactId>
-			<version>5.14.0</version>
 		</dependency>
 	</dependencies>
 

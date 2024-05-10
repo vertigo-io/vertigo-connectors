@@ -8,7 +8,8 @@
 	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
 	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
 	the specific language governing permissions and limitations under the License. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>io.vertigo</groupId>
@@ -49,53 +50,7 @@
 		</dependency>
 	</dependencies>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.elasticsearch.client</groupId>
-				<artifactId>transport</artifactId>
-				<version>7.17.14</version> <!-- TransportSearchServicesPlugin -->
-			</dependency>
-			<dependency>
-				<groupId>org.elasticsearch.client</groupId>
-				<artifactId>elasticsearch-rest-high-level-client</artifactId>
-				<version>7.17.14</version> <!-- RestHighLevelElasticSearchConnector -->
-			</dependency>
-			<dependency>
-				<groupId>org.elasticsearch.client</groupId>
-				<artifactId>x-pack-transport</artifactId>
-				<version>7.17.14</version> <!-- SecuredTransportSearchConnector -->
-			</dependency>
-			<dependency>
-				<groupId>org.codelibs.elasticsearch.module</groupId>
-				<artifactId>analysis-common</artifactId>
-				<version>7.17.9</version> <!-- required by EmbeddedSearchServicesPlugin -->
-			</dependency>
-			<dependency>
-				<groupId>org.codelibs.elasticsearch.module</groupId>
-				<artifactId>mapper-extras</artifactId>
-				<version>7.17.9</version> <!-- required by ESEmbeddedSearchServicesPlugin -->
-			</dependency>
 
-			<!-- For javalin embedded -->
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-server</artifactId>
-				<version>11.0.18</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-annotations</artifactId>
-				<version>11.0.18</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty.websocket</groupId>
-				<artifactId>websocket-jetty-server</artifactId>
-				<version>11.0.18</version>
-			</dependency>
-
-		</dependencies>
-	</dependencyManagement>
 
 	<scm>
 		<connection>scm:git:https://github.com/vertigo-io/vertigo-connectors.git</connection>
