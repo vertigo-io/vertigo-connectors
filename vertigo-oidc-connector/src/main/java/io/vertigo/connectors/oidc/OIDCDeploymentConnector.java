@@ -57,6 +57,7 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 			@ParamValue("trustStorePassword") final Optional<String> trustStorePasswordOpt,
 			@ParamValue("logoutRedirectUriParamName") final Optional<String> logoutRedirectUriParamNameOpt,
 			@ParamValue("logoutIdParamName") final Optional<String> logoutIdParamNameOpt,
+			@ParamValue("loginLocaleParamName") final Optional<String> loginLocaleParamNameOpt,
 			final ResourceManager resourceManager) {
 
 		Assertion.check()
@@ -88,7 +89,7 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 				externalUrlOpt,
 				dontFailAtStartupOpt.orElse(Boolean.FALSE),
 				trustStoreUrlOpt, trustStorePasswordOpt,
-				logoutRedirectUriParamNameOpt, logoutIdParamNameOpt);
+				logoutRedirectUriParamNameOpt, logoutIdParamNameOpt, loginLocaleParamNameOpt);
 	}
 
 	@Override
@@ -120,6 +121,7 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 
 		private final Optional<String> logoutRedirectUriParamNameOpt;
 		private final Optional<String> logoutIdParamNameOpt;
+		private final Optional<String> loginLocaleParamNameOpt;
 
 		private final Optional<String> externalUrlOpt;
 
@@ -131,7 +133,8 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 		public OIDCParameters(final String oidcClientName, final Optional<String> oidcClientSecret, final String oidcURL, final int httpConnectTimeout,
 				final int httpReadTimeout, final String[] requestedScopes, final Optional<URL> localOIDCMetadataOp, final String jwsAlgorithm,
 				final Boolean skipIdTokenValidation, final Boolean usePKCE, final Optional<String> externalUrlOpt, final boolean dontFailAtStartup, final Optional<String> trustStoreUrlOpt,
-				final Optional<String> trustStorePasswordOpt, final Optional<String> logoutRedirectUriParamNameOpt, final Optional<String> logoutIdParamNameOpt) {
+				final Optional<String> trustStorePasswordOpt, final Optional<String> logoutRedirectUriParamNameOpt, final Optional<String> logoutIdParamNameOpt,
+				final Optional<String> loginLocaleParamNameOpt) {
 
 			this.oidcClientName = oidcClientName;
 			this.oidcClientSecret = oidcClientSecret;
@@ -149,6 +152,7 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 			this.trustStorePasswordOpt = trustStorePasswordOpt;
 			this.logoutRedirectUriParamNameOpt = logoutRedirectUriParamNameOpt;
 			this.logoutIdParamNameOpt = logoutIdParamNameOpt;
+			this.loginLocaleParamNameOpt = loginLocaleParamNameOpt;
 		}
 
 		public final String getOidcClientName() {
@@ -213,6 +217,10 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 
 		public Optional<String> getLogoutIdParamNameOpt() {
 			return logoutIdParamNameOpt;
+		}
+
+		public Optional<String> getLoginLocaleParamNameOpt() {
+			return loginLocaleParamNameOpt;
 		}
 
 	}
