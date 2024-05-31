@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.vertigo</groupId>
 		<artifactId>vertigo-connectors</artifactId>
-		<version>4.0.0-SNAPSHOT</version>
+		<version>3.6.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>vertigo-mongodb-connector</artifactId>
@@ -18,6 +18,12 @@
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver-sync</artifactId>
 			<version>4.9.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.mongodb</groupId>
+					<artifactId>bson-record-codec</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
