@@ -50,6 +50,7 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 			@ParamValue("metadataFile") final Optional<String> localOIDCMetadataOpt,
 			@ParamValue("jwsAlgorithm") final Optional<String> jwsAlgorithmOpt,
 			@ParamValue("skipIdTokenValidation") final Optional<Boolean> skipIdTokenValidationOpt,
+			@ParamValue("skipAutoconfigIssuerValidation") final Optional<Boolean> skipAutoconfigIssuerValidationOpt,
 			@ParamValue("usePKCE") final Optional<Boolean> usePKCEOpt,
 			@ParamValue("externalUrl") final Optional<String> externalUrlOpt,
 			@ParamValue("dontFailAtStartup") final Optional<Boolean> dontFailAtStartupOpt,
@@ -85,6 +86,7 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 				localOIDCMetadataOpt.map(resourceManager::resolve),
 				jwsAlgorithmOpt.orElse("RS256"),
 				skipIdTokenValidationOpt.orElse(Boolean.FALSE),
+				skipAutoconfigIssuerValidationOpt.orElse(Boolean.FALSE),
 				usePKCEOpt.orElse(Boolean.TRUE),
 				externalUrlOpt,
 				dontFailAtStartupOpt.orElse(Boolean.FALSE),
@@ -117,6 +119,7 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 		private final Optional<URL> localOIDCMetadataOp;
 		private final String jwsAlgorithm;
 		private final Boolean skipIdTokenValidation;
+		private final Boolean skipAutoconfigIssuerValidation;
 		private final Boolean usePKCE;
 
 		private final Optional<String> logoutRedirectUriParamNameOpt;
@@ -132,9 +135,9 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 
 		public OIDCParameters(final String oidcClientName, final Optional<String> oidcClientSecret, final String oidcURL, final int httpConnectTimeout,
 				final int httpReadTimeout, final String[] requestedScopes, final Optional<URL> localOIDCMetadataOp, final String jwsAlgorithm,
-				final Boolean skipIdTokenValidation, final Boolean usePKCE, final Optional<String> externalUrlOpt, final boolean dontFailAtStartup, final Optional<String> trustStoreUrlOpt,
-				final Optional<String> trustStorePasswordOpt, final Optional<String> logoutRedirectUriParamNameOpt, final Optional<String> logoutIdParamNameOpt,
-				final Optional<String> loginLocaleParamNameOpt) {
+				final Boolean skipIdTokenValidation, final Boolean skipAutoconfigIssuerValidation, final Boolean usePKCE, final Optional<String> externalUrlOpt, final boolean dontFailAtStartup,
+				final Optional<String> trustStoreUrlOpt, final Optional<String> trustStorePasswordOpt, final Optional<String> logoutRedirectUriParamNameOpt,
+				final Optional<String> logoutIdParamNameOpt, final Optional<String> loginLocaleParamNameOpt) {
 
 			this.oidcClientName = oidcClientName;
 			this.oidcClientSecret = oidcClientSecret;
@@ -145,6 +148,7 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 			this.localOIDCMetadataOp = localOIDCMetadataOp;
 			this.jwsAlgorithm = jwsAlgorithm;
 			this.skipIdTokenValidation = skipIdTokenValidation;
+			this.skipAutoconfigIssuerValidation = skipAutoconfigIssuerValidation;
 			this.usePKCE = usePKCE;
 			this.externalUrlOpt = externalUrlOpt;
 			this.dontFailAtStartup = dontFailAtStartup;
@@ -189,6 +193,10 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 
 		public final Boolean getSkipIdTokenValidation() {
 			return skipIdTokenValidation;
+		}
+
+		public final Boolean getSkipAutoconfigIssuerValidation() {
+			return skipAutoconfigIssuerValidation;
 		}
 
 		public final Boolean getUsePKCE() {
