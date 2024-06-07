@@ -27,11 +27,24 @@ public final class OIDCParameters {
 	private final Optional<String> trustStoreUrlOpt;
 	private final Optional<String> trustStorePasswordOpt;
 
-	public OIDCParameters(final String oidcClientName, final Optional<String> oidcClientSecret, final String oidcURL, final int httpConnectTimeout,
-			final int httpReadTimeout, final String[] requestedScopes, final Optional<URL> localOIDCMetadataOp, final String jwsAlgorithm,
-			final Boolean skipIdTokenValidation, final Boolean skipAutoconfigIssuerValidation, final Boolean usePKCE, final Optional<String> externalUrlOpt, final boolean dontFailAtStartup,
-			final Optional<String> trustStoreUrlOpt, final Optional<String> trustStorePasswordOpt, final Optional<String> logoutRedirectUriParamNameOpt,
-			final Optional<String> logoutIdParamNameOpt, final Optional<String> loginLocaleParamNameOpt) {
+	OIDCParameters(final String oidcClientName,
+			final Optional<String> oidcClientSecret,
+			final String oidcURL,
+			final int httpConnectTimeout,
+			final int httpReadTimeout,
+			final String[] requestedScopes,
+			final Optional<URL> localOIDCMetadataOp,
+			final String jwsAlgorithm,
+			final Boolean skipIdTokenValidation,
+			final Boolean skipAutoconfigIssuerValidation,
+			final Boolean usePKCE,
+			final Optional<String> externalUrlOpt,
+			final boolean dontFailAtStartup,
+			final Optional<String> trustStoreUrlOpt,
+			final Optional<String> trustStorePasswordOpt,
+			final Optional<String> logoutRedirectUriParamNameOpt,
+			final Optional<String> logoutIdParamNameOpt,
+			final Optional<String> loginLocaleParamNameOpt) {
 
 		this.oidcClientName = oidcClientName;
 		this.oidcClientSecret = oidcClientSecret;
