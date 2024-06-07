@@ -68,12 +68,19 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 				.isNotBlank(oidcUrl)
 				.isNotNull(httpConnectTimeoutOpt)
 				.isNotNull(httpReadTimeoutOpt)
+				.isNotNull(requestedScopesOpt)
 				.isNotNull(localOIDCMetadataOpt)
 				.isNotNull(jwsAlgorithmOpt)
+				.isNotNull(skipAutoconfigIssuerValidationOpt)
 				.isNotNull(skipIdTokenValidationOpt)
 				.isNotNull(usePKCEOpt)
 				.isNotNull(externalUrlOpt)
-				.isNotNull(dontFailAtStartupOpt);
+				.isNotNull(dontFailAtStartupOpt)
+				.isNotNull(trustStoreUrlOpt)
+				.isNotNull(trustStorePasswordOpt)
+				.isNotNull(logoutRedirectUriParamNameOpt)
+				.isNotNull(logoutIdParamNameOpt)
+				.isNotNull(loginLocaleParamNameOpt);
 		//---
 		connectorName = connectorNameOpt.orElse("main");
 		oidcParameters = new OIDCParameters(
@@ -90,8 +97,11 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 				usePKCEOpt.orElse(Boolean.TRUE),
 				externalUrlOpt,
 				dontFailAtStartupOpt.orElse(Boolean.FALSE),
-				trustStoreUrlOpt, trustStorePasswordOpt,
-				logoutRedirectUriParamNameOpt, logoutIdParamNameOpt, loginLocaleParamNameOpt);
+				trustStoreUrlOpt,
+				trustStorePasswordOpt,
+				logoutRedirectUriParamNameOpt,
+				logoutIdParamNameOpt,
+				loginLocaleParamNameOpt);
 	}
 
 	@Override
