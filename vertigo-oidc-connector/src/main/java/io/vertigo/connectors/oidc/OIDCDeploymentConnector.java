@@ -42,13 +42,13 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 			@ParamValue("clientName") final String clientName,
 			@ParamValue("clientSecret") final Optional<String> clientSecretOpt,
 			@ParamValue("url") final String oidcUrl,
+			@ParamValue("overrideIssuer") final Optional<String> overrideIssuerOpt,
 			@ParamValue("httpConnectTimeout") final Optional<Integer> httpConnectTimeoutOpt,
 			@ParamValue("httpReadTimeout") final Optional<Integer> httpReadTimeoutOpt,
 			@ParamValue("scopes") final Optional<String> requestedScopesOpt,
 			@ParamValue("metadataFile") final Optional<String> localOIDCMetadataOpt,
 			@ParamValue("jwsAlgorithm") final Optional<String> jwsAlgorithmOpt,
 			@ParamValue("skipIdTokenValidation") final Optional<Boolean> skipIdTokenValidationOpt,
-			@ParamValue("skipAutoconfigIssuerValidation") final Optional<Boolean> skipAutoconfigIssuerValidationOpt,
 			@ParamValue("usePKCE") final Optional<Boolean> usePKCEOpt,
 			@ParamValue("externalUrl") final Optional<String> externalUrlOpt,
 			@ParamValue("dontFailAtStartup") final Optional<Boolean> dontFailAtStartupOpt,
@@ -64,12 +64,12 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 				.isNotBlank(clientName)
 				.isNotNull(clientSecretOpt)
 				.isNotBlank(oidcUrl)
+				.isNotNull(overrideIssuerOpt)
 				.isNotNull(httpConnectTimeoutOpt)
 				.isNotNull(httpReadTimeoutOpt)
 				.isNotNull(requestedScopesOpt)
 				.isNotNull(localOIDCMetadataOpt)
 				.isNotNull(jwsAlgorithmOpt)
-				.isNotNull(skipAutoconfigIssuerValidationOpt)
 				.isNotNull(skipIdTokenValidationOpt)
 				.isNotNull(usePKCEOpt)
 				.isNotNull(externalUrlOpt)
@@ -85,21 +85,21 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 				clientName,
 				clientSecretOpt,
 				oidcUrl,
+				overrideIssuerOpt,
 				httpConnectTimeoutOpt.orElseGet(() -> 1000),
 				httpReadTimeoutOpt.orElseGet(() -> 1000),
 				requestedScopesOpt.map(s -> s.split("\\s+")).orElse(new String[0]),
 				localOIDCMetadataOpt.map(resourceManager::resolve),
 				jwsAlgorithmOpt.orElse("RS256"),
 				skipIdTokenValidationOpt.orElse(Boolean.FALSE),
-				skipAutoconfigIssuerValidationOpt.orElse(Boolean.FALSE),
 				usePKCEOpt.orElse(Boolean.TRUE),
+				logoutRedirectUriParamNameOpt,
+				logoutIdParamNameOpt,
+				loginLocaleParamNameOpt,
 				externalUrlOpt,
 				dontFailAtStartupOpt.orElse(Boolean.FALSE),
 				trustStoreUrlOpt,
-				trustStorePasswordOpt,
-				logoutRedirectUriParamNameOpt,
-				logoutIdParamNameOpt,
-				loginLocaleParamNameOpt);
+				trustStorePasswordOpt);
 	}
 
 	@Override
