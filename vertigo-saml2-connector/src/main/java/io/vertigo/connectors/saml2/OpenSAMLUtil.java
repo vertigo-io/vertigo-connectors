@@ -58,10 +58,10 @@ import org.xml.sax.SAXException;
 
 import io.vertigo.core.lang.VSystemException;
 import io.vertigo.core.lang.WrappedException;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
-import net.shibboleth.utilities.java.support.security.impl.RandomIdentifierGenerationStrategy;
-import net.shibboleth.utilities.java.support.xml.BasicParserPool;
-import net.shibboleth.utilities.java.support.xml.ParserPool;
+import net.shibboleth.shared.component.ComponentInitializationException;
+import net.shibboleth.shared.security.impl.RandomIdentifierGenerationStrategy;
+import net.shibboleth.shared.xml.ParserPool;
+import net.shibboleth.shared.xml.impl.BasicParserPool;
 
 public final class OpenSAMLUtil {
 

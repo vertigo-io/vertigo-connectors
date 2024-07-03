@@ -17,9 +17,8 @@
  */
 package io.vertigo.connectors.mail;
 
-import javax.mail.Session;
-
 import io.vertigo.core.node.component.Connector;
+import jakarta.mail.Session;
 
 /**
  * Create javax mail session.

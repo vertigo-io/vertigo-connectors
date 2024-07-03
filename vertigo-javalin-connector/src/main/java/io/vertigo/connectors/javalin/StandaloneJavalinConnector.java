@@ -43,8 +43,8 @@ public class StandaloneJavalinConnector implements JavalinConnector {
 		Assertion.check().isNotNull(connectorNameOpt);
 		//-----
 		connectorName = connectorNameOpt.orElse("main");
-		javalinApp = Javalin.createStandalone(config -> {
-			config.routing.ignoreTrailingSlashes = false; //javalin PR#1088 fix
+		javalinApp = Javalin.create(config -> {
+			config.router.ignoreTrailingSlashes = false; //javalin PR#1088 fix
 			config.http.maxRequestSize = maxRequestSizeOpt.orElse(10 * 1024L); //limit request size
 		});
 	}

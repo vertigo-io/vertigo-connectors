@@ -21,12 +21,13 @@ import java.util.Optional;
 import java.util.Properties;
 
 import javax.inject.Inject;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
 
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.util.StringUtil;
+import jakarta.mail.Authenticator;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
 
 /**
  * Plugin de gestion des mails, pour l'implémentation du jdk.
@@ -103,7 +104,7 @@ public class NativeMailSessionConnector implements MailSessionConnector {
 
 			final String username = mailLogin.get();
 			final String password = mailPassword.get();
-			session = Session.getInstance(properties, new javax.mail.Authenticator() {
+			session = Session.getInstance(properties, new Authenticator() {
 
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication() {

@@ -41,8 +41,20 @@
 		<module>vertigo-jsch-connector</module>
 		<module>vertigo-saml2-connector</module>
 		<module>vertigo-oidc-connector</module>
+		<module>vertigo-keycloak-connector</module>
 		<module>vertigo-s3-connector</module>
 	</modules>
+	<dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.vertigo</groupId>
+                <artifactId>vertigo-core</artifactId>
+                <version>${vertigo.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>io.vertigo</groupId>
