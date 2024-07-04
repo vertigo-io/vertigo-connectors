@@ -41,7 +41,6 @@
 		<module>vertigo-jsch-connector</module>
 		<module>vertigo-saml2-connector</module>
 		<module>vertigo-oidc-connector</module>
-		<module>vertigo-keycloak-connector</module>
 		<module>vertigo-s3-connector</module>
 	</modules>
 	<dependencyManagement>
