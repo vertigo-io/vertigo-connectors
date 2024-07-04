@@ -1,7 +1,7 @@
 /*
  * vertigo - application development platform
  *
- * Copyright (C) 2013-2023, Vertigo.io, team@vertigo.io
+ * Copyright (C) 2013-2024, Vertigo.io, team@vertigo.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,8 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
-import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -43,6 +40,7 @@ import io.vertigo.core.resource.ResourceManager;
  * @author npiedeloup
  */
 public class EmbeddedJavalinConnector implements JavalinConnector, Activeable {
+	
 	private final Javalin javalinApp;
 	private final String connectorName;
 	private final int port;
@@ -73,6 +71,7 @@ public class EmbeddedJavalinConnector implements JavalinConnector, Activeable {
 		//-----
 		connectorName = connectorNameOpt.orElse("main");
 		final String tempDir = System.getProperty("java.io.tmpdir");
+		
 		final var ssl = sslOpt.orElse(false);
 		if (ssl) {
 			Assertion.check()
@@ -82,37 +81,37 @@ public class EmbeddedJavalinConnector implements JavalinConnector, Activeable {
 			//---
 			javalinApp = Javalin.create(
 					config -> {
-						config.routing.ignoreTrailingSlashes = false; //javalin PR#1088 fix
-
-						config.jetty.server(() -> {
-							final Server server = new Server();
-							final HttpConfiguration httpConfig = new HttpConfiguration();
-
-							// Add the SecureRequestCustomizer because we are using TLS.
+						config.router.ignoreTrailingSlashes = false; //javalin PR#1088 fix
+						
+						config.jetty.defaultPort = javalinPort; // set the default port for Jetty
+						config.jetty.modifyHttpConfiguration(httpConfig -> {
+					    	// Add the SecureRequestCustomizer because we are using TLS.
 							final SecureRequestCustomizer secureRequestCustomizer = new SecureRequestCustomizer();
 							secureRequestCustomizer.setSniHostCheck(sniHostCheckOpt.orElse(Boolean.TRUE));
 							httpConfig.addCustomizer(secureRequestCustomizer);
-
-							// The ConnectionFactory for HTTP/1.1.
+					    }); // modify the HttpConfiguration
+					    config.jetty.addConnector((server, httpConfig) -> {
+					    	//The ConnectionFactory for HTTP/1.1.
 							final HttpConnectionFactory http11 = new HttpConnectionFactory(httpConfig);
 							// The ConnectionFactory for TLS.
 							final SslConnectionFactory tls = new SslConnectionFactory(
 									getSslContextFactory(resourceManager.resolve(keyStoreUrlOpt.get()), keyStorePasswordOpt.get(), sslKeyAliasOpt.get()),
 									http11.getProtocol());
-
+	
 							final ServerConnector sslConnector = new ServerConnector(server, tls, http11);
-
 							sslConnector.setPort(javalinPort);
-							server.setConnectors(new Connector[] { sslConnector });
-							return server;
-						});
+							return sslConnector;
+					    }); // add a connector to the Jetty Server
 					})
 					.before(new JettyMultipartConfig(tempDir))
 					.after(new JettyMultipartCleaner());
 		} else {
-			javalinApp = Javalin.create(config -> config.routing.ignoreTrailingSlashes = false) //javalin PR#1088 fix
-					.before(new JettyMultipartConfig(tempDir))
-					.after(new JettyMultipartCleaner());
+			javalinApp = Javalin.create(config -> {
+				config.router.ignoreTrailingSlashes = false; //javalin PR#1088 fix
+			 	config.jetty.defaultPort = javalinPort; // set the default port for Jetty		    
+			})
+			.before(new JettyMultipartConfig(tempDir)) //config.jetty.multipartConfig didn't work as espected
+			.after(new JettyMultipartCleaner());
 		}
 		port = javalinPort;
 	}

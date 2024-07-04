@@ -1,7 +1,6 @@
 Version history
 ===============
 
-
 Running 4.2.0
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-410-to-420)
@@ -55,7 +54,7 @@ Release 4.0.0 - 2023/08/17
   - oauth2-oidc-sdk : 10.8 -> 10.11
   - jedis : 4.3.2 -> 4.4.3
 
- 
+
 Release 3.6.0 - 2023/05/04
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-350-to-360)

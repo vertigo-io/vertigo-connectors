@@ -1,7 +1,7 @@
 /*
  * vertigo - application development platform
  *
- * Copyright (C) 2013-2023, Vertigo.io, team@vertigo.io
+ * Copyright (C) 2013-2024, Vertigo.io, team@vertigo.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ public class StandaloneJavalinConnector implements JavalinConnector {
 		Assertion.check().isNotNull(connectorNameOpt);
 		//-----
 		connectorName = connectorNameOpt.orElse("main");
-		javalinApp = Javalin.createStandalone(config -> {
-			config.routing.ignoreTrailingSlashes = false; //javalin PR#1088 fix
+		javalinApp = Javalin.create(config -> {
+			config.router.ignoreTrailingSlashes = false; //javalin PR#1088 fix
 			config.http.maxRequestSize = maxRequestSizeOpt.orElse(10 * 1024L); //limit request size
 		});
 	}
