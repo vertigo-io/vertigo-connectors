@@ -71,11 +71,6 @@ public class EmbeddedJavalinConnector implements JavalinConnector, Activeable {
 		//-----
 		connectorName = connectorNameOpt.orElse("main");
 		final String tempDir = System.getProperty("java.io.tmpdir");
-		/*final var multipartConfig = new MultipartConfig();
-		multipartConfig.cacheDirectory(tempDir);
-		multipartConfig.maxFileSize(MAX_PARTS_SIZE, SizeUnit.BYTES);
-		multipartConfig.maxTotalRequestSize(MAX_NB_PARTS * MAX_PARTS_SIZE, SizeUnit.BYTES);
-		multipartConfig.maxInMemoryFileSize(MAX_PART_SIZE_IN_MEMORY, SizeUnit.BYTES);*/
 		
 		final var ssl = sslOpt.orElse(false);
 		if (ssl) {
@@ -88,14 +83,8 @@ public class EmbeddedJavalinConnector implements JavalinConnector, Activeable {
 					config -> {
 						config.router.ignoreTrailingSlashes = false; //javalin PR#1088 fix
 						
-						//config.jetty.defaultHost = "localhost"; // set the default host for Jetty
-					    config.jetty.defaultPort = javalinPort; // set the default port for Jetty
-					    //config.jetty.threadPool = new ThreadPool(); // set the thread pool for Jetty
-					    //config.jetty.multipartConfig = multipartConfig; // set the multipart config for Jetty
-					    //config.jetty.modifyJettyWebSocketServletFactory(factory -> {}); // modify the JettyWebSocketServletFactory
-					    //config.jetty.modifyServer(server -> {}); // modify the Jetty Server
-					    //config.jetty.modifyServletContextHandler(handler -> {}); // modify the ServletContextHandler (you can set a SessionHandler here)
-					    config.jetty.modifyHttpConfiguration(httpConfig -> {
+						config.jetty.defaultPort = javalinPort; // set the default port for Jetty
+						config.jetty.modifyHttpConfiguration(httpConfig -> {
 					    	// Add the SecureRequestCustomizer because we are using TLS.
 							final SecureRequestCustomizer secureRequestCustomizer = new SecureRequestCustomizer();
 							secureRequestCustomizer.setSniHostCheck(sniHostCheckOpt.orElse(Boolean.TRUE));
@@ -112,17 +101,16 @@ public class EmbeddedJavalinConnector implements JavalinConnector, Activeable {
 							final ServerConnector sslConnector = new ServerConnector(server, tls, http11);
 							sslConnector.setPort(javalinPort);
 							return sslConnector;
-					    }); // add a connector to the Jetty Server					    
+					    }); // add a connector to the Jetty Server
 					})
 					.before(new JettyMultipartConfig(tempDir))
 					.after(new JettyMultipartCleaner());
 		} else {
 			javalinApp = Javalin.create(config -> {
 				config.router.ignoreTrailingSlashes = false; //javalin PR#1088 fix
-			 	config.jetty.defaultPort = javalinPort; // set the default port for Jetty
-			    //config.jetty.multipartConfig = multipartConfig; // set the multipart config for Jetty			    
+			 	config.jetty.defaultPort = javalinPort; // set the default port for Jetty		    
 			})
-			.before(new JettyMultipartConfig(tempDir))
+			.before(new JettyMultipartConfig(tempDir)) //config.jetty.multipartConfig didn't work as espected
 			.after(new JettyMultipartCleaner());
 		}
 		port = javalinPort;
