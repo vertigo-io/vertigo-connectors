@@ -1,11 +1,44 @@
 Version history
 ===============
 
-Running 4.2.0
+Running 4.3.0
 ----------------------
-[Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-410-to-420)
+[Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-420-to-430)
   
 more to come :)
+
+
+Running 4.2.0 - 2024/07/04
+----------------------
+[Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-410-to-420)
+
+* **[All] Pom declare dependencyManagment to help dependencies versions config**
+* [Redis] Add analytics tag `hasLock`
+* [OIDC] Add trustStore optional parameter
+* [OIDC] Change scopes parameter to optional
+* [OIDC] Add parameters for logout redirect
+* [OIDC] Add overrideIssuer parameter
+* [Keycloak] Remove keycloak connector (deprecated)
+* [S3] Add object storage S3 connector using minio lib
+* Update libs 
+ - azure msal4j 1.14.0 -> 1.16.0
+ - elasticsearch 7.17.14 -> 7.17.22
+ - codelibs.elasticsearch 7.17.9 -> 7.17.22
+ - influxdb 6.10.0 -> 7.1.0
+ - javalin 5.6.3 -> 6.1.6
+ - jetty 11.0.18 -> 11.0.21
+ - jsch com.jcraft 0.1.55 -> github.mwiede 0.2.18
+ - bouncycastle bcpkix-jdk15on 1.70 ->bcpkix-jdk18on 1.78.1
+ - keycloak-servlet-filter-adapter 22.0.5 -> 24.0.5
+ - mail -> javax.mail 1.6.2 -> jakarta.mail 2.0.1
+ - mongodb -> 4.11.0 -> 5.1.1
+ - minio 8.5.10 -> 8.5.11
+ - neo4j 5.13.0 -> 5.21.0
+ - oidc nimbusds 11.5 -> 11.13
+ - jedis 4.4.6 -> 5.1.3
+ - opensaml 4.3.0 -> 5.1.2
+ - woodstox 6.5.1 -> 6.7.0
+ - spring-context 6.0.13 -> 6.1.10
 
 
 Release 4.1.0 - 2023/11/09
