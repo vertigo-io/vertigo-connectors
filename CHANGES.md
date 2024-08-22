@@ -47,6 +47,7 @@ Release 4.1.0 - 2023/11/09
 * [Redis] Support ssl and custom truststore
 * [Redis] Add util for lock using redis
 * [Elastic] Add security to RHL ES connector (username/password ; apiKeyId/apiKeySecret ; ssl + truststore/truststorePassword)
+  * **ssl parameter is mandatory**
 * [Javalin] Protect jetty mutlipart cleaner
 * [OIDC] Add support for PKCE (enabled by default)
 * Update libs 
