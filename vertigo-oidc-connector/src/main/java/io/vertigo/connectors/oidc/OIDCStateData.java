@@ -19,10 +19,11 @@ package io.vertigo.connectors.oidc;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
 record OIDCStateData(
 		String nonce,
 		String pkceCodeVerifier,
 		Date stateDate,
-		String requestedUri) implements Serializable {
+		Map<String, Serializable> additionalInfos) implements Serializable {
 }

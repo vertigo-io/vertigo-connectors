@@ -1,6 +1,7 @@
 package io.vertigo.connectors.oidc;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -11,6 +12,7 @@ import java.security.KeyStore;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -249,14 +251,14 @@ public class OIDCClient {
 	/**
 	 * Generates the login URL for the OpenID Connect (OIDC) authentication request.
 	 *
-	 * @param redirectUri the URI to redirect to after authentication
 	 * @param callbackUri the callback URI to handle the authentication response
 	 * @param session the current HTTP session
 	 * @param localeOpt the optional locale to forward to the SSO. Sent if localeParamName is configured.
+	 * @param additionalInfos you can store additional infos that can be retrieved at callback time
 	 * @param requestedScopes the scopes requested for the authentication
 	 * @return the URL to redirect the user to for OIDC authentication
 	 */
-	public String getLoginUrl(final URI redirectUri, final URI callbackUri, final HttpSession session, final Optional<Locale> localeOpt, final String... requestedScopes) {
+	public String getLoginUrl(final URI callbackUri, final HttpSession session, final Optional<Locale> localeOpt, final Map<String, Serializable> additionalInfos, final String... requestedScopes) {
 		loadMetadataIfNeeded(false);
 
 		// Generate random state string to securely pair the callback to this request and a corresponding nonce
@@ -267,7 +269,7 @@ public class OIDCClient {
 		scope.add("openid"); // mandatory scope
 
 		final var codeVerifier = Boolean.TRUE.equals(oidcParameters.usePKCE()) ? new CodeVerifier() : null;
-		OIDCSessionManagementUtil.storeStateDataInSession(session, state.getValue(), nonce.getValue(), codeVerifier == null ? null : codeVerifier.getValue(), redirectUri.toString());
+		OIDCSessionManagementUtil.storeStateDataInSession(session, state.getValue(), nonce.getValue(), codeVerifier == null ? null : codeVerifier.getValue(), additionalInfos);
 
 		// Compose the OpenID authentication request (for the code flow)
 		final var authRequestBuilder = new AuthenticationRequest.Builder(
@@ -381,6 +383,19 @@ public class OIDCClient {
 	}
 
 	/**
+	 * Retrieves the additional infos provided with according getLoginUrl method.
+	 *
+	 * @param responseUri the current URI, with OIDC parameters (state and code)
+	 * @param session the current HTTP session
+	 * @return the additional infos corresponding to those provided at login time
+	 */
+	public Map<String, Serializable> retreiveAdditionalInfos(final URI responseUri, final HttpSession session) {
+		final var successResponse = parseResponseUri(responseUri);
+		final var state = successResponse.getState();
+		return OIDCSessionManagementUtil.retreiveAdditionalInfos(session, state.getValue());
+	}
+
+	/**
 	 * Build the logout URL for the SSO.
 	 *
 	 * @param redirectUriOpt the URL to redirect to after logout
@@ -412,18 +427,5 @@ public class OIDCClient {
 		}
 
 		return ssoMetadata.getEndSessionEndpointURI().toString() + logoutParam;
-	}
-
-	/**
-	 * Retrieves the originally requested URI from the session using the state parameter from the OIDC response.
-	 *
-	 * @param responseUri the current URI, with OIDC parameters (state and code)
-	 * @param session the current HTTP session
-	 * @return the originally requested URI, if available
-	 */
-	public Optional<String> getRequestedUri(final URI responseUri, final HttpSession session) {
-		final var successResponse = parseResponseUri(responseUri);
-		final var state = successResponse.getState();
-		return Optional.ofNullable(OIDCSessionManagementUtil.getRequestedUri(session, state.getValue()));
 	}
 }

@@ -17,6 +17,7 @@
  */
 package io.vertigo.connectors.oidc;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,9 +58,9 @@ final class OIDCSessionManagementUtil {
 		throw new VSystemException("Failed to validate data received from Authorization service - could not validate state");
 	}
 
-	static String getRequestedUri(final HttpSession session, final String state) {
+	static Map<String, Serializable> retreiveAdditionalInfos(final HttpSession session, final String state) {
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("Retrieving requestedUri for state " + state + " from session " + session.getId());
+			LOG.trace("Retrieving additional infos for state " + state + " from session " + session.getId());
 			dumpStates(session);
 		}
 		if (!StringUtil.isBlank(state)) {
@@ -67,13 +68,14 @@ final class OIDCSessionManagementUtil {
 			if (states != null) {
 				final var stateData = states.get(state);
 				if (stateData != null) {
-					return stateData.requestedUri();
+					return stateData.additionalInfos();
 				}
 			}
 		}
-		// can happen if we go back after auth, keycloak will redirect with the previous state that does not exists anymore (we have deleted if on login success)
-		// we still not permit to authenticate with a previously used state but we do not want to stop redirect on already authenticated session
-		return null;
+		// in OIDCWebAuthenticationPlugin, we use this map to store previously requestedUri to redirect to after auth
+		// the "no state" can happen if we go back after auth, keycloak will redirect with the previous state that does not exists anymore (we have deleted if on login success)
+		// we still not permit to authenticate with a previously used state but we do not want to stop redirect on already authenticated session, so we dont throw an error here
+		return Map.of();
 	}
 
 	private static void dumpStates(final HttpSession session) {
@@ -125,14 +127,14 @@ final class OIDCSessionManagementUtil {
 		}
 	}
 
-	static void storeStateDataInSession(final HttpSession session, final String state, final String nonce, final String pkceCodeVerifier, final String requestedUri) {
+	static void storeStateDataInSession(final HttpSession session, final String state, final String nonce, final String pkceCodeVerifier, final Map<String, Serializable> additionalInfos) {
 		// state parameter to validate response from Authorization server and nonce parameter to validate idToken
 		final var states = Optional.ofNullable((Map<String, OIDCStateData>) session.getAttribute(STATES))
 				.orElseGet(HashMap::new);
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("Storing state " + state + " in session " + session.getId());
 		}
-		states.put(state, new OIDCStateData(nonce, pkceCodeVerifier, new Date(), requestedUri));
+		states.put(state, new OIDCStateData(nonce, pkceCodeVerifier, new Date(), additionalInfos));
 		session.setAttribute(STATES, states);
 	}
 
