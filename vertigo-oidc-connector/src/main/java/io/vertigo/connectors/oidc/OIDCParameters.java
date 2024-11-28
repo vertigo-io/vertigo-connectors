@@ -27,7 +27,6 @@ public final record OIDCParameters(
 		Optional<String> overrideIssuerOpt,
 		int httpConnectTimeout, // milliseconds, used to fetch metadata from OIDC provider
 		int httpReadTimeout, // milliseconds, used to fetch metadata from OIDC provider
-		String[] requestedScopes,
 		Optional<URL> localOIDCMetadataOp,
 		String jwsAlgorithm,
 		Boolean skipIdTokenValidation,
@@ -35,9 +34,7 @@ public final record OIDCParameters(
 
 		Optional<String> logoutRedirectUriParamNameOpt,
 		Optional<String> logoutIdParamNameOpt,
-		Optional<String> loginLocaleParamNameOpt,
-
-		Optional<String> externalUrlOpt,
+		Optional<String> localeParamNameOpt,
 
 		boolean dontFailAtStartup,
 
