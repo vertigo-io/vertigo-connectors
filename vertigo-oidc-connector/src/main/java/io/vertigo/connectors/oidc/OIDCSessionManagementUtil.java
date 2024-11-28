@@ -58,7 +58,7 @@ final class OIDCSessionManagementUtil {
 		throw new VSystemException("Failed to validate data received from Authorization service - could not validate state");
 	}
 
-	static Map<String, Serializable> retreiveAdditionalInfos(final HttpSession session, final String state) {
+	static Map<String, Serializable> retrieveAdditionalInfos(final HttpSession session, final String state) {
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("Retrieving additional infos for state " + state + " from session " + session.getId());
 			dumpStates(session);

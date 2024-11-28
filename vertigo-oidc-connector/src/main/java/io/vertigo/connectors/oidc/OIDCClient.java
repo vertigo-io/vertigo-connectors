@@ -389,10 +389,10 @@ public class OIDCClient {
 	 * @param session the current HTTP session
 	 * @return the additional infos corresponding to those provided at login time
 	 */
-	public Map<String, Serializable> retreiveAdditionalInfos(final URI responseUri, final HttpSession session) {
+	public Map<String, Serializable> retrieveAdditionalInfos(final URI responseUri, final HttpSession session) {
 		final var successResponse = parseResponseUri(responseUri);
 		final var state = successResponse.getState();
-		return OIDCSessionManagementUtil.retreiveAdditionalInfos(session, state.getValue());
+		return OIDCSessionManagementUtil.retrieveAdditionalInfos(session, state.getValue());
 	}
 
 	/**
