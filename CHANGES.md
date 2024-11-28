@@ -4,7 +4,11 @@ Version history
 Running 4.3.0
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-420-to-430)
-  
+
+* [OIDC] `scopes` and `externalUrl` parameters moved to `OIDCWebAuthenticationPlugin`
+* [OIDC] `loginLocaleParamName` renamed to `localeParamNameOpt` and used on logout too
+* [OIDC] `OIDCDeploymentConnector.getClient()` now return an usable client (`OIDCClient`) instead of a record of parameters
+
 more to come :)
 
 
@@ -14,10 +18,11 @@ Running 4.2.0 - 2024/07/04
 
 * **[All] Pom declare dependencyManagment to help dependencies versions config**
 * [Redis] Add analytics tag `hasLock`
-* [OIDC] Add trustStore optional parameter
-* [OIDC] Change scopes parameter to optional
+* [OIDC] Add `trustStore` optional parameter
+* [OIDC] Change `scopes` parameter to optional
 * [OIDC] Add parameters for logout redirect
-* [OIDC] Add overrideIssuer parameter
+* [OIDC] Add `overrideIssuer` parameter. Usefull if your SSO uses his external url as issuer and your backchannel is by another URL.
+* [OIDC] Add `loginLocaleParamName` parameter to forward user locale into login url parameter
 * [Keycloak] Remove keycloak connector (deprecated)
 * [S3] Add object storage S3 connector using minio lib
 * Update libs 
