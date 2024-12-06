@@ -77,18 +77,22 @@ import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 
+import io.vertigo.connectors.oidc.state.IOIDCStateStorage;
 import io.vertigo.core.lang.VSystemException;
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.node.Node;
 import io.vertigo.core.node.component.di.DIInjector;
 import io.vertigo.core.resource.ResourceManager;
 import io.vertigo.core.util.StringUtil;
-import jakarta.servlet.http.HttpSession;
 import net.minidev.json.JSONObject;
 
+/**
+ * Custom OpenID Connect client over the Nimbus library.
+ *
+ * @author skerdudou
+ */
 public class OIDCClient {
 
-	private static final String OIDC_ID_TOKEN = "OIDC_ID_TOKEN";
 	private static final Logger LOG = LogManager.getLogger(OIDCClient.class);
 	// if metadata is not available at startup, limit check frequency at runtime
 	private static final int MIN_TIME_BETWEEN_METATADA_CHECK = 60;
@@ -112,11 +116,12 @@ public class OIDCClient {
 
 		clientID = new ClientID(oidcParameters.oidcClientName());
 
-		if (oidcParameters.trustStoreUrlOpt().isPresent()) {
+		final var trustStoreUrlOpt = oidcParameters.trustStoreUrlOpt();
+		if (trustStoreUrlOpt.isPresent()) {
 			// load custom trust store
 			try {
 				sslSocketFactoryOpt = Optional.of(createSSLSocketFactory(
-						resourceManager.resolve(oidcParameters.trustStoreUrlOpt().get()),
+						resourceManager.resolve(trustStoreUrlOpt.get()),
 						oidcParameters.trustStorePasswordOpt()));
 			} catch (final Exception e) {
 				throw WrappedException.wrap(e);
@@ -211,16 +216,11 @@ public class OIDCClient {
 
 	private OIDCProviderMetadata getOidcMetadataFromRemote(final Issuer issuer, final int httpConnectTimeout, final int httpReadTimeout) {
 		try {
-
-			final HTTPRequestConfigurator requestConfigurator = new HTTPRequestConfigurator() {
-
-				@Override
-				public void configure(final HTTPRequest httpRequest) {
-					httpRequest.setConnectTimeout(httpConnectTimeout);
-					httpRequest.setReadTimeout(httpReadTimeout);
-					if (sslSocketFactoryOpt.isPresent()) {
-						httpRequest.setSSLSocketFactory(sslSocketFactoryOpt.get());
-					}
+			final HTTPRequestConfigurator requestConfigurator = (final HTTPRequest httpRequest) -> {
+				httpRequest.setConnectTimeout(httpConnectTimeout);
+				httpRequest.setReadTimeout(httpReadTimeout);
+				if (sslSocketFactoryOpt.isPresent()) {
+					httpRequest.setSSLSocketFactory(sslSocketFactoryOpt.get());
 				}
 			};
 			if (oidcParameters.overrideIssuerOpt().isPresent()) {
@@ -269,13 +269,14 @@ public class OIDCClient {
 	 * Generates the login URL for the OpenID Connect (OIDC) authentication request.
 	 *
 	 * @param callbackUri the callback URI to handle the authentication response
-	 * @param session the current HTTP session
+	 * @param oidcStateStorage the storage to keep the state and nonce for the callback
 	 * @param localeOpt the optional locale to forward to the SSO. Sent if localeParamName is configured.
 	 * @param additionalInfos you can store additional infos that can be retrieved at callback time
 	 * @param requestedScopes the scopes requested for the authentication
 	 * @return the URL to redirect the user to for OIDC authentication
 	 */
-	public String getLoginUrl(final URI callbackUri, final HttpSession session, final Optional<Locale> localeOpt, final Map<String, Serializable> additionalInfos, final String... requestedScopes) {
+	public String getLoginUrl(final URI callbackUri, final IOIDCStateStorage oidcStateStorage, final Optional<Locale> localeOpt, final Map<String, Serializable> additionalInfos,
+			final String... requestedScopes) {
 		loadMetadataIfNeeded(false);
 
 		// Generate random state string to securely pair the callback to this request and a corresponding nonce
@@ -286,7 +287,7 @@ public class OIDCClient {
 		scope.add("openid"); // mandatory scope
 
 		final var codeVerifier = Boolean.TRUE.equals(oidcParameters.usePKCE()) ? new CodeVerifier() : null;
-		OIDCSessionManagementUtil.storeStateDataInSession(session, state.getValue(), nonce.getValue(), codeVerifier == null ? null : codeVerifier.getValue(), additionalInfos);
+		oidcStateStorage.storeStateDataInSession(state.getValue(), nonce.getValue(), codeVerifier == null ? null : codeVerifier.getValue(), additionalInfos);
 
 		// Compose the OpenID authentication request (for the code flow)
 		final var authRequestBuilder = new AuthenticationRequest.Builder(
@@ -300,8 +301,9 @@ public class OIDCClient {
 						.codeChallenge(codeVerifier, CodeChallengeMethod.S256);
 
 		// forward user locale to the SSO, for example keycloak uses ui_locales parameter
-		if (oidcParameters.localeParamNameOpt().isPresent()) {
-			authRequestBuilder.customParameter(oidcParameters.localeParamNameOpt().get(), localeOpt.orElse(Locale.FRENCH).getLanguage());
+		final var localeParamNameOpt = oidcParameters.localeParamNameOpt();
+		if (localeParamNameOpt.isPresent()) {
+			authRequestBuilder.customParameter(localeParamNameOpt.get(), localeOpt.orElse(Locale.FRENCH).getLanguage());
 		}
 
 		final var authRequest = authRequestBuilder.build();
@@ -314,14 +316,14 @@ public class OIDCClient {
 	 *
 	 * @param responseUri the current URI, with OIDC parameters (state and code)
 	 * @param callbackUri the callback URI provided when sending user to SSO login page
-	 * @param session the current session
+	 * @param oidcStateStorage the storage to retrieve the state and nonce
 	 * @return OIDC tokens (with ID token and Access token).
 	 */
-	public OIDCTokens parseResponse(final URI responseUri, final URI callbackUri, final HttpSession session) {
+	public OIDCTokens parseResponse(final URI responseUri, final URI callbackUri, final IOIDCStateStorage oidcStateStorage) {
 		final var successResponse = parseResponseUri(responseUri);
 
 		final var state = successResponse.getState();
-		final var stateData = OIDCSessionManagementUtil.retrieveStateDataFromSession(session, state.getValue());
+		final var stateData = oidcStateStorage.retrieveStateDataFromSession(state.getValue());
 		loadMetadataIfNeeded(false);
 
 		final var oidcTokens = doGetOIDCTokens(successResponse.getAuthorizationCode(), stateData.pkceCodeVerifier(), callbackUri);
@@ -329,8 +331,6 @@ public class OIDCClient {
 		if (!Boolean.TRUE.equals(oidcParameters.skipIdTokenValidation())) {
 			doValidateToken(oidcTokens.getIDToken(), stateData.nonce());
 		}
-
-		session.setAttribute(OIDC_ID_TOKEN, oidcTokens.getIDTokenString()); // store ID token in session, keycloak needs it for logout with redirect
 
 		return oidcTokens;
 	}
@@ -406,41 +406,45 @@ public class OIDCClient {
 	 * @param session the current HTTP session
 	 * @return the additional infos corresponding to those provided at login time
 	 */
-	public Map<String, Serializable> retrieveAdditionalInfos(final URI responseUri, final HttpSession session) {
+	public Map<String, Serializable> retrieveAdditionalInfos(final URI responseUri, final IOIDCStateStorage oidcStateStorage) {
 		final var successResponse = parseResponseUri(responseUri);
 		final var state = successResponse.getState();
-		return OIDCSessionManagementUtil.retrieveAdditionalInfos(session, state.getValue());
+		return oidcStateStorage.retrieveAdditionalInfos(state.getValue());
 	}
 
 	/**
 	 * Build the logout URL for the SSO.
 	 *
 	 * @param redirectUriOpt the URL to redirect to after logout
-	 * @param sessionOpt the user session if any, needed for logoutIdParamName to be sent (prevent session ending confirmation by the SSO)
+	 * @param idTokenOpt the ID token of the connected user to logout. Needed by some SSO providers to skip logout confirmation.
+	 * user session if any, needed for logoutIdParamName to be sent (prevent session ending confirmation by the SSO)
 	 * @param localeOpt the user locale, default to French. Sent if localeParamName is configured.
 	 * @return the URL to logout the user from the SSO
 	 */
-	public String getLogoutUrl(final Optional<URI> redirectUriOpt, final Optional<HttpSession> sessionOpt, final Optional<Locale> localeOpt) {
+	public String getLogoutUrl(final Optional<URI> redirectUriOpt, final Optional<String> idTokenOpt, final Optional<Locale> localeOpt) {
 		String logoutParam = "?client_id=" + clientID.getValue();
 
 		if (redirectUriOpt.isPresent()) {
-			if (oidcParameters.logoutRedirectUriParamNameOpt().isPresent()) {
+			final var logoutRedirectUriParamNameOpt = oidcParameters.logoutRedirectUriParamNameOpt();
+			if (logoutRedirectUriParamNameOpt.isPresent()) {
 				final var redirectUrl = redirectUriOpt.get().toString();
-				logoutParam += "&" + oidcParameters.logoutRedirectUriParamNameOpt().get() + "=" + URLEncoder.encode(redirectUrl, StandardCharsets.UTF_8);
+				logoutParam += "&" + logoutRedirectUriParamNameOpt.get() + "=" + URLEncoder.encode(redirectUrl, StandardCharsets.UTF_8);
 			}
 		}
-		if (oidcParameters.logoutIdParamNameOpt().isPresent() && sessionOpt.isPresent()) {
-			final String idToken = (String) sessionOpt.get().getAttribute(OIDC_ID_TOKEN);
+		final var logoutIdParamNameOpt = oidcParameters.logoutIdParamNameOpt();
+		if (logoutIdParamNameOpt.isPresent() && idTokenOpt.isPresent()) {
+			final String idToken = idTokenOpt.get();
 			if (!StringUtil.isBlank(idToken)) { //if we have a OIDC ID TOKEN : we send it to the logout endpoint
 				logoutParam += "&";
-				logoutParam += oidcParameters.logoutIdParamNameOpt().get() + "=" + idToken;
+				logoutParam += logoutIdParamNameOpt.get() + "=" + idToken;
 			}
 		}
 
 		// forward user locale to the SSO, for example keycloak uses ui_locales parameter
-		if (oidcParameters.localeParamNameOpt().isPresent()) {
+		final var localeParamNameOpt = oidcParameters.localeParamNameOpt();
+		if (localeParamNameOpt.isPresent()) {
 			logoutParam += "&";
-			logoutParam += oidcParameters.localeParamNameOpt().get() + "=" + localeOpt.orElse(Locale.FRENCH).getLanguage();
+			logoutParam += localeParamNameOpt.get() + "=" + localeOpt.orElse(Locale.FRENCH).getLanguage();
 		}
 
 		return ssoMetadata.getEndSessionEndpointURI().toString() + logoutParam;

@@ -15,15 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.vertigo.connectors.oidc;
+package io.vertigo.connectors.oidc.state;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Map;
 
-record OIDCStateData(
-		String nonce,
-		String pkceCodeVerifier,
-		Date stateDate,
-		Map<String, Serializable> additionalInfos) implements Serializable {
+/**
+ * Abstraction of the state storage.
+ *
+ * @author skerdudou
+ */
+public interface IOIDCStateStorage {
+
+	OIDCStateData retrieveStateDataFromSession(final String state);
+
+	Map<String, Serializable> retrieveAdditionalInfos(final String state);
+
+	void storeStateDataInSession(final String state, final String nonce, final String pkceCodeVerifier, final Map<String, Serializable> additionalInfos);
+
 }
