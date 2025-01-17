@@ -55,9 +55,9 @@ public class JSchKeyAuthConnector implements JSchConnector {
 			Assertion.check().isNotNull(privateKey, "No private key found in keystore with alias {0}", privateKeyAlias);
 			//---
 			final var stringWriter = new StringWriter();
-			final var pemWriter = new JcaPEMWriter(stringWriter);
-			pemWriter.writeObject(privateKey);
-			pemWriter.close();
+			try (final var pemWriter = new JcaPEMWriter(stringWriter)) {
+				pemWriter.writeObject(privateKey);
+			}
 			final var privateKeyPEM = stringWriter.toString().getBytes(StandardCharsets.UTF_8);
 
 			createdJSch.addIdentity(username, privateKeyPEM, null, null);
