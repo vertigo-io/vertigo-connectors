@@ -57,6 +57,11 @@
 				<artifactId>jetty-annotations</artifactId>
 				<version>11.0.24</version>
 			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>apache-jsp</artifactId>
+				<version>11.0.24</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
