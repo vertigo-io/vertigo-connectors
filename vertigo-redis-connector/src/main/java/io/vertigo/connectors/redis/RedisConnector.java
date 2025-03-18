@@ -46,8 +46,6 @@ import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisClientConfig;
 import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.JedisPooled;
-import redis.clients.jedis.JedisSentineled;
 import redis.clients.jedis.UnifiedJedis;
 import redis.clients.jedis.providers.ClusterConnectionProvider;
 import redis.clients.jedis.providers.ConnectionProvider;
@@ -157,7 +155,7 @@ public class RedisConnector implements Connector<UnifiedJedis>, Activeable {
 					.map(HostAndPort::from).collect(Collectors.toSet());
 			final var sentineledConnectionProvider = new SentineledConnectionProvider(masternameOpt.get(), jedisClientConfig, connectionPoolConfig, sentinels, sentinelClientConfig);
 			connectionProvider = sentineledConnectionProvider;
-			unifiedJedis = new JedisSentineled(sentineledConnectionProvider);
+			unifiedJedis = new VJedisSentineled(sentineledConnectionProvider);
 			mode = JedisMode.SENTINEL;
 		} else if (clusterNodesOpt.isPresent()) {
 			//detect si ; manquant et accept ; vide
@@ -169,12 +167,12 @@ public class RedisConnector implements Connector<UnifiedJedis>, Activeable {
 					.map(HostAndPort::from).collect(Collectors.toSet());
 			final var clusterConnectionProvider = new ClusterConnectionProvider(clusterNodes, jedisClientConfig, connectionPoolConfig);
 			connectionProvider = clusterConnectionProvider;
-			unifiedJedis = new JedisCluster(clusterConnectionProvider, MAX_ATTEMPTS, Duration.ofMillis((long) CONNECT_TIMEOUT * MAX_ATTEMPTS));
+			unifiedJedis = new VJedisCluster(clusterConnectionProvider, MAX_ATTEMPTS, Duration.ofMillis((long) CONNECT_TIMEOUT * MAX_ATTEMPTS));
 			mode = JedisMode.CLUSTER;
 		} else {
 			final var pooledConnectionProvider = new PooledConnectionProvider(new HostAndPort(redisHost.get().trim(), redisPort.get()), jedisClientConfig, connectionPoolConfig);
 			connectionProvider = pooledConnectionProvider;
-			unifiedJedis = new JedisPooled(pooledConnectionProvider);
+			unifiedJedis = new VJedisPooled(pooledConnectionProvider);
 			mode = JedisMode.SINGLE;
 		}
 		//test
@@ -182,23 +180,24 @@ public class RedisConnector implements Connector<UnifiedJedis>, Activeable {
 	}
 
 	/**
-	 * @return unifiedJedis client (DON't USE try-with-ressource pattern)
+	 * @return unifiedJedis client (DON't USE try-with-ressource pattern : it close the pool)
 	 */
 	@Override
 	public UnifiedJedis getClient() {
 		if (mode == JedisMode.CLUSTER && ((JedisCluster) unifiedJedis).getClusterNodes().isEmpty()) {
-			LOG.warn("JedisCluster : no nodes found. JedisCluster shouldn't be close manually (watch out try-with-ressource pattern), it can't be reused after that. it will be close correctly at app closing. Try to rediscover nodes (cost a lot)");
+			LOG.warn(
+					"JedisCluster : no nodes found. JedisCluster shouldn't be close manually (watch out try-with-ressource pattern), it can't be reused after that. it will be close correctly at app closing. Try to rediscover nodes (cost a lot)");
 			((JedisCluster) unifiedJedis).getConnectionFromSlot(0); //this will force refresh nodes cache
 		}
-		return unifiedJedis;
+		return unifiedJedis; //Warning : don't use AutoCloseable and avoid misuse of try-with-ressource pattern
 	}
 
 	/**
 	 * @param key Key used to find slot, may use Hash-tags of Redis and use partition key between {}.
-	 * Ex: myPrefix-{myPartioningKey}-myFonctionalKey. Warning : only first {} is used !
+	 *        Ex: myPrefix-{myPartioningKey}-myFonctionalKey. Warning : only first {} is used !
 	 * @see https://redis.io/docs/reference/cluster-spec/#hash-tags
 	 *
-	 * Must be use with try-with-ressource pattern
+	 *      Must be use with try-with-ressource pattern
 	 * @return jedis client for one node (use try-with-resource pattern)
 	 */
 	public Jedis getClient(final String key) {
@@ -239,7 +238,7 @@ public class RedisConnector implements Connector<UnifiedJedis>, Activeable {
 	/** {@inheritDoc} */
 	@Override
 	public void stop() {
-		unifiedJedis.close();
+		((VJedisCloseable) unifiedJedis).closeJedisUnified();
 	}
 
 	private static SSLSocketFactory createTrustStoreSslSocketFactory(final URL trustStoreUrl, final String trustStorePassword) throws Exception {
