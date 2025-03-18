@@ -55,7 +55,7 @@ import okhttp3.Protocol;
 /**
  * Minio (S3) client provider.
  *
- * @author skerdudou
+ * @author skerdudou, xdurand
  */
 public class S3Connector implements Connector<MinioClient> {
 	private static final Logger LOG = LogManager.getLogger(S3Connector.class);
