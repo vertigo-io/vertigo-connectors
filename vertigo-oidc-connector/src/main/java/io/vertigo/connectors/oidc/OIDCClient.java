@@ -171,7 +171,7 @@ public class OIDCClient {
 			ssoMetadata = getOidcMetadataFromFile(localOIDCMetadataOp.get());
 		}
 
-		final var issuer = new Issuer(oidcParameters.overrideIssuerOpt().orElse(oidcParameters.oidcURL()));
+		final var issuer = new Issuer(oidcParameters.overrideIssuerOpt().orElseGet(() -> oidcParameters.oidcURL()));
 		if (ssoMetadata == null) { // no file or error reading file
 			ssoMetadata = getOidcMetadataFromRemote(issuer, oidcParameters.httpConnectTimeout(), oidcParameters.httpReadTimeout());
 		}
