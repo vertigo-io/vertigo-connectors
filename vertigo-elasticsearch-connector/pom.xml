@@ -42,7 +42,7 @@
 			<dependency>
 				<groupId>org.elasticsearch</groupId>
 				<artifactId>elasticsearch</artifactId>
-				<version>7.17.22</version>
+				<version>7.17.28</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.apache.logging.log4j</groupId>
@@ -52,61 +52,52 @@
 			</dependency>
 			<dependency>
 				<groupId>org.elasticsearch.client</groupId>
-				<artifactId>transport</artifactId>
-				<version>7.17.22</version> <!-- TransportSearchServicesPlugin -->
-			</dependency>
-			<dependency>
-				<groupId>org.elasticsearch.client</groupId>
 				<artifactId>elasticsearch-rest-high-level-client</artifactId>
-				<version>7.17.22</version> <!-- RestHighLevelElasticSearchConnector -->
+				<version>7.17.28</version>
 			</dependency>
 			<dependency>
 				<groupId>org.elasticsearch.client</groupId>
 				<artifactId>x-pack-transport</artifactId>
-				<version>7.17.22</version> <!-- SecuredTransportSearchConnector -->
+				<version>7.17.28</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codelibs.elasticsearch.module</groupId>
 				<artifactId>analysis-common</artifactId>
-				<version>7.17.22</version> <!-- required by EmbeddedSearchServicesPlugin -->
+				<version>7.17.22</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codelibs.elasticsearch.module</groupId>
 				<artifactId>mapper-extras</artifactId>
-				<version>7.17.22</version> <!-- required by ESEmbeddedSearchServicesPlugin -->
+				<version>7.17.22</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
 	<dependencies>
+
+		<!-- Search -->
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>transport</artifactId> <!-- TransportSearchServicesPlugin -->
-			<optional>true</optional>
+			<artifactId>elasticsearch-rest-high-level-client</artifactId>
+			<optional>true</optional> <!-- RestElasticSearchConnector -->
 		</dependency>
 		<dependency>
 			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>elasticsearch-rest-high-level-client</artifactId> <!-- RestHighLevelElasticSearchConnector -->
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>x-pack-transport</artifactId> <!-- SecuredTransportSearchConnector -->
-			<optional>true</optional>
+			<artifactId>x-pack-transport</artifactId>
+			<optional>true</optional> <!-- SecuredTransportSearchConnector -->
 		</dependency>
 		<dependency>
 			<groupId>org.codelibs.elasticsearch.module</groupId>
-			<artifactId>analysis-common</artifactId> <!-- required by EmbeddedSearchServicesPlugin -->
-			<optional>true</optional>
+			<artifactId>analysis-common</artifactId>
+			<optional>true</optional> <!-- required by EmbeddedSearchServicesPlugin -->
 		</dependency>
 		<dependency>
 			<groupId>org.codelibs.elasticsearch.module</groupId>
-			<artifactId>mapper-extras</artifactId> <!-- required by ESEmbeddedSearchServicesPlugin -->
-			<optional>true</optional>
-		</dependency> 
+			<artifactId>mapper-extras</artifactId>
+			<optional>true</optional> <!-- required by ESEmbeddedSearchServicesPlugin -->
+		</dependency>
 	</dependencies>
 </project>

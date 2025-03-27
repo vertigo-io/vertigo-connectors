@@ -43,7 +43,7 @@
 			<dependency>
 				<groupId>org.elasticsearch</groupId>
 				<artifactId>elasticsearch</artifactId>
-				<version>7.17.14</version>
+				<version>7.17.28</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.apache.logging.log4j</groupId>
@@ -54,12 +54,12 @@
 			<dependency>
 				<groupId>org.elasticsearch.client</groupId>
 				<artifactId>elasticsearch-rest-high-level-client</artifactId>
-				<version>7.17.22</version>
+				<version>7.17.28</version>
 			</dependency>
 			<dependency>
 				<groupId>org.elasticsearch.client</groupId>
 				<artifactId>x-pack-transport</artifactId>
-				<version>7.17.22</version>
+				<version>7.17.28</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codelibs.elasticsearch.module</groupId>
@@ -93,7 +93,7 @@
 		<dependency>
 			<groupId>org.codelibs.elasticsearch.module</groupId>
 			<artifactId>analysis-common</artifactId>
-			<optional>true</optional><!-- required by EmbeddedSearchServicesPlugin -->
+			<optional>true</optional> <!-- required by EmbeddedSearchServicesPlugin -->
 		</dependency>
 		<dependency>
 			<groupId>org.codelibs.elasticsearch.module</groupId>
