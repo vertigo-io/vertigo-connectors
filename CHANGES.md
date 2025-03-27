@@ -1,18 +1,22 @@
 Version history
 ===============
 
-Running 4.3.0
+Running 5.0.0
+----------------------
+more to come :)
+
+
+Release 4.3.0 - 2025/03/27
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-420-to-430)
-
 * [OIDC] `scopes` and `externalUrl` parameters moved to `OIDCWebAuthenticationPlugin`
 * [OIDC] `loginLocaleParamName` renamed to `localeParamNameOpt` and used on logout too
 * [OIDC] `OIDCDeploymentConnector.getClient()` now return an usable client (`OIDCClient`) instead of a record of parameters
 
-more to come :)
+TODO
 
 
-Running 4.2.0 - 2024/07/04
+Release 4.2.0 - 2024/07/04
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-410-to-420)
 
@@ -52,6 +56,7 @@ Release 4.1.0 - 2023/11/09
 * [Redis] Support ssl and custom truststore
 * [Redis] Add util for lock using redis
 * [Elastic] Add security to RHL ES connector (username/password ; apiKeyId/apiKeySecret ; ssl + truststore/truststorePassword)
+  * **ssl parameter is mandatory**
 * [Javalin] Protect jetty mutlipart cleaner
 * [OIDC] Add support for PKCE (enabled by default)
 * Update libs 
