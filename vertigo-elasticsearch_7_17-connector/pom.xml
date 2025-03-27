@@ -41,7 +41,7 @@
 			<dependency>
 				<groupId>org.elasticsearch</groupId>
 				<artifactId>elasticsearch</artifactId>
-				<version>7.17.14</version>
+				<version>8.2.0</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.apache.logging.log4j</groupId>
