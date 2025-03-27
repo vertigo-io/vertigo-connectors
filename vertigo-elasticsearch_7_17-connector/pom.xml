@@ -10,7 +10,7 @@
 
 	<artifactId>vertigo-elasticsearch_7_17-connector</artifactId>
 	<packaging>jar</packaging>
-	<name>vertigo-elasticsearch_7_17-connector-connector</name>
+	<name>vertigo-elasticsearch_7_17-connector</name>
 
 	<repositories>
 		<!-- add the elasticsearch repo for x-pack -->
