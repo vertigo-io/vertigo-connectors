@@ -31,9 +31,9 @@ import io.vertigo.core.resource.ResourceManager;
  *
  * @author skerdudou
  */
-public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
+public class OIDCDeploymentConnector implements Connector<OIDCClient> {
 
-	private final OIDCParameters oidcParameters;
+	private final OIDCClient oidcClient;
 	private final String connectorName;
 
 	@Inject
@@ -45,18 +45,16 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 			@ParamValue("overrideIssuer") final Optional<String> overrideIssuerOpt,
 			@ParamValue("httpConnectTimeout") final Optional<Integer> httpConnectTimeoutOpt,
 			@ParamValue("httpReadTimeout") final Optional<Integer> httpReadTimeoutOpt,
-			@ParamValue("scopes") final Optional<String> requestedScopesOpt,
 			@ParamValue("metadataFile") final Optional<String> localOIDCMetadataOpt,
 			@ParamValue("jwsAlgorithm") final Optional<String> jwsAlgorithmOpt,
 			@ParamValue("skipIdTokenValidation") final Optional<Boolean> skipIdTokenValidationOpt,
 			@ParamValue("usePKCE") final Optional<Boolean> usePKCEOpt,
-			@ParamValue("externalUrl") final Optional<String> externalUrlOpt,
 			@ParamValue("dontFailAtStartup") final Optional<Boolean> dontFailAtStartupOpt,
 			@ParamValue("trustStoreUrl") final Optional<String> trustStoreUrlOpt,
 			@ParamValue("trustStorePassword") final Optional<String> trustStorePasswordOpt,
 			@ParamValue("logoutRedirectUriParamName") final Optional<String> logoutRedirectUriParamNameOpt,
 			@ParamValue("logoutIdParamName") final Optional<String> logoutIdParamNameOpt,
-			@ParamValue("loginLocaleParamName") final Optional<String> loginLocaleParamNameOpt,
+			@ParamValue("localeParamName") final Optional<String> localeParamNameOpt,
 			final ResourceManager resourceManager) {
 
 		Assertion.check()
@@ -67,39 +65,38 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 				.isNotNull(overrideIssuerOpt)
 				.isNotNull(httpConnectTimeoutOpt)
 				.isNotNull(httpReadTimeoutOpt)
-				.isNotNull(requestedScopesOpt)
 				.isNotNull(localOIDCMetadataOpt)
 				.isNotNull(jwsAlgorithmOpt)
 				.isNotNull(skipIdTokenValidationOpt)
 				.isNotNull(usePKCEOpt)
-				.isNotNull(externalUrlOpt)
 				.isNotNull(dontFailAtStartupOpt)
 				.isNotNull(trustStoreUrlOpt)
 				.isNotNull(trustStorePasswordOpt)
 				.isNotNull(logoutRedirectUriParamNameOpt)
 				.isNotNull(logoutIdParamNameOpt)
-				.isNotNull(loginLocaleParamNameOpt);
+				.isNotNull(localeParamNameOpt);
 		//---
 		connectorName = connectorNameOpt.orElse("main");
-		oidcParameters = new OIDCParameters(
+
+		final OIDCParameters oidcParameters = new OIDCParameters(
 				clientName,
 				clientSecretOpt,
 				oidcUrl,
 				overrideIssuerOpt,
-				httpConnectTimeoutOpt.orElseGet(() -> 1000),
-				httpReadTimeoutOpt.orElseGet(() -> 1000),
-				requestedScopesOpt.map(s -> s.split("\\s+")).orElse(new String[0]),
+				httpConnectTimeoutOpt.orElse(1000),
+				httpReadTimeoutOpt.orElse(1000),
 				localOIDCMetadataOpt.map(resourceManager::resolve),
 				jwsAlgorithmOpt.orElse("RS256"),
 				skipIdTokenValidationOpt.orElse(Boolean.FALSE),
 				usePKCEOpt.orElse(Boolean.TRUE),
 				logoutRedirectUriParamNameOpt,
 				logoutIdParamNameOpt,
-				loginLocaleParamNameOpt,
-				externalUrlOpt,
+				localeParamNameOpt,
 				dontFailAtStartupOpt.orElse(Boolean.FALSE),
 				trustStoreUrlOpt,
 				trustStorePasswordOpt);
+
+		oidcClient = new OIDCClient(oidcParameters);
 	}
 
 	@Override
@@ -108,13 +105,13 @@ public class OIDCDeploymentConnector implements Connector<OIDCParameters> {
 	}
 
 	/**
-	 * Get config value object
+	 * Get custom client over NimbusDS OIDC client.
 	 *
 	 * @return the config
 	 */
 	@Override
-	public OIDCParameters getClient() {
-		return oidcParameters;
+	public OIDCClient getClient() {
+		return oidcClient;
 	}
 
 }

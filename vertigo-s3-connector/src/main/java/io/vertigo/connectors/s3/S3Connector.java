@@ -55,7 +55,7 @@ import okhttp3.Protocol;
 /**
  * Minio (S3) client provider.
  *
- * @author skerdudou
+ * @author skerdudou, xdurand
  */
 public class S3Connector implements Connector<MinioClient> {
 	private static final Logger LOG = LogManager.getLogger(S3Connector.class);
@@ -69,6 +69,7 @@ public class S3Connector implements Connector<MinioClient> {
 			@ParamValue("endpointURL") final String endpointURL,
 			@ParamValue("accessKey") final String accessKey,
 			@ParamValue("secretKey") final String secretKey,
+			@ParamValue("region") final Optional<String> regionOpt,
 			@ParamValue("connectionTimeoutSeconds") final Optional<Long> connectionTimeoutOpt,
 			@ParamValue("skipHostnameCheck") final Optional<Boolean> skipHostnameCheckOpt,
 			@ParamValue("publicCert") final Optional<String> publicCertOpt,
@@ -76,15 +77,16 @@ public class S3Connector implements Connector<MinioClient> {
 			@ParamValue("trustStorePassword") final Optional<String> trustStorePasswordOpt) {
 
 		Assertion.check()
-				.isNotBlank(endpointURL)
-				.isNotBlank(accessKey)
-				.isNotBlank(secretKey)
-				.isNotNull(connectionTimeoutOpt)
-				.isNotNull(skipHostnameCheckOpt)
-				.isNotNull(publicCertOpt)
-				.isNotNull(trustStoreOpt)
-				.isNotNull(trustStorePasswordOpt)
-				.isTrue(publicCertOpt.isEmpty() || trustStoreOpt.isEmpty(), "Cannot configure both publicCert and trustStore.");
+		.isNotBlank(endpointURL)
+		.isNotBlank(accessKey)
+		.isNotBlank(secretKey)
+		.isNotNull(regionOpt)
+		.isNotNull(connectionTimeoutOpt)
+		.isNotNull(skipHostnameCheckOpt)
+		.isNotNull(publicCertOpt)
+		.isNotNull(trustStoreOpt)
+		.isNotNull(trustStorePasswordOpt)
+		.isTrue(publicCertOpt.isEmpty() || trustStoreOpt.isEmpty(), "Cannot configure both publicCert and trustStore.");
 		//-----
 
 		final long connectionTimeout = connectionTimeoutOpt.orElse(DEFAULT_CONNECTION_TIMEOUT);
@@ -94,6 +96,10 @@ public class S3Connector implements Connector<MinioClient> {
 			LOG.warn("Hostname verification on S3 connector disabled. Not safe for production.");
 		}
 
+		final MinioClient.Builder minioBuilder = MinioClient.builder()
+				.endpoint(endpointURL)
+				.credentials(accessKey, secretKey);
+
 		if (publicCertOpt.isPresent()) {
 			// minio public certificate
 			OkHttpClient okHttpClient;
@@ -102,11 +108,9 @@ public class S3Connector implements Connector<MinioClient> {
 			} catch (GeneralSecurityException | IOException e) {
 				throw new VSystemException(e, "Unable to load truststore file '{0}'.", trustStoreOpt.get());
 			}
-			minioClient = MinioClient.builder()
-					.endpoint(endpointURL)
-					.credentials(accessKey, secretKey)
-					.httpClient(okHttpClient)
-					.build();
+
+			minioBuilder.httpClient(okHttpClient);
+
 		} else if (trustStoreOpt.isPresent()) {
 			// custom truststore
 			final OkHttpClient okHttpClient = buildSslOkHttpClient(
@@ -115,19 +119,18 @@ public class S3Connector implements Connector<MinioClient> {
 					connectionTimeout,
 					skipHostnameCheck);
 
-			minioClient = MinioClient.builder()
-					.endpoint(endpointURL)
-					.credentials(accessKey, secretKey)
-					.httpClient(okHttpClient)
-					.build();
+			minioBuilder.httpClient(okHttpClient);
+
 		} else {
 			// no ssl or jvm truststore
-			minioClient = MinioClient.builder()
-					.endpoint(endpointURL)
-					.credentials(accessKey, secretKey)
-					.httpClient(getOkHttpDefaultBuilder(connectionTimeout, skipHostnameCheck).build()) // overwrite default timeout of 5 minutes
-					.build();
+			minioBuilder.httpClient(getOkHttpDefaultBuilder(connectionTimeout, skipHostnameCheck).build()); // overwrite default timeout of 5 minutes
 		}
+
+		if (regionOpt.isPresent()) {
+			minioBuilder.region(regionOpt.get());
+		}
+
+		minioClient = minioBuilder.build();
 	}
 
 	private static OkHttpClient buildSslOkHttpClient(final String trustStorePath, final char[] keyStorePassword, final long connectionTimeout, final boolean skipHostnameCheck) {

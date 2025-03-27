@@ -93,7 +93,7 @@ public class NativeMailSessionConnector implements MailSessionConnector {
 		properties.setProperty("mail.store.protocol", mailStoreProtocol);
 		properties.setProperty("mail.host", mailHost);
 		if (mailPort.isPresent()) {
-			properties.setProperty("mail.port", mailPort.get().toString());
+			properties.setProperty("mail.smtp.port", mailPort.get().toString());
 		}
 		properties.setProperty("mail.debug", "false");
 		final Session session;

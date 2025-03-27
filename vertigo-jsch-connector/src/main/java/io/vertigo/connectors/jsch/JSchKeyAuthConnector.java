@@ -29,6 +29,7 @@ import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 
 import com.jcraft.jsch.JSch;
 
+import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
@@ -51,10 +52,12 @@ public class JSchKeyAuthConnector implements JSchConnector {
 			final var jks = KeyStore.getInstance("PKCS12");
 			jks.load(keyStoreResolvedUrl.openStream(), keyStorePassword.toCharArray());
 			final var privateKey = (PrivateKey) jks.getKey(privateKeyAlias, keyStorePassword.toCharArray());
+			Assertion.check().isNotNull(privateKey, "No private key found in keystore with alias {0}", privateKeyAlias);
+			//---
 			final var stringWriter = new StringWriter();
-			final var pemWriter = new JcaPEMWriter(stringWriter);
-			pemWriter.writeObject(privateKey);
-			pemWriter.close();
+			try (final var pemWriter = new JcaPEMWriter(stringWriter)) {
+				pemWriter.writeObject(privateKey);
+			}
 			final var privateKeyPEM = stringWriter.toString().getBytes(StandardCharsets.UTF_8);
 
 			createdJSch.addIdentity(username, privateKeyPEM, null, null);
@@ -62,7 +65,7 @@ public class JSchKeyAuthConnector implements JSchConnector {
 			if (knownHostUrlOpt.isPresent()) {
 				createdJSch.setKnownHosts(knownHostUrlOpt.get());
 			}
-			this.jSch = createdJSch;
+			jSch = createdJSch;
 		} catch (final Exception e) {
 			throw WrappedException.wrap(e);
 		}
