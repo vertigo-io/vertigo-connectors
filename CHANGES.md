@@ -12,9 +12,27 @@ Release 4.3.0 - 2025/03/27
 * [OIDC] `scopes` and `externalUrl` parameters moved to `OIDCWebAuthenticationPlugin`
 * [OIDC] `loginLocaleParamName` renamed to `localeParamNameOpt` and used on logout too
 * [OIDC] `OIDCDeploymentConnector.getClient()` now return an usable client (`OIDCClient`) instead of a record of parameters
-
-TODO
-
+* [S3] Add region parameter (mandatory for some CSP)
+* [Jsch] Better error message when missing key
+* [Mail] Fix port configuration (property `mail.smtp.port` instead of `mail.port`)
+* [Redis] Wrap unifiedJedis to close connexions only when closing the pool
+* Update libs
+ - azure msal4j 1.16.0 -> 1.19.1
+ - elasticsearch 7.17.14 -> 7.17.28
+ - influxdb 7.1.0 -> 7.2.0
+ - javalin 6.1.6 -> 6.5.0
+ - jetty 11.0.21 -> 11.0.25
+ - bouncycastle bcpkix-jdk18on 1.78.1 -> 1.80
+ - keycloak-servlet-filter-adapter 24.0.5 -> 25.0.3
+ - mongodb -> 5.1.1 -> 5.4.0
+ - neo4j 5.21.0 -> 5.25.1
+ - neo4j-driver 5.22.0 -> 5.26.3
+ - oidc nimbusds 11.13 -> 11.23.1
+ - jedis 5.1.3 -> 5.2.0
+ - s3 8.5.11 -> 8.5.17
+ - opensaml 5.1.2 -> 5.1.3
+ - fasterxml 6.7.0 -> 7.1.0
+ - spring-context 6.1.10 -> 6.2.5
 
 Release 4.2.0 - 2024/07/04
 ----------------------
