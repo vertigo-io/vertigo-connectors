@@ -8,6 +8,34 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    services:
+        influxdb:
+            image: influxdb:2.4
+            env:
+              DOCKER_INFLUXDB_INIT_MODE: setup
+              DOCKER_INFLUXDB_INIT_USERNAME: vertigo
+              DOCKER_INFLUXDB_INIT_PASSWORD: vertigo-password
+              DOCKER_INFLUXDB_INIT_ORG: vertigo
+              DOCKER_INFLUXDB_INIT_BUCKET: myApp
+              DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: rytuvFE1f5JR4CPD1cOfr-74W2rL7tu1by-6DnO6zbTxMQy6foj7qtBMYSkFGT15Y1vjJCr5OP01Uci_ZdIlIA==
+            ports:
+              - 8086:8086
+        analytics:
+            image: vertigoio/vertigo-analytics-server:0.14.0
+            env:
+              INFLUXDB_URL: http://influxdb:8086
+              INFLUXDB_TOKEN: rytuvFE1f5JR4CPD1cOfr-74W2rL7tu1by-6DnO6zbTxMQy6foj7qtBMYSkFGT15Y1vjJCr5OP01Uci_ZdIlIA==
+            ports:
+              - 4562:4562
+              - 4563:4563
+        redis:
+            image: redis
+            ports:
+              - 6379:6379
+        mongo:
+            image: mongo:4.0
+            ports:
+              - 27017:27017
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,6 +58,10 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      - name: Update hosts
+        run: |
+          echo "127.0.0.1 analytica.part.klee.lan.net" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 docker-vertigo.part.klee.lan.net" | sudo tee -a /etc/hosts
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
