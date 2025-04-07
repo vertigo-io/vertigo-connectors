@@ -16,6 +16,7 @@ Release 4.3.0 - 2025/03/27
 * [Jsch] Better error message when missing key
 * [Mail] Fix port configuration (property `mail.smtp.port` instead of `mail.port`)
 * [Redis] Wrap unifiedJedis to close connexions only when closing the pool
+* [Elastic] Elastic deprecated Transport protocol renamed maven artifact from `transport` to `x-pack-transport`
 * Update libs
   - azure msal4j 1.16.0 -> 1.19.1
   - elasticsearch 7.17.14 -> 7.17.28
