@@ -63,7 +63,7 @@ public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 		oidcParameters = new SAML2Parameters(
 				clientName,
 				externalUrlOpt,
-				signatureTypeOpt.orElse("RSA-SAH256"),
+				signatureTypeOpt.orElse("RSA-SHA256"),
 				cryptAssertionOpt.orElse(true),
 				extractPublicKeyFromCertificateOpt.orElse(false),
 				spKeyConfig.getCredentials(),
