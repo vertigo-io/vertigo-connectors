@@ -51,6 +51,7 @@ import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
+import org.elasticsearch.client.RestHighLevelClientBuilder;
 
 /**
  * Gestion de la connexion au serveur elasticSearch en mode HTTP.
@@ -89,6 +90,7 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 			@ParamValue("apiKeyId") final Optional<String> apiKeyIdOpt,
 			@ParamValue("apiKeySecret") final Optional<String> apiKeySecretOpt,
 			@ParamValue("ssl") final boolean ssl,
+			@ParamValue("compatibilityMode") final Optional<Boolean> compatibilityMode,
 			@ParamValue("trustStoreUrl") final Optional<String> trustStoreUrlOpt,
 			@ParamValue("trustStorePassword") final Optional<String> trustStorePasswordOpt) {
 		Assertion.check()
@@ -116,7 +118,9 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 
 		final RestClientBuilder restClientBuilder = buildRestClientBuilder(resourceManager, basicUserOpt, basicPasswordOpt,
 				apiKeyIdOpt, apiKeySecretOpt, ssl, trustStoreUrlOpt, trustStorePasswordOpt);
-		client = new RestHighLevelClient(restClientBuilder);
+		final RestHighLevelClientBuilder restHighLevelClientBuilder = new RestHighLevelClientBuilder(restClientBuilder.build());
+		restHighLevelClientBuilder.setApiCompatibilityMode(compatibilityMode.orElse(false));
+		client = restHighLevelClientBuilder.build();
 	}
 
 	/** {@inheritDoc} */
