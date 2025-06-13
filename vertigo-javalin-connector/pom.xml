@@ -17,7 +17,7 @@
 			<dependency>
 				<groupId>io.javalin</groupId>
 				<artifactId>javalin</artifactId>
-				<version>6.5.0</version>
+				<version>6.6.0</version>
 				<exclusions> <!-- jetty is optional in project -->
 					<exclusion>
 						<groupId>org.eclipse.jetty</groupId>
@@ -34,7 +34,7 @@
 				</exclusions>
 			</dependency>
 
-			<!-- For javalin embedded -->
+			<!-- Version for javalin embedded -->
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-server</artifactId>
