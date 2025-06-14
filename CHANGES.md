@@ -6,6 +6,25 @@ Running 5.0.0
 more to come :)
 
 
+Release 4.3.1 - 2025/06/13
+----------------------
+* [Elastic] Add basic support for Elasticsearch 8, use connector `compatibilityMode` parameter
+* [saml2] Fix signature type default value (`RSA-SHA256`)
+
+* Update libs
+  - azure 1.19.1 -> 1.21.0
+  - influxdb 7.2.0 -> 7.3.0
+  - javalin 6.5.0 -> 6.6.0
+  - jsch 0.2.18 -> 0.2.26
+  - bouncycastle 1.78.1 -> 1.81
+  - mongodb 5.4.0 -> 5.5.1
+  - neo4j 5.25.1 -> 5.26.7
+  - oauth oidc 11.23.1 -> 11.25
+  - saml2 5.1.3 -> 5.1.4
+  - woodstox 7.1.0 -> 7.1.1
+  - spring-context 6.2.5 -> 6.2.8
+
+
 Release 4.3.0 - 2025/03/27
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-420-to-430)
