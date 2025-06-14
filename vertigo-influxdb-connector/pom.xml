@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.vertigo</groupId>
 		<artifactId>vertigo-connectors</artifactId>
-		<version>5.0.0-SNAPSHOT</version>
+		<version>4.4.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>vertigo-influxdb-connector</artifactId>
@@ -17,7 +17,7 @@
 			<dependency>
 				<groupId>com.influxdb</groupId>
 				<artifactId>influxdb-client-java</artifactId>
-				<version>7.2.0</version>
+				<version>7.3.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.vertigo</groupId>
 		<artifactId>vertigo-connectors</artifactId>
-		<version>5.0.0-SNAPSHOT</version>
+		<version>4.4.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>vertigo-neo4j-connector</artifactId>
@@ -17,7 +17,7 @@
 			<dependency>
 				<groupId>org.neo4j</groupId>
 				<artifactId>neo4j</artifactId>
-				<version>5.25.1</version> <!-- GPLv3 Licence, make sure to comply with your obligations. For Embedded Server  -->
+				<version>5.26.7</version> <!-- GPLv3 Licence, make sure to comply with your obligations. For Embedded Server  -->
 				<exclusions>
 					<exclusion>
 						<groupId>jdk.tools</groupId>
@@ -28,7 +28,7 @@
 			<dependency>
 				<groupId>org.neo4j</groupId>
 				<artifactId>neo4j-bolt</artifactId>
-				<version>5.25.1</version><!-- GPLv3 Licence, make sure to comply with your obligations. For Embedded Server  -->
+				<version>5.26.7</version><!-- GPLv3 Licence, make sure to comply with your obligations. For Embedded Server  -->
 			</dependency>
 			<dependency>
 				<groupId>org.neo4j.driver</groupId>
