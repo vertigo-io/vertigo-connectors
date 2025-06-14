@@ -8,9 +8,9 @@ more to come :)
 
 Release 4.3.1 - 2025/06/13
 ----------------------
+[Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-430-to-431)
 * [Elastic] Add basic support for Elasticsearch 8, use connector `compatibilityMode` parameter
 * [saml2] Fix signature type default value (`RSA-SHA256`)
-
 * Update libs
   - azure 1.19.1 -> 1.21.0
   - influxdb 7.2.0 -> 7.3.0
