@@ -13,6 +13,8 @@ Release 4.3.2 - 2025/07/09
 * [ElasticSearch] Add compatibilityMode parameter (to use 7.x connector with server ES8)
 * [ElasticSearch] Correction on error message when ssl enabled without truststore
 * [Redis] Fix connector for Jedis cluster
+* [Connectors] Fix pom parent
+
 
 Release 4.3.1 - 2025/06/13
 ----------------------
