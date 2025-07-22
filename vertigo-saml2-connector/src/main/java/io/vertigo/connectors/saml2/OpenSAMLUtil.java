@@ -132,18 +132,13 @@ public final class OpenSAMLUtil {
 	public static String resolveSignatureType(final String type) {
 		final var normalizedType = NORMALIZER_PATTERN.matcher(type).replaceAll("")
 				.toLowerCase();
-		switch (normalizedType) {
-			case "rsasha1":
-				return SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA1;
-			case "rsasha256":
-				return SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256;
-			case "rsasha384":
-				return SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA384;
-			case "rsasha512":
-				return SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA512;
-			default:
-				throw new VSystemException("Unknown signature type '{0}'.", type);
-		}
+		return switch (normalizedType) {
+			case "rsasha1" -> SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA1;
+			case "rsasha256" -> SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256;
+			case "rsasha384" -> SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA384;
+			case "rsasha512" -> SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA512;
+			default -> throw new VSystemException("Unknown signature type '{0}'.", type);
+		};
 	}
 
 	public static Issuer buildIssuer(final String issuerName) {
