@@ -55,6 +55,8 @@ public class OIDCDeploymentConnector implements Connector<OIDCClient> {
 			@ParamValue("logoutRedirectUriParamName") final Optional<String> logoutRedirectUriParamNameOpt,
 			@ParamValue("logoutIdParamName") final Optional<String> logoutIdParamNameOpt,
 			@ParamValue("localeParamName") final Optional<String> localeParamNameOpt,
+			@ParamValue("proxyHost") final Optional<String> proxyHostOpt,
+			@ParamValue("proxyPort") final Optional<Integer> proxyPortOpt,
 			final ResourceManager resourceManager) {
 
 		Assertion.check()
@@ -74,11 +76,13 @@ public class OIDCDeploymentConnector implements Connector<OIDCClient> {
 				.isNotNull(trustStorePasswordOpt)
 				.isNotNull(logoutRedirectUriParamNameOpt)
 				.isNotNull(logoutIdParamNameOpt)
-				.isNotNull(localeParamNameOpt);
+				.isNotNull(localeParamNameOpt)
+				.isNotNull(proxyHostOpt)
+				.isNotNull(proxyPortOpt);
 		//---
 		connectorName = connectorNameOpt.orElse("main");
 
-		final OIDCParameters oidcParameters = new OIDCParameters(
+		final var oidcParameters = new OIDCParameters(
 				clientName,
 				clientSecretOpt,
 				oidcUrl,
@@ -94,7 +98,9 @@ public class OIDCDeploymentConnector implements Connector<OIDCClient> {
 				localeParamNameOpt,
 				dontFailAtStartupOpt.orElse(Boolean.FALSE),
 				trustStoreUrlOpt,
-				trustStorePasswordOpt);
+				trustStorePasswordOpt,
+				proxyHostOpt,
+				proxyPortOpt.orElse(3128));// default port for http proxy
 
 		oidcClient = new OIDCClient(oidcParameters);
 	}

@@ -19,7 +19,10 @@ package io.vertigo.connectors.oidc;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Proxy;
+import java.net.Proxy.Type;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -59,7 +62,6 @@ import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
 import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.oauth2.sdk.http.HTTPRequestConfigurator;
-import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.oauth2.sdk.id.State;
@@ -84,7 +86,6 @@ import io.vertigo.core.node.Node;
 import io.vertigo.core.node.component.di.DIInjector;
 import io.vertigo.core.resource.ResourceManager;
 import io.vertigo.core.util.StringUtil;
-import net.minidev.json.JSONObject;
 
 /**
  * Custom OpenID Connect client over the Nimbus library.
@@ -108,6 +109,7 @@ public class OIDCClient {
 
 	@Inject
 	private ResourceManager resourceManager;
+	private final HTTPRequestConfigurator requestConfigurator;
 
 	public OIDCClient(final OIDCParameters oidcParameters) {
 		DIInjector.injectMembers(this, Node.getNode().getComponentSpace());
@@ -129,6 +131,17 @@ public class OIDCClient {
 		} else {
 			sslSocketFactoryOpt = Optional.empty();
 		}
+
+		this.requestConfigurator = (final var httpRequest) -> {
+			httpRequest.setConnectTimeout(oidcParameters.httpConnectTimeout());
+			httpRequest.setReadTimeout(oidcParameters.httpReadTimeout());
+			if (sslSocketFactoryOpt.isPresent()) {
+				httpRequest.setSSLSocketFactory(sslSocketFactoryOpt.get());
+			}
+			oidcParameters.proxyHostOpt().ifPresent(proxyHost -> {
+				httpRequest.setProxy(new Proxy(Type.HTTP, new InetSocketAddress(proxyHost, oidcParameters.proxyPort())));
+			});
+		};
 
 		loadMetadataIfNeeded(oidcParameters.dontFailAtStartup());
 	}
@@ -182,7 +195,9 @@ public class OIDCClient {
 			idTokenValidator = new IDTokenValidator(issuer, clientID, jwsAlgorithm, new Secret(paddedKey));
 		} else {
 			final var resourceRetriever = new DefaultResourceRetriever(oidcParameters.httpConnectTimeout(), oidcParameters.httpReadTimeout(), 0, true, sslSocketFactoryOpt.orElse(null));
-
+			oidcParameters.proxyHostOpt().ifPresent(proxyHost -> {
+				resourceRetriever.setProxy(new Proxy(Type.HTTP, new InetSocketAddress(proxyHost, oidcParameters.proxyPort())));
+			});
 			try {
 				idTokenValidator = new IDTokenValidator(issuer, clientID, jwsAlgorithm, ssoMetadata.getJWKSetURI().toURL(), resourceRetriever);
 			} catch (final MalformedURLException e) {
@@ -216,13 +231,7 @@ public class OIDCClient {
 
 	private OIDCProviderMetadata getOidcMetadataFromRemote(final Issuer issuer, final int httpConnectTimeout, final int httpReadTimeout) {
 		try {
-			final HTTPRequestConfigurator requestConfigurator = (final HTTPRequest httpRequest) -> {
-				httpRequest.setConnectTimeout(httpConnectTimeout);
-				httpRequest.setReadTimeout(httpReadTimeout);
-				if (sslSocketFactoryOpt.isPresent()) {
-					httpRequest.setSSLSocketFactory(sslSocketFactoryOpt.get());
-				}
-			};
+
 			if (oidcParameters.overrideIssuerOpt().isPresent()) {
 				return resolveAlternateIssuerValidation(new Issuer(oidcParameters.oidcURL()), issuer, requestConfigurator);
 			}
@@ -242,21 +251,21 @@ public class OIDCClient {
 			final HTTPRequestConfigurator requestConfigurator)
 			throws GeneralException, IOException {
 
-		final URL configURL = OIDCProviderMetadata.resolveURL(issuer);
+		final var configURL = OIDCProviderMetadata.resolveURL(issuer);
 
-		final HTTPRequest httpRequest = new HTTPRequest(HTTPRequest.Method.GET, configURL);
+		final var httpRequest = new HTTPRequest(HTTPRequest.Method.GET, configURL);
 		requestConfigurator.configure(httpRequest);
 
-		final HTTPResponse httpResponse = httpRequest.send();
+		final var httpResponse = httpRequest.send();
 
 		if (httpResponse.getStatusCode() != 200) {
 			throw new IOException("Couldn't download OpenID Provider metadata from " + configURL +
 					": Status code " + httpResponse.getStatusCode());
 		}
 
-		final JSONObject jsonObject = httpResponse.getContentAsJSONObject();
+		final var jsonObject = httpResponse.getContentAsJSONObject();
 
-		final OIDCProviderMetadata op = OIDCProviderMetadata.parse(jsonObject);
+		final var op = OIDCProviderMetadata.parse(jsonObject);
 
 		if (!returnedIssuer.equals(op.getIssuer())) {
 			throw new GeneralException("The returned issuer doesn't match the expected: " + op.getIssuer());
@@ -283,7 +292,7 @@ public class OIDCClient {
 		// save all this in http session paired with the original requested URL to forward user after authentication
 		final var state = new State();
 		final var nonce = new Nonce();
-		final Scope scope = new Scope(requestedScopes);
+		final var scope = new Scope(requestedScopes);
 		scope.add("openid"); // mandatory scope
 
 		final var codeVerifier = Boolean.TRUE.equals(oidcParameters.usePKCE()) ? new CodeVerifier() : null;
@@ -372,10 +381,8 @@ public class OIDCClient {
 		// Call the endpoint
 		final TokenResponse tokenResponse;
 		try {
-			final HTTPRequest httpRequest = request.toHTTPRequest();
-			if (sslSocketFactoryOpt.isPresent()) {
-				httpRequest.setSSLSocketFactory(sslSocketFactoryOpt.get());
-			}
+			final var httpRequest = request.toHTTPRequest();
+			requestConfigurator.configure(httpRequest);
 			tokenResponse = OIDCTokenResponseParser.parse(httpRequest.send());
 		} catch (com.nimbusds.oauth2.sdk.ParseException | IOException e) {
 			throw new VSystemException(e, "Unable to retreive token from OIDC provider");
@@ -422,7 +429,7 @@ public class OIDCClient {
 	 * @return the URL to logout the user from the SSO
 	 */
 	public String getLogoutUrl(final Optional<URI> redirectUriOpt, final Optional<String> idTokenOpt, final Optional<Locale> localeOpt) {
-		String logoutParam = "?client_id=" + clientID.getValue();
+		var logoutParam = "?client_id=" + clientID.getValue();
 
 		if (redirectUriOpt.isPresent()) {
 			final var logoutRedirectUriParamNameOpt = oidcParameters.logoutRedirectUriParamNameOpt();
@@ -433,7 +440,7 @@ public class OIDCClient {
 		}
 		final var logoutIdParamNameOpt = oidcParameters.logoutIdParamNameOpt();
 		if (logoutIdParamNameOpt.isPresent() && idTokenOpt.isPresent()) {
-			final String idToken = idTokenOpt.get();
+			final var idToken = idTokenOpt.get();
 			if (!StringUtil.isBlank(idToken)) { //if we have a OIDC ID TOKEN : we send it to the logout endpoint
 				logoutParam += "&";
 				logoutParam += logoutIdParamNameOpt.get() + "=" + idToken;
