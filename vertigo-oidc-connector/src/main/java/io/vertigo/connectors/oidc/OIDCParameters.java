@@ -39,5 +39,8 @@ public final record OIDCParameters(
 		boolean dontFailAtStartup,
 
 		Optional<String> trustStoreUrlOpt,
-		Optional<String> trustStorePasswordOpt) {
+		Optional<String> trustStorePasswordOpt,
+
+		Optional<String> proxyHostOpt,
+		int proxyPort) {
 }

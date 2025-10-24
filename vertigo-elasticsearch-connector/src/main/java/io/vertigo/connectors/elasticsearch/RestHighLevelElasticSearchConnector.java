@@ -44,6 +44,7 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.RestHighLevelClientBuilder;
 
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.WrappedException;
@@ -51,7 +52,6 @@ import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
-import org.elasticsearch.client.RestHighLevelClientBuilder;
 
 /**
  * Gestion de la connexion au serveur elasticSearch en mode HTTP.
@@ -111,7 +111,7 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 				.when(ssl, () -> Assertion.check()
 						.isTrue(trustStoreUrlOpt.isPresent()
 								&& trustStorePasswordOpt.isPresent(),
-								"When SSL is enabled, you must set apiKey, trustStoreUrl and trustStorePassword"));
+								"When SSL is enabled, you must set trustStoreUrl and trustStorePassword"));
 		// ---------------------------------------------------------------------
 		connectorName = connectorNameOpt.orElse("main");
 		serversNames = serversNamesStr.split(",");
