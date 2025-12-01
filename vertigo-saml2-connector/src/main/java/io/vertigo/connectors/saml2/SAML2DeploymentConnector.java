@@ -19,7 +19,7 @@ package io.vertigo.connectors.saml2;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.node.component.Connector;

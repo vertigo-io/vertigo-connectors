@@ -20,7 +20,7 @@ package io.vertigo.connectors.ldap;
 import java.util.Hashtable;
 import java.util.Optional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.naming.CommunicationException;
 import javax.naming.Context;
 import javax.naming.NamingException;

@@ -27,7 +27,7 @@ import java.security.cert.CertificateException;
 import java.time.Instant;
 import java.util.Optional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 

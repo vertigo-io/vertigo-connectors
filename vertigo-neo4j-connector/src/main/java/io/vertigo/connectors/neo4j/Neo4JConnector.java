@@ -20,7 +20,7 @@ package io.vertigo.connectors.neo4j;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Config;

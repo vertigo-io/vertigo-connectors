@@ -23,7 +23,7 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.util.Optional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 

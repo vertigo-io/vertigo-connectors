@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.param.ParamValue;

@@ -19,7 +19,7 @@ package io.vertigo.connectors.mongodb;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;

@@ -20,7 +20,7 @@ package io.vertigo.connectors.azure.aad;
 import java.net.MalformedURLException;
 import java.util.Optional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import com.microsoft.aad.msal4j.ClientCredentialFactory;
 import com.microsoft.aad.msal4j.ConfidentialClientApplication;

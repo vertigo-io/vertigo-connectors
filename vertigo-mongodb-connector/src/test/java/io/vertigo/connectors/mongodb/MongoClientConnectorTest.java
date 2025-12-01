@@ -17,7 +17,7 @@
  */
 package io.vertigo.connectors.mongodb;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.bson.BsonValue;
 import org.bson.codecs.configuration.CodecRegistries;

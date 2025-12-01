@@ -19,7 +19,7 @@ package io.vertigo.connectors.javalin;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import io.javalin.Javalin;
 import io.vertigo.core.lang.Assertion;
