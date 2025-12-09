@@ -19,11 +19,10 @@ package io.vertigo.connectors.javalin;
 
 import java.util.Optional;
 
-import jakarta.inject.Inject;
-
 import io.javalin.Javalin;
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.param.ParamValue;
+import jakarta.inject.Inject;
 
 /**
  * @author npiedeloup
