@@ -17,30 +17,34 @@
  */
 package io.vertigo.connectors.httpclient;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ProxySelector;
-import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Builder;
 import java.net.http.HttpClient.Redirect;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Optional;
 
 import jakarta.inject.Inject;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 
+import io.vertigo.connectors.ssl.ConnectorSslUtil;
 import io.vertigo.core.lang.Assertion;
-import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
 
 /**
+ * Connector that acts as a factory for {@link java.net.http.HttpClient} instances.
+ *
+ * <p>Unlike connectors that wrap a shared connection pool, each call to {@link #getClient()}
+ * returns a <em>new</em> {@code HttpClient} configured with the same settings (base URL,
+ * proxy, timeout, optional SSL context).  Callers are therefore responsible for reusing
+ * the returned client appropriately for their use-case.</p>
+ *
+ * <p>Because no long-lived connection is held, this connector does <em>not</em> implement
+ * {@link io.vertigo.core.node.component.Activeable}: there is nothing to start or stop.</p>
+ *
  * @author npiedeloup
  */
 public class HttpClientConnector implements Connector<HttpClient> {
@@ -75,11 +79,7 @@ public class HttpClientConnector implements Connector<HttpClient> {
 		proxyOpt = proxyHostOpt.map(proxy -> ProxySelector.of(new InetSocketAddress(proxy, proxyPortOpt.get())));
 
 		if (trustStoreUrlOpt.isPresent()) {
-			try {
-				sslContextOpt = Optional.of(createTrustStoreSslContext(resourceManager.resolve(trustStoreUrlOpt.get()), trustStorePasswordOpt.orElseGet(() -> null)));
-			} catch (final Exception e) {
-				throw WrappedException.wrap(e);
-			}
+			sslContextOpt = Optional.of(ConnectorSslUtil.buildSslContext(resourceManager.resolve(trustStoreUrlOpt.get()), trustStorePasswordOpt.orElse(null)));
 		} else {
 			sslContextOpt = Optional.empty();
 		}
@@ -107,20 +107,6 @@ public class HttpClientConnector implements Connector<HttpClient> {
 	@Override
 	public String getName() {
 		return connectionName;
-	}
-
-	private static SSLContext createTrustStoreSslContext(final URL trustStoreUrl, final String trustStorePassword) throws GeneralSecurityException, IOException {
-		final var trustStore = KeyStore.getInstance("pkcs12");
-		try (var inputStream = trustStoreUrl.openStream()) {
-			trustStore.load(inputStream, trustStorePassword.toCharArray());
-		}
-
-		final var trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-		trustManagerFactory.init(trustStore);
-		final var trustManagers = trustManagerFactory.getTrustManagers();
-		final var sslContext = SSLContext.getInstance("TLSv1.2");
-		sslContext.init(null, trustManagers, new SecureRandom());
-		return sslContext;
 	}
 
 }

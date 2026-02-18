@@ -18,18 +18,13 @@
 package io.vertigo.connectors.elasticsearch;
 
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyStore;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.inject.Inject;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
@@ -46,12 +41,14 @@ import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.RestHighLevelClientBuilder;
 
+import io.vertigo.connectors.ssl.ConnectorSslUtil;
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
+import jakarta.inject.Inject;
 
 /**
  * Gestion de la connexion au serveur elasticSearch en mode HTTP.
@@ -153,21 +150,6 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 		}
 	}
 
-	private static SSLContext createTrustStoreSslContext(final URL trustStoreUrl, final String trustStorePassword) throws Exception {
-		final var trustStore = KeyStore.getInstance("pkcs12");
-		try (var inputStream = trustStoreUrl.openStream()) {
-			trustStore.load(inputStream, trustStorePassword.toCharArray());
-		}
-
-		final var trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-		trustManagerFactory.init(trustStore);
-		final var trustManagers = trustManagerFactory.getTrustManagers();
-
-		final var sslContext = SSLContext.getInstance("TLSv1.2");
-		sslContext.init(null, trustManagers, new SecureRandom());
-		return sslContext;
-	}
-
 	protected RestClientBuilder buildRestClientBuilder(final ResourceManager resourceManager,
 			final Optional<String> basicUserOpt, final Optional<String> basicPasswordOpt,
 			final Optional<String> apiKeyIdOpt, final Optional<String> apiKeySecretOpt,
@@ -199,12 +181,7 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 
 		final SSLContext sslContext;
 		if (trustStoreUrlOpt.isPresent()) {
-			try {
-				sslContext = createTrustStoreSslContext(resourceManager.resolve(trustStoreUrlOpt.get()), trustStorePasswordOpt.get());
-
-			} catch (final Exception e) {
-				throw WrappedException.wrap(e);
-			}
+			sslContext = ConnectorSslUtil.buildSslContext(resourceManager.resolve(trustStoreUrlOpt.get()), trustStorePasswordOpt.get());
 		} else {
 			sslContext = null;
 		}

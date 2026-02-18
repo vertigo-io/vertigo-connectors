@@ -17,29 +17,23 @@
  */
 package io.vertigo.connectors.redis;
 
-import java.net.URL;
-import java.security.KeyStore;
-import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.inject.Inject;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.vertigo.connectors.ssl.ConnectorSslUtil;
 import io.vertigo.core.lang.Assertion;
-import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
+import jakarta.inject.Inject;
 import redis.clients.jedis.ConnectionPoolConfig;
 import redis.clients.jedis.DefaultJedisClientConfig;
 import redis.clients.jedis.HostAndPort;
@@ -131,15 +125,11 @@ public class RedisConnector implements Connector<UnifiedJedis>, Activeable {
 		passwordOpt.ifPresent(jedisClientConfigBuilder::password);
 
 		if (trustStoreUrlOpt.isPresent()) {
-			try {
-				final var sslSocketFactory = createTrustStoreSslSocketFactory(resourceManager.resolve(trustStoreUrlOpt.get()), trustStorePasswordOpt.get());
-				final var sslParameters = new SSLParameters();
-				jedisClientConfigBuilder
-						.sslParameters(sslParameters)
-						.sslSocketFactory(sslSocketFactory);
-			} catch (final Exception e) {
-				throw WrappedException.wrap(e);
-			}
+			final var sslSocketFactory = ConnectorSslUtil.buildSslSocketFactory(resourceManager.resolve(trustStoreUrlOpt.get()), trustStorePasswordOpt.get());
+			final var sslParameters = new SSLParameters();
+			jedisClientConfigBuilder
+					.sslParameters(sslParameters)
+					.sslSocketFactory(sslSocketFactory);
 		}
 		final JedisClientConfig jedisClientConfig = jedisClientConfigBuilder.build();
 
@@ -239,21 +229,6 @@ public class RedisConnector implements Connector<UnifiedJedis>, Activeable {
 	@Override
 	public void stop() {
 		((VJedisCloseable) unifiedJedis).closeJedisUnified();
-	}
-
-	private static SSLSocketFactory createTrustStoreSslSocketFactory(final URL trustStoreUrl, final String trustStorePassword) throws Exception {
-		final var trustStore = KeyStore.getInstance("pkcs12");
-		try (var inputStream = trustStoreUrl.openStream()) {
-			trustStore.load(inputStream, trustStorePassword.toCharArray());
-		}
-
-		final var trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-		trustManagerFactory.init(trustStore);
-		final var trustManagers = trustManagerFactory.getTrustManagers();
-
-		final var sslContext = SSLContext.getInstance("TLSv1.2");
-		sslContext.init(null, trustManagers, new SecureRandom());
-		return sslContext.getSocketFactory();
 	}
 
 }

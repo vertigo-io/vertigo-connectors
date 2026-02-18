@@ -12,6 +12,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>vertigo-connector-commons</module>
 		<module>vertigo-azure-connector</module>
 		<module>vertigo-redis-connector</module>
 		<module>vertigo-mqtt-connector</module>

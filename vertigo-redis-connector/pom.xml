@@ -24,6 +24,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-connector-commons</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
 		</dependency>

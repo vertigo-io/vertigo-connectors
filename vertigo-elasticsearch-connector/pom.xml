@@ -72,6 +72,11 @@
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
+		<dependency>
+			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-connector-commons</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<!-- Search -->
 		<dependency>
