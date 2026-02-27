@@ -17,14 +17,13 @@
  */
 package io.vertigo.connectors.elasticsearch;
 
-import org.elasticsearch.client.Client;
-
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.node.component.Connector;
 
 /**
  * @author npiedeloup
  */
-public interface ElasticSearchConnector extends Connector<Client>, Activeable {
+public interface ElasticSearchConnector extends Connector<ElasticsearchClient>, Activeable {
 	//
 }

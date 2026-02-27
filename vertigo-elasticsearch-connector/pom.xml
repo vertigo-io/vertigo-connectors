@@ -39,9 +39,9 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.elasticsearch</groupId>
-				<artifactId>elasticsearch</artifactId>
-				<version>7.17.28</version>
+				<groupId>co.elastic.clients</groupId>
+			    <artifactId>elasticsearch-java</artifactId>
+				<version>9.2.3</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.apache.logging.log4j</groupId>
@@ -49,54 +49,18 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			<dependency>
-				<groupId>org.elasticsearch.client</groupId>
-				<artifactId>elasticsearch-rest-high-level-client</artifactId>
-				<version>7.17.28</version>
-			</dependency>
-			<dependency>
-				<groupId>org.elasticsearch.client</groupId>
-				<artifactId>x-pack-transport</artifactId>
-				<version>7.17.28</version>
-			</dependency>
-			<dependency>
-				<groupId>org.codelibs.elasticsearch.module</groupId>
-				<artifactId>analysis-common</artifactId>
-				<version>7.17.22</version>
-			</dependency>
-			<dependency>
-				<groupId>org.codelibs.elasticsearch.module</groupId>
-				<artifactId>mapper-extras</artifactId>
-				<version>7.17.22</version>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
-
 		<!-- Search -->
 		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
+				<groupId>co.elastic.clients</groupId>
+			    <artifactId>elasticsearch-java</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>elasticsearch-rest-high-level-client</artifactId>
-			<optional>true</optional> <!-- RestElasticSearchConnector -->
-		</dependency>
-		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>x-pack-transport</artifactId>
-			<optional>true</optional> <!-- SecuredTransportSearchConnector -->
-		</dependency>
-		<dependency>
-			<groupId>org.codelibs.elasticsearch.module</groupId>
-			<artifactId>analysis-common</artifactId>
-			<optional>true</optional> <!-- required by EmbeddedSearchServicesPlugin -->
-		</dependency>
-		<dependency>
-			<groupId>org.codelibs.elasticsearch.module</groupId>
-			<artifactId>mapper-extras</artifactId>
-			<optional>true</optional> <!-- required by ESEmbeddedSearchServicesPlugin -->
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.18.3</version>
 		</dependency>
 	</dependencies>
 </project>
