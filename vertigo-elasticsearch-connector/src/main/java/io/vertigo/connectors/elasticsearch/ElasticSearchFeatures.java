@@ -41,6 +41,13 @@ public final class ElasticSearchFeatures extends Features<ElasticSearchFeatures>
 				.addConnector(RestElasticSearchConnector.class, params);
 		return this;
 	}
+	
+	@Feature("embeddedServer")
+	public ElasticSearchFeatures withEmbeddedServer(final Param... params) {
+		getModuleConfigBuilder()
+				.addComponent(EmbeddedElasticSearchServer.class, params);
+		return this;
+	}
 
 	/** {@inheritDoc} */
 	@Override
