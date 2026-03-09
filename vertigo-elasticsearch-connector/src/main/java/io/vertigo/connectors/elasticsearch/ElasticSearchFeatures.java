@@ -41,9 +41,14 @@ public final class ElasticSearchFeatures extends Features<ElasticSearchFeatures>
 				.addConnector(RestElasticSearchConnector.class, params);
 		return this;
 	}
-	
+
 	@Feature("embeddedServer")
 	public ElasticSearchFeatures withEmbeddedServer(final Param... params) {
+		/**
+		 * To use EmbeddedServer with org.testcontainers, we need to declare a varEnv DOCKER_HOST to point on docker socket
+		 * To active socket on a docket with WSL, you shoud edit "/lib/systemd/system/docker.service" and add this line in [Service] section:
+		 * ExecStart=/usr/bin/dockerd -H fd:// -H tcp://127.0.0.1:2375 --containerd=/run/containerd/containerd.sock
+		 */
 		getModuleConfigBuilder()
 				.addComponent(EmbeddedElasticSearchServer.class, params);
 		return this;
