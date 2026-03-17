@@ -24,6 +24,7 @@ import javax.inject.Inject;
 
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.TestcontainersConfiguration;
 
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.node.component.Activeable;
@@ -42,6 +43,7 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 
 	public static final String DEFAULT_VERTIGO_ES_CLUSTER_NAME = "vertigo-elasticsearch-test";
 	//private static final String DEFAULT_ES_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch:7.17.28";
+	private static final String DEFAULT_DOCKER_HOST = "tcp://localhost:2375";
 	private static final String DEFAULT_ES_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch:9.2.3";
 
 	private final ElasticsearchContainer container;
@@ -56,6 +58,7 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 	 */
 	@Inject
 	public EmbeddedElasticSearchServer(
+			@ParamValue("docker.host") final Optional<String> dockerHostOpt,
 			@ParamValue("esImage") final Optional<String> imageOpt,
 			@ParamValue("cluster.name") final Optional<String> clusterNameOpt,
 			@ParamValue("http.port") final Optional<Integer> httpPortOpt,
@@ -65,6 +68,8 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 		final String clusterName = clusterNameOpt.orElse(DEFAULT_VERTIGO_ES_CLUSTER_NAME);
 		final int httpPort = httpPortOpt.orElse(DEFAULT_HTTP_PORT);
 		final int transportPort = transportPortOpt.orElse(DEFAULT_TRANSPORT_PORT);
+
+		TestcontainersConfiguration.getInstance().updateUserConfig("docker.host", dockerHostOpt.orElse(DEFAULT_DOCKER_HOST));
 
 		// Définition du conteneur
 		container = new ElasticsearchContainer(DockerImageName.parse(imageName))
