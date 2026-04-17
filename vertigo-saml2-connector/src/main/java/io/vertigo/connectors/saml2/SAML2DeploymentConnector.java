@@ -34,7 +34,7 @@ import io.vertigo.core.resource.ResourceManager;
  */
 public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 
-	private final SAML2Parameters oidcParameters;
+	private final SAML2Parameters samlParameters;
 	private final String connectorName;
 
 	@Inject
@@ -60,7 +60,7 @@ public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 				.isNotNull(resourceManager);
 		//---
 		connectorName = connectorNameOpt.orElse("main");
-		oidcParameters = new SAML2Parameters(
+		samlParameters = new SAML2Parameters(
 				clientName,
 				externalUrlOpt,
 				signatureTypeOpt.orElse("RSA-SHA256"),
@@ -83,7 +83,7 @@ public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 	 */
 	@Override
 	public SAML2Parameters getClient() {
-		return oidcParameters;
+		return samlParameters;
 	}
 
 }
