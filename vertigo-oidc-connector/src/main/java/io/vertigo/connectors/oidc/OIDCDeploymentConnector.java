@@ -22,7 +22,6 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 import io.vertigo.core.lang.Assertion;
-import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
 
@@ -31,7 +30,7 @@ import io.vertigo.core.resource.ResourceManager;
  *
  * @author skerdudou
  */
-public class OIDCDeploymentConnector implements Connector<OIDCClient> {
+public class OIDCDeploymentConnector implements IOIDCDeploymentConnector {
 
 	private final OIDCClient oidcClient;
 	private final String connectorName;
