@@ -20,6 +20,7 @@ package io.vertigo.connectors.mqtt;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines commons module.
@@ -36,6 +37,8 @@ public final class MqttFeatures extends Features<MqttFeatures> {
 
 	@Feature("mosquitto")
 	public MqttFeatures withMosquitto(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(MosquittoConnector.class, params);
 		return this;

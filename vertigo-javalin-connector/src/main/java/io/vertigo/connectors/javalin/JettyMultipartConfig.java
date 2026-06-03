@@ -19,6 +19,7 @@ package io.vertigo.connectors.javalin;
 
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
+import io.vertigo.core.lang.Assertion;
 import jakarta.servlet.MultipartConfigElement;
 
 /**
@@ -37,6 +38,8 @@ public final class JettyMultipartConfig implements Handler {
 	 * @param tempPath path for uploaded tempfiles
 	 */
 	public JettyMultipartConfig(final String tempPath) {
+		Assertion.check().isNotBlank(tempPath);
+		//---
 		multipartConfigElement = new MultipartConfigElement(tempPath, MAX_PARTS_SIZE, MAX_NB_PARTS * MAX_PARTS_SIZE, MAX_PART_SIZE_IN_MEMORY);
 	}
 
@@ -47,6 +50,8 @@ public final class JettyMultipartConfig implements Handler {
 	/** {@inheritDoc} */
 	@Override
 	public void handle(final Context ctx) throws Exception {
+		Assertion.check().isNotNull(ctx);
+		//---
 		ctx.req().setAttribute(JETTY_CONFIG_ATTRIBUTE, multipartConfigElement);
 	}
 

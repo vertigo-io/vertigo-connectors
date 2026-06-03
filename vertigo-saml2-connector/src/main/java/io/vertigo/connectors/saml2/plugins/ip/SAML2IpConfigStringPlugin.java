@@ -29,6 +29,7 @@ import org.opensaml.security.credential.Credential;
 
 import io.vertigo.connectors.saml2.SAML2IpConfigPlugin;
 import io.vertigo.connectors.saml2.plugins.CertUtil;
+import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.util.StringUtil;
 
@@ -44,7 +45,12 @@ public class SAML2IpConfigStringPlugin implements SAML2IpConfigPlugin {
 			@ParamValue("logoutUrl") final String logoutUrl,
 			@ParamValue("publicKey") final String publicKey,
 			@ParamValue("nextPublicKey") final Optional<String> nextPublicKeyOpt) {
-
+		Assertion.check()
+				.isNotBlank(loginUrl)
+				.isNotBlank(logoutUrl)
+				.isNotBlank(publicKey)
+				.isNotNull(nextPublicKeyOpt);
+		//---
 		Security.addProvider(new BouncyCastleProvider()); //PKCS1 support
 
 		credentials = new ArrayList<>();

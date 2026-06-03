@@ -20,6 +20,7 @@ package io.vertigo.connectors.neo4j;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines commons module.
@@ -36,6 +37,8 @@ public final class Neo4jFeatures extends Features<Neo4jFeatures> {
 
 	@Feature("GPL.embeddedServer")
 	public Neo4jFeatures withGPLEmbeddedServer(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addComponent(Neo4jGPLEmbeddedServer.class, params);
 		return this;
@@ -44,6 +47,8 @@ public final class Neo4jFeatures extends Features<Neo4jFeatures> {
 
 	@Feature("neo4j")
 	public Neo4jFeatures withNeo4j(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(Neo4JConnector.class, params);
 		return this;

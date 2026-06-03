@@ -20,6 +20,7 @@ package io.vertigo.connectors.javalin;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines javalin connector module.
@@ -36,6 +37,8 @@ public final class JavalinFeatures extends Features<JavalinFeatures> {
 
 	@Feature("embeddedServer")
 	public JavalinFeatures withEmbeddedServer(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(EmbeddedJavalinConnector.class, params);
 		return this;
@@ -43,6 +46,8 @@ public final class JavalinFeatures extends Features<JavalinFeatures> {
 
 	@Feature("standalone")
 	public JavalinFeatures withStandalone(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(StandaloneJavalinConnector.class, params);
 		return this;

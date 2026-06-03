@@ -20,6 +20,7 @@ package io.vertigo.connectors.ldap;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines LdapConnector module.
@@ -36,6 +37,8 @@ public final class LdapFeatures extends Features<LdapFeatures> {
 
 	@Feature("ldap")
 	public LdapFeatures withLdap(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(LdapConnector.class, params);
 		return this;

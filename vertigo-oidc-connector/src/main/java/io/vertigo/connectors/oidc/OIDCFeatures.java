@@ -20,6 +20,7 @@ package io.vertigo.connectors.oidc;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines commons module.
@@ -36,6 +37,8 @@ public class OIDCFeatures extends Features<OIDCFeatures> {
 
 	@Feature("oidc")
 	public OIDCFeatures withConfig(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(OIDCDeploymentConnector.class, params);
 		return this;

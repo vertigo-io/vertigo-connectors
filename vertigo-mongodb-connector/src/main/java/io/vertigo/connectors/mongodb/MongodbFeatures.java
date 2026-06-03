@@ -20,6 +20,7 @@ package io.vertigo.connectors.mongodb;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * MongoDb features
@@ -37,6 +38,8 @@ public final class MongodbFeatures extends Features<MongodbFeatures> {
 
 	@Feature("mongo")
 	public MongodbFeatures withMongoClient(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(MongoClientConnector.class, params);
 

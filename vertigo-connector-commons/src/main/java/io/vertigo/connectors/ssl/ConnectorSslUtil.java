@@ -89,6 +89,10 @@ public final class ConnectorSslUtil {
 	 * @return an {@link SSLSocketFactory} derived from a TLSv1.2 {@link SSLContext}
 	 */
 	public static SSLSocketFactory buildSslSocketFactory(final URL trustStoreUrl, final String trustStorePassword) {
+		Assertion.check()
+				.isNotNull(trustStoreUrl)
+				.isNotNull(trustStorePassword);
+		//---
 		return buildSslContext(trustStoreUrl, trustStorePassword).getSocketFactory();
 	}
 }

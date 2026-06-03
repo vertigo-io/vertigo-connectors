@@ -19,6 +19,7 @@ package io.vertigo.connectors.redis;
 
 import java.time.Duration;
 
+import io.vertigo.core.lang.Assertion;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.providers.ClusterConnectionProvider;
 
@@ -30,6 +31,9 @@ class VJedisCluster extends JedisCluster implements VJedisCloseable {
 
 	public VJedisCluster(final ClusterConnectionProvider clusterConnectionProvider, final int maxAttempts, final Duration ofMillis) {
 		super(clusterConnectionProvider, maxAttempts, ofMillis);
+		Assertion.check()
+				.isNotNull(clusterConnectionProvider)
+				.isNotNull(ofMillis);
 	}
 
 	@Override

@@ -79,6 +79,8 @@ public class LdapConnector implements Connector<LdapContext> {
 	 * @return LDAP resource
 	 */
 	public LdapContext createLdapContext(final String userProtectedPrincipal, final String credentials) throws NamingException {
+		Assertion.check().isNotBlank(userProtectedPrincipal);
+		//---
 		final Hashtable<String, String> env = new Hashtable<>();
 		env.put(Context.INITIAL_CONTEXT_FACTORY, DEFAULT_CONTEXT_FACTORY_CLASS_NAME);
 		env.put(Context.REFERRAL, DEFAULT_REFERRAL);

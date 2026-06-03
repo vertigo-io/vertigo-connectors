@@ -49,7 +49,9 @@ public class Neo4jGPLEmbeddedServer implements Component, Activeable {
 			@ParamValue("home") final String home,
 			final ResourceManager resourceManager) throws URISyntaxException {
 
-		Assertion.check().isNotBlank(home);
+		Assertion.check()
+				.isNotBlank(home)
+				.isNotNull(resourceManager);
 		//---
 		final Path homeFile = Paths.get(resourceManager.resolve(home).toURI());
 

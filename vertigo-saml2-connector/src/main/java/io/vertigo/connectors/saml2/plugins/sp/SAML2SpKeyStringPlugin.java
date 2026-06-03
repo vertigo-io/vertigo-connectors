@@ -29,6 +29,7 @@ import org.opensaml.security.credential.Credential;
 
 import io.vertigo.connectors.saml2.SAML2SpKeyPlugin;
 import io.vertigo.connectors.saml2.plugins.CertUtil;
+import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.VSystemException;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.util.StringUtil;
@@ -43,7 +44,12 @@ public class SAML2SpKeyStringPlugin implements SAML2SpKeyPlugin {
 			@ParamValue("privateKey") final String myPrivateKey,
 			@ParamValue("nextPublicKey") final Optional<String> nextPublicKeyOpt,
 			@ParamValue("nextPrivateKey") final Optional<String> nextPrivateKeyOpt) {
-
+		Assertion.check()
+				.isNotBlank(myPublicKey)
+				.isNotBlank(myPrivateKey)
+				.isNotNull(nextPublicKeyOpt)
+				.isNotNull(nextPrivateKeyOpt);
+		//---
 		Security.addProvider(new BouncyCastleProvider()); //PKCS1 support
 
 		credentials = new ArrayList<>();

@@ -20,6 +20,7 @@ package io.vertigo.connectors.elasticsearch;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines ElasticSearchConnector module.
@@ -36,6 +37,8 @@ public final class ElasticSearchFeatures extends Features<ElasticSearchFeatures>
 
 	@Feature("embeddedServer")
 	public ElasticSearchFeatures withEmbeddedServer(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addComponent(EmbeddedElasticSearchServer.class, params);
 		return this;
@@ -43,6 +46,8 @@ public final class ElasticSearchFeatures extends Features<ElasticSearchFeatures>
 
 	@Feature("transport")
 	public ElasticSearchFeatures withTransport(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(TransportElasticSearchConnector.class, params);
 		return this;
@@ -50,6 +55,8 @@ public final class ElasticSearchFeatures extends Features<ElasticSearchFeatures>
 
 	@Feature("node")
 	public ElasticSearchFeatures withNode(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(NodeElasticSearchConnector.class, params);
 		return this;
@@ -57,6 +64,8 @@ public final class ElasticSearchFeatures extends Features<ElasticSearchFeatures>
 
 	@Feature("restHL")
 	public ElasticSearchFeatures withRestHL(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(RestHighLevelElasticSearchConnector.class, params);
 		return this;

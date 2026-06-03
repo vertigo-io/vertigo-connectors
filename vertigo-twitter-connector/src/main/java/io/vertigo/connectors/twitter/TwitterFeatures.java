@@ -20,6 +20,7 @@ package io.vertigo.connectors.twitter;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines commons module.
@@ -36,6 +37,8 @@ public final class TwitterFeatures extends Features<TwitterFeatures> {
 
 	@Feature("twitter4j")
 	public TwitterFeatures withTwitter4j(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(Twitter4jConnector.class, params);
 		return this;

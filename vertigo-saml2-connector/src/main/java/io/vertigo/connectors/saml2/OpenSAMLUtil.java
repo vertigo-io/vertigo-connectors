@@ -130,6 +130,8 @@ public final class OpenSAMLUtil {
 	}
 
 	public static String resolveSignatureType(final String type) {
+		io.vertigo.core.lang.Assertion.check().isNotBlank(type);
+		//---
 		final var normalizedType = NORMALIZER_PATTERN.matcher(type).replaceAll("")
 				.toLowerCase();
 		return switch (normalizedType) {
@@ -142,6 +144,8 @@ public final class OpenSAMLUtil {
 	}
 
 	public static Issuer buildIssuer(final String issuerName) {
+		io.vertigo.core.lang.Assertion.check().isNotBlank(issuerName);
+		//---
 		final var issuer = new IssuerBuilder().buildObject();
 		issuer.setValue(issuerName);
 
@@ -153,6 +157,8 @@ public final class OpenSAMLUtil {
 	}
 
 	public static Endpoint urlToEndpoint(final String URL) {
+		io.vertigo.core.lang.Assertion.check().isNotBlank(URL);
+		//---
 		final var endpoint = new SingleSignOnServiceBuilder().buildObject();
 		endpoint.setBinding(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
 		endpoint.setLocation(URL);
@@ -161,6 +167,8 @@ public final class OpenSAMLUtil {
 	}
 
 	public static Response extractSamlResponse(final ByteArrayInputStream is) {
+		io.vertigo.core.lang.Assertion.check().isNotNull(is);
+		//---
 		try {
 			final var factory = DocumentBuilderFactory.newInstance();
 			// for safety, disable function that might fetch external entities
@@ -183,6 +191,8 @@ public final class OpenSAMLUtil {
 	}
 
 	public static Map<String, Object> extractAttributes(final Assertion assertion) {
+		io.vertigo.core.lang.Assertion.check().isNotNull(assertion);
+		//---
 		return assertion.getAttributeStatements().stream()
 				.flatMap(a -> a.getAttributes().stream())
 				.collect(HashMap::new, (m, v) -> m.put(v.getName(), resolveAttributeValue(v)), HashMap::putAll);
@@ -202,6 +212,11 @@ public final class OpenSAMLUtil {
 	}
 
 	public static void addKeyDescriptor(final SPSSODescriptor spSSODescriptor, final Credential credential, final UsageType usageType, final boolean isExtractPublicKeyFromCertificate) {
+		io.vertigo.core.lang.Assertion.check()
+				.isNotNull(spSSODescriptor)
+				.isNotNull(credential)
+				.isNotNull(usageType);
+		//---
 		final var keyInfo = getKeyInfo(credential, isExtractPublicKeyFromCertificate);
 
 		final var signKeyDescriptor = new KeyDescriptorBuilder().buildObject();

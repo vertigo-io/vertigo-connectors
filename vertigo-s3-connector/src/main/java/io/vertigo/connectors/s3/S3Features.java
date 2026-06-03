@@ -20,6 +20,7 @@ package io.vertigo.connectors.s3;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines commons module.
@@ -37,6 +38,8 @@ public class S3Features extends Features<S3Features> {
 
 	@Feature("s3")
 	public S3Features withConfig(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(S3Connector.class, params);
 		return this;

@@ -20,6 +20,7 @@ package io.vertigo.connectors.jsch;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 public class JSchConnectorFeatures extends Features<JSchConnectorFeatures> {
 
@@ -29,6 +30,8 @@ public class JSchConnectorFeatures extends Features<JSchConnectorFeatures> {
 
 	@Feature("jsch.keyAuth")
 	public JSchConnectorFeatures withKeyAuthentication(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(JSchKeyAuthConnector.class, params);
 		return this;

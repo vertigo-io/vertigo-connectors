@@ -20,6 +20,7 @@ package io.vertigo.connectors.ifttt;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines commons module.
@@ -36,6 +37,8 @@ public final class IftttFeatures extends Features<IftttFeatures> {
 
 	@Feature("ifttt")
 	public IftttFeatures withIfttt(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(IftttConnector.class, params);
 		return this;

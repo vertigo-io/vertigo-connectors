@@ -24,6 +24,7 @@ import java.util.function.Predicate;
 
 import jakarta.inject.Inject;
 
+import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
@@ -44,6 +45,12 @@ public class SAML2IpConfigFilePlugin extends SAML2IpConfigStringPlugin {
 				nextPublicKeyFileOpt
 						.filter(Predicate.not(StringUtil::isBlank))
 						.map(keyFile -> readFileContent(resourceManager, keyFile)));
+		Assertion.check()
+				.isNotBlank(loginUrl)
+				.isNotBlank(logoutUrl)
+				.isNotBlank(publicKey)
+				.isNotNull(nextPublicKeyFileOpt)
+				.isNotNull(resourceManager);
 	}
 
 	private static String readFileContent(final ResourceManager resourceManager, final String path) {

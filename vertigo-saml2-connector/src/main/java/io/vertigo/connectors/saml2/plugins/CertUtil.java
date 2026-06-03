@@ -45,6 +45,7 @@ import org.opensaml.security.credential.BasicCredential;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.security.x509.BasicX509Credential;
 
+import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.VSystemException;
 import io.vertigo.core.lang.WrappedException;
 
@@ -56,6 +57,10 @@ public final class CertUtil {
 	}
 
 	public static Credential getCredentialFromString(final String publicKeyString, final String privateKeyString) {
+		Assertion.check()
+				.isNotBlank(publicKeyString)
+				.isNotBlank(privateKeyString);
+		//---
 		final var privKey = privateKeyFromPem(privateKeyString);
 
 		if (publicKeyString.startsWith("-----BEGIN CERTIFICATE-----")) {
@@ -68,6 +73,8 @@ public final class CertUtil {
 	}
 
 	public static Credential getCredentialFromString(final String publicKeyString) {
+		Assertion.check().isNotBlank(publicKeyString);
+		//---
 		if (publicKeyString.startsWith("-----BEGIN CERTIFICATE-----")) {
 			final var pubKey = readX509FromString(publicKeyString);
 			return new BasicX509Credential(pubKey);
@@ -78,6 +85,8 @@ public final class CertUtil {
 	}
 
 	public static X509Certificate readX509FromString(final String source) {
+		Assertion.check().isNotBlank(source);
+		//---
 		try {
 			final var factory = CertificateFactory.getInstance("X.509");
 			return (X509Certificate) factory.generateCertificate(
@@ -120,12 +129,24 @@ public final class CertUtil {
 	}
 
 	public static List<Credential> getCredentialsFromKeystore(final URL ksUrl, final String[] aliases, final char[] keystorePassword, final boolean withPrivateKey, final String keystoreType) {
+		Assertion.check()
+				.isNotNull(ksUrl)
+				.isNotNull(aliases)
+				.isNotNull(keystorePassword)
+				.isNotBlank(keystoreType);
+		//---
 		return Arrays.stream(aliases)
 				.map(alias -> getCredentialFromKeystore(ksUrl, alias, keystorePassword, withPrivateKey, keystoreType))
 				.toList();
 	}
 
 	public static Credential getCredentialFromKeystore(final URL ksUrl, final String alias, final char[] keystorePassword, final boolean withPrivateKey, final String keystoreType) {
+		Assertion.check()
+				.isNotNull(ksUrl)
+				.isNotBlank(alias)
+				.isNotNull(keystorePassword)
+				.isNotBlank(keystoreType);
+		//---
 		// Note: could have used KeyStoreCredentialResolver from opensaml
 		try (final var inputStream = ksUrl.openStream()) {
 			final var store = KeyStore.getInstance(keystoreType);

@@ -21,6 +21,7 @@ import io.vertigo.connectors.azure.aad.AzureAdConnector;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines Azure module.
@@ -37,6 +38,8 @@ public final class AzureFeatures extends Features<AzureFeatures> {
 
 	@Feature("aad")
 	public AzureFeatures withAzureAd(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(AzureAdConnector.class, params);
 		return this;

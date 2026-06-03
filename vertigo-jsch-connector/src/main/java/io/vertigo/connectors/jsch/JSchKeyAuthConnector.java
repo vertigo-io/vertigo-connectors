@@ -46,6 +46,14 @@ public class JSchKeyAuthConnector implements JSchConnector {
 			@ParamValue("keyStorePassword") final String keyStorePassword,
 			@ParamValue("privateKeyAlias") final String privateKeyAlias,
 			@ParamValue("knownHostUrlOpt") final Optional<String> knownHostUrlOpt) {
+		Assertion.check()
+				.isNotNull(resourceManager)
+				.isNotBlank(username)
+				.isNotBlank(keyStoreUrl)
+				.isNotBlank(keyStorePassword)
+				.isNotBlank(privateKeyAlias)
+				.isNotNull(knownHostUrlOpt);
+		//---
 		try {
 			final var createdJSch = new JSch();
 			final var keyStoreResolvedUrl = resourceManager.resolve(keyStoreUrl);

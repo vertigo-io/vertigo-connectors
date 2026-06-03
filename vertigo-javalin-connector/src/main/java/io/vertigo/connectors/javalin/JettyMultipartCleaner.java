@@ -27,6 +27,7 @@ import org.eclipse.jetty.http.MimeTypes;
 
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
+import io.vertigo.core.lang.Assertion;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Part;
 
@@ -40,6 +41,8 @@ public final class JettyMultipartCleaner implements Handler {
 	/** {@inheritDoc} */
 	@Override
 	public void handle(final Context ctx) {
+		Assertion.check().isNotNull(ctx);
+		//---
 		try {
 			final String contentType = ctx.req().getContentType();
 			if (contentType != null && MimeTypes.Type.MULTIPART_FORM_DATA.is(HttpField.valueParameters(contentType, null))) {

@@ -51,6 +51,7 @@ import org.opensaml.xmlsec.config.impl.DefaultSecurityConfigurationBootstrap;
 import io.vertigo.connectors.saml2.OpenSAMLUtil;
 import io.vertigo.connectors.saml2.SAML2IpConfigPlugin;
 import io.vertigo.connectors.saml2.plugins.CertUtil;
+import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.VSystemException;
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.param.ParamValue;
@@ -74,7 +75,13 @@ public class SAML2IpConfigMetadataPlugin implements SAML2IpConfigPlugin {
 			@ParamValue("nextCertFile") final Optional<String> alternateCertFileOpt,
 			@ParamValue("simpleLogoutUrl") final Optional<String> simpleLogoutUrl,
 			final ResourceManager resourceManager) {
-
+		Assertion.check()
+				.isNotBlank(metadataFilePath)
+				.isNotNull(nextMetadataFileOpt)
+				.isNotNull(alternateCertFileOpt)
+				.isNotNull(simpleLogoutUrl)
+				.isNotNull(resourceManager);
+		//---
 		final var parserPool = OpenSAMLUtil.initOpenSamlIfNeeded();
 
 		final var metadataFileUrl = resourceManager.resolve(metadataFilePath);

@@ -17,6 +17,7 @@
  */
 package io.vertigo.connectors.redis;
 
+import io.vertigo.core.lang.Assertion;
 import redis.clients.jedis.JedisSentineled;
 import redis.clients.jedis.providers.SentineledConnectionProvider;
 
@@ -28,6 +29,7 @@ class VJedisSentineled extends JedisSentineled implements VJedisCloseable {
 
 	public VJedisSentineled(final SentineledConnectionProvider sentineledConnectionProvider) {
 		super(sentineledConnectionProvider);
+		Assertion.check().isNotNull(sentineledConnectionProvider);
 	}
 
 	@Override

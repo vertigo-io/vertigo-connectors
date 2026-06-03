@@ -26,6 +26,7 @@ import org.opensaml.security.credential.Credential;
 
 import io.vertigo.connectors.saml2.SAML2IpConfigPlugin;
 import io.vertigo.connectors.saml2.plugins.CertUtil;
+import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
 
@@ -44,7 +45,15 @@ public class SAML2IpConfigKeystorePlugin implements SAML2IpConfigPlugin {
 			@ParamValue("aliases") final String aliases,
 			@ParamValue("keystoreType") final Optional<String> keystoreTypeOpt,
 			final ResourceManager resourceManager) {
-
+		Assertion.check()
+				.isNotBlank(loginUrl)
+				.isNotBlank(logoutUrl)
+				.isNotBlank(keystoreFile)
+				.isNotBlank(keystorePassword)
+				.isNotBlank(aliases)
+				.isNotNull(keystoreTypeOpt)
+				.isNotNull(resourceManager);
+		//---
 		this.loginUrl = loginUrl;
 		this.logoutUrl = logoutUrl;
 

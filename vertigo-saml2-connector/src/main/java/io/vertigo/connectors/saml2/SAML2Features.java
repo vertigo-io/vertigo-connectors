@@ -27,6 +27,7 @@ import io.vertigo.connectors.saml2.plugins.sp.SAML2SpKeyStringPlugin;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines SAML module.
@@ -43,6 +44,8 @@ public class SAML2Features extends Features<SAML2Features> {
 
 	@Feature("saml")
 	public SAML2Features withCommonConfig(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(SAML2DeploymentConnector.class, params);
 		return this;
@@ -50,6 +53,8 @@ public class SAML2Features extends Features<SAML2Features> {
 
 	@Feature("saml.certif.keystore")
 	public SAML2Features withKeystore(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addPlugin(SAML2SpKeyKeystorePlugin.class, params);
 		return this;
@@ -57,6 +62,8 @@ public class SAML2Features extends Features<SAML2Features> {
 
 	@Feature("saml.certif.file")
 	public SAML2Features withKeyfiles(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addPlugin(SAML2SpKeyFilePlugin.class, params);
 		return this;
@@ -64,6 +71,8 @@ public class SAML2Features extends Features<SAML2Features> {
 
 	@Feature("saml.certif.string")
 	public SAML2Features withStringKey(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addPlugin(SAML2SpKeyStringPlugin.class, params);
 		return this;
@@ -71,6 +80,8 @@ public class SAML2Features extends Features<SAML2Features> {
 
 	@Feature("saml.ip.string")
 	public SAML2Features withIpStringKey(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addPlugin(SAML2IpConfigStringPlugin.class, params);
 		return this;
@@ -78,6 +89,8 @@ public class SAML2Features extends Features<SAML2Features> {
 
 	@Feature("saml.ip.file")
 	public SAML2Features withIpFileKey(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addPlugin(SAML2IpConfigFilePlugin.class, params);
 		return this;
@@ -85,6 +98,8 @@ public class SAML2Features extends Features<SAML2Features> {
 
 	@Feature("saml.ip.keystore")
 	public SAML2Features withIpKeystoreKey(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addPlugin(SAML2IpConfigKeystorePlugin.class, params);
 		return this;
@@ -92,6 +107,8 @@ public class SAML2Features extends Features<SAML2Features> {
 
 	@Feature("saml.ip.metadata")
 	public SAML2Features withIpMetadataFile(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addPlugin(SAML2IpConfigMetadataPlugin.class, params);
 		return this;

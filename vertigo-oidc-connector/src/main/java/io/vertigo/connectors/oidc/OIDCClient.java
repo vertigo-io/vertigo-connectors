@@ -80,6 +80,7 @@ import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 
 import io.vertigo.connectors.oidc.state.IOIDCStateStorage;
+import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.VSystemException;
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.node.Node;
@@ -112,6 +113,8 @@ public class OIDCClient {
 	private final HTTPRequestConfigurator requestConfigurator;
 
 	public OIDCClient(final OIDCParameters oidcParameters) {
+		Assertion.check().isNotNull(oidcParameters);
+		//---
 		DIInjector.injectMembers(this, Node.getNode().getComponentSpace());
 
 		this.oidcParameters = oidcParameters;
@@ -286,6 +289,13 @@ public class OIDCClient {
 	 */
 	public String getLoginUrl(final URI callbackUri, final IOIDCStateStorage oidcStateStorage, final Optional<Locale> localeOpt, final Map<String, Serializable> additionalInfos,
 			final String... requestedScopes) {
+		Assertion.check()
+				.isNotNull(callbackUri)
+				.isNotNull(oidcStateStorage)
+				.isNotNull(localeOpt)
+				.isNotNull(additionalInfos)
+				.isNotNull(requestedScopes);
+		//---
 		loadMetadataIfNeeded(false);
 
 		// Generate random state string to securely pair the callback to this request and a corresponding nonce
@@ -329,6 +339,11 @@ public class OIDCClient {
 	 * @return OIDC tokens (with ID token and Access token).
 	 */
 	public OIDCTokens parseResponse(final URI responseUri, final URI callbackUri, final IOIDCStateStorage oidcStateStorage) {
+		Assertion.check()
+				.isNotNull(responseUri)
+				.isNotNull(callbackUri)
+				.isNotNull(oidcStateStorage);
+		//---
 		final var successResponse = parseResponseUri(responseUri);
 
 		final var state = successResponse.getState();
@@ -414,6 +429,10 @@ public class OIDCClient {
 	 * @return the additional infos corresponding to those provided at login time
 	 */
 	public Map<String, Serializable> retrieveAdditionalInfos(final URI responseUri, final IOIDCStateStorage oidcStateStorage) {
+		Assertion.check()
+				.isNotNull(responseUri)
+				.isNotNull(oidcStateStorage);
+		//---
 		final var successResponse = parseResponseUri(responseUri);
 		final var state = successResponse.getState();
 		return oidcStateStorage.retrieveAdditionalInfos(state.getValue());
@@ -429,6 +448,11 @@ public class OIDCClient {
 	 * @return the URL to logout the user from the SSO
 	 */
 	public String getLogoutUrl(final Optional<URI> redirectUriOpt, final Optional<String> idTokenOpt, final Optional<Locale> localeOpt) {
+		Assertion.check()
+				.isNotNull(redirectUriOpt)
+				.isNotNull(idTokenOpt)
+				.isNotNull(localeOpt);
+		//---
 		var logoutParam = "?client_id=" + clientID.getValue();
 
 		if (redirectUriOpt.isPresent()) {

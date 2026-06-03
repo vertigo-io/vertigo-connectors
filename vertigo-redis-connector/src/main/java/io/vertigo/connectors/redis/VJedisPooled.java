@@ -17,6 +17,7 @@
  */
 package io.vertigo.connectors.redis;
 
+import io.vertigo.core.lang.Assertion;
 import redis.clients.jedis.JedisPooled;
 import redis.clients.jedis.providers.PooledConnectionProvider;
 
@@ -28,6 +29,7 @@ class VJedisPooled extends JedisPooled implements VJedisCloseable {
 
 	public VJedisPooled(final PooledConnectionProvider pooledConnectionProvider) {
 		super(pooledConnectionProvider);
+		Assertion.check().isNotNull(pooledConnectionProvider);
 	}
 
 	@Override

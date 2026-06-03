@@ -191,6 +191,8 @@ public class RedisConnector implements Connector<UnifiedJedis>, Activeable {
 	 * @return jedis client for one node (use try-with-resource pattern)
 	 */
 	public Jedis getClient(final String key) {
+		Assertion.check().isNotBlank(key);
+		//---
 		if (mode == JedisMode.CLUSTER) {
 			final int slot = JedisClusterCRC16.getSlot(key);
 			return new Jedis(((JedisCluster) unifiedJedis).getConnectionFromSlot(slot));

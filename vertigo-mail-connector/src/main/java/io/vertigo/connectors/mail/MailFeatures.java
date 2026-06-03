@@ -20,6 +20,7 @@ package io.vertigo.connectors.mail;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines commons module.
@@ -36,6 +37,8 @@ public final class MailFeatures extends Features<MailFeatures> {
 
 	@Feature("javax.native")
 	public MailFeatures withNativeMailConnector(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(NativeMailSessionConnector.class, params);
 
@@ -44,6 +47,8 @@ public final class MailFeatures extends Features<MailFeatures> {
 
 	@Feature("javax.jndi")
 	public MailFeatures withJndiMailConnector(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(JndiMailSessionConnector.class, params);
 

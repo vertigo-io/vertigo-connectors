@@ -20,6 +20,7 @@ package io.vertigo.connectors.influxdb;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines the influxdb connector module.
@@ -36,6 +37,8 @@ public final class InfluxDbFeatures extends Features<InfluxDbFeatures> {
 
 	@Feature("influxdb")
 	public InfluxDbFeatures withInfluxDb(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(InfluxDbConnector.class, params);
 		return this;

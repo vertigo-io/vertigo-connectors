@@ -154,6 +154,15 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 			final Optional<String> basicUserOpt, final Optional<String> basicPasswordOpt,
 			final Optional<String> apiKeyIdOpt, final Optional<String> apiKeySecretOpt,
 			final boolean ssl, final Optional<String> trustStoreUrlOpt, final Optional<String> trustStorePasswordOpt) {
+		Assertion.check()
+				.isNotNull(resourceManager)
+				.isNotNull(basicUserOpt)
+				.isNotNull(basicPasswordOpt)
+				.isNotNull(apiKeyIdOpt)
+				.isNotNull(apiKeySecretOpt)
+				.isNotNull(trustStoreUrlOpt)
+				.isNotNull(trustStorePasswordOpt);
+		//---
 		final List<HttpHost> httpHostList = new ArrayList<>();
 		for (final String serverName : serversNames) {
 			final String[] serverNameSplit = serverName.split(":");

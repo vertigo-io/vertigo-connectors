@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.VSystemException;
 import io.vertigo.core.util.StringUtil;
 import jakarta.servlet.http.HttpSession;
@@ -45,6 +46,8 @@ public final class OIDCSessionStateStorage implements IOIDCStateStorage {
 	private final HttpSession session;
 
 	public static OIDCSessionStateStorage of(final HttpSession session) {
+		Assertion.check().isNotNull(session);
+		//---
 		return new OIDCSessionStateStorage(session);
 	}
 
@@ -54,6 +57,8 @@ public final class OIDCSessionStateStorage implements IOIDCStateStorage {
 
 	@Override
 	public OIDCStateData retrieveStateDataFromSession(final String state) {
+		Assertion.check().isNotBlank(state);
+		//---
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("Retrieving state '{}' from session '{}'", state, session.getId());
 		}
@@ -68,6 +73,8 @@ public final class OIDCSessionStateStorage implements IOIDCStateStorage {
 
 	@Override
 	public Map<String, Serializable> retrieveAdditionalInfos(final String state) {
+		Assertion.check().isNotBlank(state);
+		//---
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("Retrieving additional infos for state '{}' from session '{}'", state, session.getId());
 			dumpStates();
@@ -138,6 +145,11 @@ public final class OIDCSessionStateStorage implements IOIDCStateStorage {
 
 	@Override
 	public void storeStateDataInSession(final String state, final String nonce, final String pkceCodeVerifier, final Map<String, Serializable> additionalInfos) {
+		Assertion.check()
+				.isNotBlank(state)
+				.isNotBlank(nonce)
+				.isNotNull(additionalInfos);
+		//---
 		// state parameter to validate response from Authorization server and nonce parameter to validate idToken
 		final var states = Optional.ofNullable((Map<String, OIDCStateData>) session.getAttribute(STATES))
 				.orElseGet(HashMap::new);
@@ -149,10 +161,16 @@ public final class OIDCSessionStateStorage implements IOIDCStateStorage {
 	}
 
 	public static void storeIdTokenInSession(final HttpSession session, final String idToken) {
+		Assertion.check()
+				.isNotNull(session)
+				.isNotBlank(idToken);
+		//---
 		session.setAttribute(OIDC_ID_TOKEN, idToken);
 	}
 
 	public static String retrieveIdTokenFromSession(final HttpSession session) {
+		Assertion.check().isNotNull(session);
+		//---
 		return (String) session.getAttribute(OIDC_ID_TOKEN);
 	}
 

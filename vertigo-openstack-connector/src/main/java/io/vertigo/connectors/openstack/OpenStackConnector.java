@@ -152,6 +152,15 @@ public class OpenStackConnector implements Connector<OSClientV3> {
 			final String projectDomain,
 			final String projectName,
 			final Config config) {
+		Assertion.check()
+				.isNotBlank(authenticationUrl)
+				.isNotBlank(domain)
+				.isNotBlank(user)
+				.isNotBlank(secret)
+				.isNotBlank(projectDomain)
+				.isNotBlank(projectName)
+				.isNotNull(config);
+		//---
 		return OSFactory.builderV3().endpoint(authenticationUrl).withConfig(config)
 				.credentials(user, secret, Identifier.byName(domain))
 				.scopeToProject(Identifier.byName(projectName), Identifier.byName(projectDomain))
@@ -162,6 +171,11 @@ public class OpenStackConnector implements Connector<OSClientV3> {
 			final Optional<String> trustoreFileOpt,
 			final Optional<String> trustorePswdOpt,
 			final Optional<Boolean> enableSSLOpt) {
+		Assertion.check()
+				.isNotNull(trustoreFileOpt)
+				.isNotNull(trustorePswdOpt)
+				.isNotNull(enableSSLOpt);
+		//---
 		final boolean enableSSL = enableSSLOpt.isPresent() && enableSSLOpt.get();
 		final Config config = Config.newConfig().withMaxConnections(MAX_CONNECTION);
 		if (enableSSL && trustoreFileOpt.isPresent()) {

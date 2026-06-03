@@ -63,6 +63,12 @@ public class Neo4JConnector implements Connector<Driver>, Activeable {
 			final Optional<Long> connectionLivenessCheckTimeoutOpt,
 			final Optional<Long> connectionAcquisitionTimeoutOpt,
 			final Optional<Integer> connectionPoolSizeOpt) {
+		Assertion.check()
+				.isNotNull(connectionTimeoutOpt)
+				.isNotNull(connectionLivenessCheckTimeoutOpt)
+				.isNotNull(connectionAcquisitionTimeoutOpt)
+				.isNotNull(connectionPoolSizeOpt);
+		//---
 		return Config.builder()
 				.withConnectionTimeout(connectionTimeoutOpt.orElse(1L), TimeUnit.MINUTES)
 				.withConnectionLivenessCheckTimeout(connectionLivenessCheckTimeoutOpt.orElse(10L), TimeUnit.MINUTES)

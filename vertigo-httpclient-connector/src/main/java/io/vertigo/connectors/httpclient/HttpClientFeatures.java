@@ -20,6 +20,7 @@ package io.vertigo.connectors.httpclient;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines commons module.
@@ -36,6 +37,8 @@ public final class HttpClientFeatures extends Features<HttpClientFeatures> {
 
 	@Feature("httpclient")
 	public HttpClientFeatures withHttpClient(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(HttpClientConnector.class, params);
 		return this;

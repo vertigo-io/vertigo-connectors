@@ -20,6 +20,7 @@ package io.vertigo.connectors.redis;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines commons module.
@@ -36,6 +37,8 @@ public final class RedisFeatures extends Features<RedisFeatures> {
 
 	@Feature("jedis-single")
 	public RedisFeatures withJedisSingle(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(RedisSingleConnector.class, params);
 		return this;
@@ -44,6 +47,8 @@ public final class RedisFeatures extends Features<RedisFeatures> {
 
 	@Feature("jedis")
 	public RedisFeatures withJedis(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(RedisConnector.class, params);
 		return this;

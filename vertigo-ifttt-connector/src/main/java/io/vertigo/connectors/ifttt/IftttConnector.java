@@ -40,7 +40,12 @@ public class IftttConnector implements Connector<IftttClient> {
 			@ParamValue("apiKey") final String apiKey,
 			@ParamValue("proxyHost") final Optional<String> proxyHostOpt,
 			@ParamValue("proxyPort") final Optional<String> proxyPortOpt) {
-		Assertion.check().isNotNull(connectorNameOpt);
+		Assertion.check()
+				.isNotNull(connectorNameOpt)
+				.isNotBlank(baseUrl)
+				.isNotBlank(apiKey)
+				.isNotNull(proxyHostOpt)
+				.isNotNull(proxyPortOpt);
 		//---
 		connectorName = connectorNameOpt.orElse("main");
 		iftttClient = new IftttClient(baseUrl, apiKey, proxyHostOpt, proxyPortOpt);

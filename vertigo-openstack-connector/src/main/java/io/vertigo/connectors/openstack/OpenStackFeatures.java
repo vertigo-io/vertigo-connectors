@@ -20,6 +20,7 @@ package io.vertigo.connectors.openstack;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
+import io.vertigo.core.lang.Assertion;
 
 public class OpenStackFeatures extends Features<OpenStackFeatures> {
 
@@ -32,6 +33,8 @@ public class OpenStackFeatures extends Features<OpenStackFeatures> {
 
 	@Feature("openstack")
 	public OpenStackFeatures withOpenStack(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
 		getModuleConfigBuilder()
 				.addConnector(OpenStackConnector.class, params);
 		return this;
