@@ -34,8 +34,6 @@ public final class MakerEventMetadatas {
 	}
 
 	public void setValue1(final String value1) {
-		Assertion.check().isNotBlank(value1);
-		//---
 		this.value1 = value1;
 	}
 
@@ -44,8 +42,6 @@ public final class MakerEventMetadatas {
 	}
 
 	public void setValue2(final String value2) {
-		Assertion.check().isNotBlank(value2);
-		//---
 		this.value2 = value2;
 	}
 
@@ -54,8 +50,6 @@ public final class MakerEventMetadatas {
 	}
 
 	public void setValue3(final String value3) {
-		Assertion.check().isNotBlank(value3);
-		//---
 		this.value3 = value3;
 	}
 

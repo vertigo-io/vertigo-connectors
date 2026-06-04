@@ -39,7 +39,9 @@ public class StandaloneJavalinConnector implements JavalinConnector {
 	public StandaloneJavalinConnector(
 			@ParamValue("name") final Optional<String> connectorNameOpt,
 			@ParamValue("maxRequestSize") final Optional<Long> maxRequestSizeOpt) {
-		Assertion.check().isNotNull(connectorNameOpt);
+		Assertion.check()
+				.isNotNull(connectorNameOpt)
+				.isNotNull(maxRequestSizeOpt);
 		//-----
 		connectorName = connectorNameOpt.orElse("main");
 		javalinApp = Javalin.create(config -> {
