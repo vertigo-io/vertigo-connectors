@@ -6,6 +6,20 @@ Running 5.0.0
 more to come :)
 
 
+Release 4.4.0 - 2026/05/xx
+----------------------
+[Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-432-to-440)
+
+* [OIDC] Add proxy support
+* [OIDC] Add interfaces for extensibility
+* [ElasticSearch] Add connector ES 9
+* [ElasticSearch] Add embedded elasticSearch as testContainer (ES9 can't run embedded as simpler as ES7)
+* Update libs
+  - elasticsearch 9.3.2
+  - jackson-datatype-jsr310 2.18.3 -> 2.21.1
+  - neo4j 5.26.7 -> 5.26.11
+  - neo4j.driver 5.26.3 -> 5.28.9
+
 Release 4.3.2 - 2025/07/10
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-431-to-432)
