@@ -23,7 +23,7 @@ import io.vertigo.core.param.Param;
 
 /**
  * Defines ElasticSearchConnector module.
- * 
+ *
  * @author npiedeloup
  */
 public final class ElasticSearchFeatures extends Features<ElasticSearchFeatures> {
@@ -45,7 +45,7 @@ public final class ElasticSearchFeatures extends Features<ElasticSearchFeatures>
 	@Feature("embeddedServer")
 	public ElasticSearchFeatures withEmbeddedServer(final Param... params) {
 		/**
-		 * To use EmbeddedServer with org.testcontainers, we need to declare a varEnv DOCKER_HOST to point on docker socket
+		 * To use EmbeddedServer with org.testcontainers, we need to declare a varEnv DOCKER_HOST to point on docker socket (like DOCKER_HOST=tcp://localhost:2375)
 		 * To active socket on a docket with WSL, you shoud edit "/lib/systemd/system/docker.service" and add this line in [Service] section:
 		 * ExecStart=/usr/bin/dockerd -H fd:// -H tcp://127.0.0.1:2375 --containerd=/run/containerd/containerd.sock
 		 */
