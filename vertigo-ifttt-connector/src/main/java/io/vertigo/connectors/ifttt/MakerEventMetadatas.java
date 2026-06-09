@@ -17,8 +17,6 @@
  */
 package io.vertigo.connectors.ifttt;
 
-import io.vertigo.core.lang.Assertion;
-
 /**
  *
  * @author dt
