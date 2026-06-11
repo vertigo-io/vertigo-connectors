@@ -221,8 +221,6 @@ Inject by name with a qualifier:
 |---|---|
 | `vertigo-mail-connector` | SMTP / email |
 | `vertigo-jsch-connector` | SSH (JSch) |
-| `vertigo-ifttt-connector` | IFTTT webhooks |
-| `vertigo-twitter-connector` | Twitter4j |
 
 ---
 
