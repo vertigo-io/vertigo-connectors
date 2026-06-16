@@ -44,14 +44,14 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 	public static final String DEFAULT_VERTIGO_ES_CLUSTER_NAME = "vertigo-elasticsearch-test";
 	//private static final String DEFAULT_ES_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch:7.17.28";
 	private static final String DEFAULT_DOCKER_HOST = "tcp://localhost:2375";
-	private static final String DEFAULT_ES_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch:9.2.3";
+	private static final String DEFAULT_ES_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch:9.4.2";
 
 	private final ElasticsearchContainer container;
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param imageOpt Image Docker ES (ex: docker.elastic.co/elasticsearch/elasticsearch:9.2.3)
+	 *
+	 * @param imageOpt Image Docker ES (ex: docker.elastic.co/elasticsearch/elasticsearch:9.4.2)
 	 * @param clusterNameOpt Nom du cluster
 	 * @param httpPortOpt Port HTTP
 	 * @param transportPortOpt Port Transport (TCP)
