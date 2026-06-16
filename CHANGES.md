@@ -16,14 +16,13 @@ Running 4.4.0 - 2026-06-XX
 * [ElasticSearch] Add embedded elasticSearch as testContainer (ES9 can't run embedded as simpler as ES7)
 * [Redis] Deprecated RedisSingleConnector no longer supports Sentinel configuration (use withJedisSentineled instead)
 * New libs
-  - elasticsearch-java 9.3.5 (for new Connector ES 9, replaces elasticsearch 7.17.28)
   - jackson-datatype-jsr310 2.21.4
   - testcontainers-elasticsearch 1.19.8 (test dependency for ES 9 connector)
 * Update libs
   - neo4j 5.26.7 -> 5.26.27
   - neo4j-bolt 5.26.7 -> 5.26.27
   - neo4j.driver 5.26.3 -> 5.28.13
-  - elasticsearch-java 9.3.5 -> 9.4.2
+  - elasticsearch-java 7.17.28 -> 9.4.2
   - testcontainers-elasticsearch 1.19.8 -> 1.21.4
   - influxdb-client-java 7.3.0 -> 7.5.0
   - bcpkix-jdk18on 1.81 -> 1.84
