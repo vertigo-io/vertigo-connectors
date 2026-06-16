@@ -6,7 +6,7 @@ Running 5.0.0
 more to come :)
 
 
-Release 4.4.0 - 2026/05/xx
+Running 4.4.0 - 2026-06-XX
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-432-to-440)
 
@@ -14,11 +14,29 @@ Release 4.4.0 - 2026/05/xx
 * [OIDC] Add interfaces for extensibility
 * [ElasticSearch] Add connector ES 9
 * [ElasticSearch] Add embedded elasticSearch as testContainer (ES9 can't run embedded as simpler as ES7)
+* [Redis] Deprecated RedisSingleConnector no longer supports Sentinel configuration (use withJedisSentineled instead)
+* New libs
+  - elasticsearch-java 9.3.5 (for new Connector ES 9, replaces elasticsearch 7.17.28)
+  - jackson-datatype-jsr310 2.21.4
+  - testcontainers-elasticsearch 1.19.8 (test dependency for ES 9 connector)
 * Update libs
-  - elasticsearch 9.3.2
-  - jackson-datatype-jsr310 2.18.3 -> 2.21.1
-  - neo4j 5.26.7 -> 5.26.11
-  - neo4j.driver 5.26.3 -> 5.28.9
+  - neo4j 5.26.7 -> 5.26.27
+  - neo4j-bolt 5.26.7 -> 5.26.27
+  - neo4j.driver 5.26.3 -> 5.28.13
+  - elasticsearch-java 9.3.5 -> 9.4.2
+  - testcontainers-elasticsearch 1.19.8 -> 1.21.4
+  - influxdb-client-java 7.3.0 -> 7.5.0
+  - bcpkix-jdk18on 1.81 -> 1.84
+  - bcprov-jdk18on 1.80 -> 1.84
+  - woodstox-core 7.1.1 -> 7.2.1
+  - spring-context 6.2.8 -> 6.2.18
+  - javalin 6.6.0 -> 6.7.0
+  - jetty 11.0.25 -> 11.0.26
+  - msal4j 1.21.0 -> 1.25.0
+  - jakarta.mail 2.0.1 -> 2.0.2
+  - mongodb-driver-sync 5.5.1 -> 5.8.0
+  - oauth2-oidc-sdk 11.25 -> 11.37.2
+  - jedis 5.2.0 -> 7.5.2
 
 Release 4.3.2 - 2025/07/10
 ----------------------
