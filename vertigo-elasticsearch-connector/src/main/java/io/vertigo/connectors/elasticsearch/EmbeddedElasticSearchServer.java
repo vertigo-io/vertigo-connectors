@@ -17,6 +17,10 @@
  */
 package io.vertigo.connectors.elasticsearch;
 
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,7 +73,10 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 		final int httpPort = httpPortOpt.orElse(DEFAULT_HTTP_PORT);
 		final int transportPort = transportPortOpt.orElse(DEFAULT_TRANSPORT_PORT);
 
-		TestcontainersConfiguration.getInstance().updateUserConfig("docker.host", dockerHostOpt.orElse(DEFAULT_DOCKER_HOST));
+		// Respect DOCKER_HOST env var (set by CI/docker:dind), fallback to config or default
+		String dockerHost = Optional.ofNullable(System.getenv("DOCKER_HOST"))
+			.orElse(dockerHostOpt.orElse(DEFAULT_DOCKER_HOST));
+		TestcontainersConfiguration.getInstance().updateUserConfig("docker.host", dockerHost);
 
 		// Définition du conteneur
 		container = new ElasticsearchContainer(DockerImageName.parse(imageName))
