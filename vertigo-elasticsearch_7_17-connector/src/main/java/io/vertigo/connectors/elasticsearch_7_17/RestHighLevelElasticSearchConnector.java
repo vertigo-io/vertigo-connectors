@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.vertigo.connectors.elasticsearch;
+package io.vertigo.connectors.elasticsearch_7_17;
 
 import java.io.IOException;
 import java.net.URL;
