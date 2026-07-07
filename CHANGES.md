@@ -17,13 +17,12 @@ Running 4.4.0 - 2026-06-XX
 * [ElasticSearch] Rename ES7 connector package to `elasticsearch_7_17` for clarity
 * [Redis] Deprecated RedisSingleConnector no longer supports Sentinel configuration (use withJedisSentineled instead)
 * New libs
-  - testcontainers-elasticsearch 1.19.8 (test dependency for ES 9 connector)
+  - testcontainers-elasticsearch 1.21.4 (for ES 9 connector)
 * Update libs
   - neo4j 5.26.7 -> 5.26.28
   - neo4j-bolt 5.26.7 -> 5.26.28
   - neo4j.driver 5.26.3 -> 5.28.14
   - elasticsearch-java 7.17.28 -> 9.4.3
-  - testcontainers-elasticsearch 1.19.8 -> 1.21.4
   - influxdb-client-java 7.3.0 -> 7.5.0
   - bcpkix-jdk18on 1.81 -> 1.84
   - bcprov-jdk18on 1.80 -> 1.84
