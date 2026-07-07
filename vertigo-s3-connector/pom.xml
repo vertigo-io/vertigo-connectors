@@ -18,7 +18,7 @@
 			<dependency>
 				<groupId>io.minio</groupId>
 				<artifactId>minio</artifactId>
-				<version>8.5.17</version>
+				<version>8.5.17</version> <!-- 8.6.0+ pulls OkHttp 5.x (Kotlin, JDK21+) incompatible with okhttp3 imports -->
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -6,6 +6,46 @@ Running 5.0.0
 more to come :)
 
 
+Running 4.4.0 - 2026-06-XX
+----------------------
+[Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-432-to-440)
+
+* [OIDC] Add proxy support
+* [OIDC] Add interfaces for extensibility
+* [ElasticSearch] Add connector ES 9
+* [ElasticSearch] Add embedded elasticSearch as testContainer (ES9 can't run embedded as simpler as ES7)
+* [ElasticSearch] Rename ES7 connector package to `elasticsearch_7_17` for clarity
+* [Redis] Deprecated RedisSingleConnector no longer supports Sentinel configuration (use withJedisSentineled instead)
+* New libs
+  - testcontainers-elasticsearch 1.21.4 (for ES 9 connector)
+* Update libs
+  - neo4j 5.26.7 -> 5.26.28
+  - neo4j-bolt 5.26.7 -> 5.26.28
+  - neo4j.driver 5.26.3 -> 5.28.14
+  - elasticsearch-java 7.17.28 -> 9.4.3
+  - influxdb-client-java 7.3.0 -> 7.5.0
+  - bcpkix-jdk18on 1.81 -> 1.84
+  - bcprov-jdk18on 1.80 -> 1.84
+  - woodstox-core 7.1.1 -> 7.2.1
+  - spring-context 6.2.8 -> 6.2.19
+  - javalin 6.6.0 -> 6.7.0
+  - jetty 11.0.25 -> 11.0.26
+  - msal4j 1.21.0 -> 1.25.0
+  - jakarta.mail 2.0.1 -> 2.0.2
+  - mongodb-driver-sync 5.5.1 -> 5.8.0
+  - oauth2-oidc-sdk 11.25 -> 11.37.2
+  - jedis 5.2.0 -> 7.5.3
+
+Release 4.3.2 - 2025/07/10
+----------------------
+[Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-431-to-432)
+
+* [ElasticSearch] Add compatibilityMode parameter (to use 7.x connector with server ES8)
+* [ElasticSearch] Correction on error message when ssl enabled without truststore
+* [Redis] Fix connector for Jedis cluster
+* [Connectors] Fix pom parent
+
+
 Release 4.3.1 - 2025/06/13
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-430-to-431)

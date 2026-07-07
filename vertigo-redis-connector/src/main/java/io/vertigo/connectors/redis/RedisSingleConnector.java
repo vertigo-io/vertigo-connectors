@@ -22,9 +22,6 @@ import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import javax.inject.Inject;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
@@ -43,7 +40,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisClientConfig;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.JedisSentinelPool;
 import redis.clients.jedis.util.Pool;
 
 /**
@@ -98,9 +94,6 @@ public class RedisSingleConnector implements Connector<Jedis>, Activeable {
 				.connectionTimeoutMillis(CONNECT_TIMEOUT)
 				.database(redisDatabase)
 				.ssl(ssl);
-		final var sentinelConfigBuilder = DefaultJedisClientConfig.builder()
-				.connectionTimeoutMillis(CONNECT_TIMEOUT)
-				.ssl(ssl);
 		passwordOpt.ifPresent(jedisClientConfigBuilder::password);
 
 		if (trustStoreUrlOpt.isPresent()) {
@@ -110,21 +103,15 @@ public class RedisSingleConnector implements Connector<Jedis>, Activeable {
 				jedisClientConfigBuilder
 						.sslParameters(sslParameters)
 						.sslSocketFactory(sslSocketFactory);
-
-				sentinelConfigBuilder
-						.sslParameters(sslParameters)
-						.sslSocketFactory(sslSocketFactory);
 			} catch (final Exception e) {
 				throw WrappedException.wrap(e);
 			}
 		}
 		final JedisClientConfig jedisClientConfig = jedisClientConfigBuilder.build();
 		if (sentinelsOpt.isPresent()) {
-			final Set<HostAndPort> sentinels = Set.of(sentinelsOpt.get().split(";")).stream().map(HostAndPort::from).collect(Collectors.toSet());
-			jedisPool = new JedisSentinelPool(masternameOpt.get(), sentinels, jedisPoolConfig, jedisClientConfig, sentinelConfigBuilder.build());
-		} else {
-			jedisPool = new JedisPool(jedisPoolConfig, new HostAndPort(redisHost, redisPort), jedisClientConfig);
+			throw new UnsupportedOperationException("Sentinel configuration is no longer supported in RedisSingleConnector (deprecated). Use withJedisSentineled instead.");
 		}
+		jedisPool = new JedisPool(jedisPoolConfig, new HostAndPort(redisHost, redisPort), jedisClientConfig);
 		//test
 		try (var jedis = jedisPool.getResource()) {
 			jedis.ping();

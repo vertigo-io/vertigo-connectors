@@ -18,6 +18,7 @@
 package io.vertigo.connectors.elasticsearch;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
@@ -31,47 +32,42 @@ import javax.inject.Inject;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.apache.http.Header;
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
-import org.apache.http.message.BasicHeader;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.apache.hc.core5.http.HttpHost;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.ElasticsearchTransportConfig;
 import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
-import org.elasticsearch.client.RestHighLevelClientBuilder;
 
 /**
  * Gestion de la connexion au serveur elasticSearch en mode HTTP.
  *
- * @author npiedeloup
+ * @author npiedeloup, mlaroche
  */
-public class RestHighLevelElasticSearchConnector implements Connector<RestHighLevelClient>, Activeable {
+public class RestElasticSearchConnector implements Connector<ElasticsearchClient>, Activeable {
 
 	private final String connectorName;
 	/** url du serveur elasticSearch. */
 	private final String[] serversNames;
 	/** le noeud interne. */
-	private final RestHighLevelClient client;
+	private final ElasticsearchClient client;
 
 	/**
 	 * Constructor.
 	 *
 	 * @param resourceManager Resource manager
 	 * @param connectorNameOpt Connector name (default `main`)
-	 * @param serversNamesStr Server names list (ex : host1:3889,host2:3889) separator : ','
+	 * @param serversNamesStr Server names list (ex : host1:3889,host2:3889)
+	 *        separator : ','
 	 * @param basicUserOpt Username if basic autgent
 	 * @param basicPasswordOpt password if basic authent
 	 * @param apiKeyIdOpt api key id if apiKey authent
@@ -81,7 +77,7 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 	 * @param trustStorePasswordOpt truststore's password
 	 */
 	@Inject
-	public RestHighLevelElasticSearchConnector(
+	public RestElasticSearchConnector(
 			final ResourceManager resourceManager,
 			@ParamValue("name") final Optional<String> connectorNameOpt,
 			@ParamValue("servers.names") final String serversNamesStr,
@@ -90,7 +86,6 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 			@ParamValue("apiKeyId") final Optional<String> apiKeyIdOpt,
 			@ParamValue("apiKeySecret") final Optional<String> apiKeySecretOpt,
 			@ParamValue("ssl") final boolean ssl,
-			@ParamValue("compatibilityMode") final Optional<Boolean> compatibilityMode,
 			@ParamValue("trustStoreUrl") final Optional<String> trustStoreUrlOpt,
 			@ParamValue("trustStorePassword") final Optional<String> trustStorePasswordOpt) {
 		Assertion.check()
@@ -111,23 +106,23 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 				.when(ssl, () -> Assertion.check()
 						.isTrue(trustStoreUrlOpt.isPresent()
 								&& trustStorePasswordOpt.isPresent(),
-								"When SSL is enabled, you must set apiKey, trustStoreUrl and trustStorePassword"));
+								"When SSL is enabled, you must set trustStoreUrl and trustStorePassword"));
 		// ---------------------------------------------------------------------
 		connectorName = connectorNameOpt.orElse("main");
 		serversNames = serversNamesStr.split(",");
 
-		final RestClientBuilder restClientBuilder = buildRestClientBuilder(resourceManager, basicUserOpt, basicPasswordOpt,
-				apiKeyIdOpt, apiKeySecretOpt, ssl, trustStoreUrlOpt, trustStorePasswordOpt);
-		final RestHighLevelClientBuilder restHighLevelClientBuilder = new RestHighLevelClientBuilder(restClientBuilder.build());
-		restHighLevelClientBuilder.setApiCompatibilityMode(compatibilityMode.orElse(false));
-		client = restHighLevelClientBuilder.build();
+		client = ElasticsearchClient.of(builder -> {
+			buildRestClientBuilder(builder, resourceManager, basicUserOpt, basicPasswordOpt, apiKeyIdOpt,
+					apiKeySecretOpt, ssl, trustStoreUrlOpt, trustStorePasswordOpt);
+			return builder;
+		});
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public void start() {
 		try {
-			client.ping(RequestOptions.DEFAULT);
+			client.ping();
 		} catch (final Exception e) {
 			throw WrappedException.wrap(e);
 		}
@@ -139,7 +134,7 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 	}
 
 	@Override
-	public RestHighLevelClient getClient() {
+	public ElasticsearchClient getClient() {
 		return client;
 	}
 
@@ -153,7 +148,8 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 		}
 	}
 
-	private static SSLContext createTrustStoreSslContext(final URL trustStoreUrl, final String trustStorePassword) throws Exception {
+	private static SSLContext createTrustStoreSslContext(final URL trustStoreUrl, final String trustStorePassword)
+			throws Exception {
 		final var trustStore = KeyStore.getInstance("pkcs12");
 		try (var inputStream = trustStoreUrl.openStream()) {
 			trustStore.load(inputStream, trustStorePassword.toCharArray());
@@ -168,64 +164,47 @@ public class RestHighLevelElasticSearchConnector implements Connector<RestHighLe
 		return sslContext;
 	}
 
-	protected RestClientBuilder buildRestClientBuilder(final ResourceManager resourceManager,
+	protected ElasticsearchTransportConfig.Builder buildRestClientBuilder(
+			final ElasticsearchTransportConfig.Builder builder, final ResourceManager resourceManager,
 			final Optional<String> basicUserOpt, final Optional<String> basicPasswordOpt,
 			final Optional<String> apiKeyIdOpt, final Optional<String> apiKeySecretOpt,
 			final boolean ssl, final Optional<String> trustStoreUrlOpt, final Optional<String> trustStorePasswordOpt) {
 		final List<HttpHost> httpHostList = new ArrayList<>();
 		for (final String serverName : serversNames) {
-			final String[] serverNameSplit = serverName.split(":");
+			final var serverNameSplit = serverName.split(":");
 			Assertion.check().isTrue(serverNameSplit.length == 2,
 					"La déclaration du serveur doit être au format host:port ({0}).", serverName);
-			final int port = Integer.parseInt(serverNameSplit[1]);
-			httpHostList.add(new HttpHost(serverNameSplit[0], port, ssl ? "https" : "http"));
+			final var port = Integer.parseInt(serverNameSplit[1]);
+			httpHostList.add(new HttpHost(ssl ? "https" : "http", serverNameSplit[0], port));
 		}
-		final HttpHost[] httpHosts = httpHostList.toArray(new HttpHost[httpHostList.size()]);
-		final RestClientBuilder restClientBuilder = RestClient.builder(httpHosts);
+		builder.hosts(httpHostList.stream().map(host -> URI.create(host.toURI())).toList());
 
 		if (apiKeyIdOpt.isPresent()) {
-			final String apiKeyAuth = Base64.getEncoder().encodeToString((apiKeyIdOpt.get() + ":" + apiKeySecretOpt.get()).getBytes(StandardCharsets.UTF_8));
-			final Header[] defaultHeaders = new Header[] { new BasicHeader("Authorization", "ApiKey " + apiKeyAuth) };
-			restClientBuilder.setDefaultHeaders(defaultHeaders);
+			final var apiKeyAuth = Base64.getEncoder()
+					.encodeToString((apiKeyIdOpt.get() + ":" + apiKeySecretOpt.get()).getBytes(StandardCharsets.UTF_8));
+			builder.apiKey(apiKeyAuth);
 		}
 
-		final CredentialsProvider credentialsProvider;
 		if (basicUserOpt.isPresent()) {
-			credentialsProvider = new BasicCredentialsProvider();
-			credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(basicUserOpt.get(), basicPasswordOpt.get()));
-		} else {
-			credentialsProvider = null;
+			builder.usernameAndPassword(basicUserOpt.get(), basicPasswordOpt.get());
 		}
 
-		final SSLContext sslContext;
 		if (trustStoreUrlOpt.isPresent()) {
 			try {
-				sslContext = createTrustStoreSslContext(resourceManager.resolve(trustStoreUrlOpt.get()), trustStorePasswordOpt.get());
-
+				final var sslContext = createTrustStoreSslContext(resourceManager.resolve(trustStoreUrlOpt.get()),
+						trustStorePasswordOpt.get());
+				builder.sslContext(sslContext);
 			} catch (final Exception e) {
 				throw WrappedException.wrap(e);
 			}
-		} else {
-			sslContext = null;
 		}
 
-		if (credentialsProvider != null || sslContext != null) {
-			final HttpClientConfigCallback httpClientConfigCallback = new HttpClientConfigCallback() {
-				@Override
-				public HttpAsyncClientBuilder customizeHttpClient(final HttpAsyncClientBuilder httpClientBuilder) {
-					if (credentialsProvider != null) {
-						httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-					}
-					if (sslContext != null) {
-						httpClientBuilder.setSSLContext(sslContext);
-					}
-					return httpClientBuilder;
-				}
-			};
-			restClientBuilder.setHttpClientConfigCallback(httpClientConfigCallback);
-		}
+		final ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		builder.jsonMapper(new JacksonJsonpMapper(mapper));
 
-		return restClientBuilder;
+		return builder;
 
 	}
 }

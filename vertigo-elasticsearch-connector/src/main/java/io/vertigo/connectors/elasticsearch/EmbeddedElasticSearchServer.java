@@ -17,35 +17,19 @@
  */
 package io.vertigo.connectors.elasticsearch;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.elasticsearch.analysis.common.CommonAnalysisPlugin;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.mapper.MapperExtrasPlugin;
-import org.elasticsearch.node.InternalSettingsPreparer;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeValidationException;
-import org.elasticsearch.plugins.Plugin;
-import org.elasticsearch.reindex.ReindexPlugin;
-import org.elasticsearch.transport.Netty4Plugin;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.TestcontainersConfiguration;
 
-import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.lang.WrappedException;
 import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.node.component.Component;
 import io.vertigo.core.param.ParamValue;
-import io.vertigo.core.resource.ResourceManager;
 
 //Vérifier
 /**
@@ -55,51 +39,68 @@ import io.vertigo.core.resource.ResourceManager;
  */
 public final class EmbeddedElasticSearchServer implements Component, Activeable {
 	private static final int DEFAULT_TRANSPORT_PORT = 9300;
-
 	private static final int DEFAULT_HTTP_PORT = 9200;
 
-	public static final String DEFAULT_VERTIGO_ES_CLUSTER_NAME = "vertigo-elasticsearch-embedded";
+	public static final String DEFAULT_VERTIGO_ES_CLUSTER_NAME = "vertigo-elasticsearch-test";
+	//private static final String DEFAULT_ES_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch:7.17.28";
+	private static final String DEFAULT_DOCKER_HOST = "tcp://localhost:2375";
+	private static final String DEFAULT_ES_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch:9.4.3";
 
-	/** url du serveur elasticSearch.  */
-	private final URL elasticSearchHomeURL;
-	private Node node;
-
-	private final String clusterName;
-	private final Integer httpPort;
-	private final Integer transportPort;
+	private final ElasticsearchContainer container;
 
 	/**
 	 * Constructor.
-	 * @param elasticSearchHome URL du serveur SOLR
-	 * @param envIndex Nom de l'index de l'environment
-	 * @param envIndexIsPrefix Si Nom de l'index de l'environment est un prefix
-	 * @param rowsPerQuery Nombre d'élément retourné par query
-	 * @param resourceManager Manager d'accès aux ressources
-	 * @param configFile Fichier de configuration des indexs
+	 *
+	 * @param imageOpt Image Docker ES (ex: docker.elastic.co/elasticsearch/elasticsearch:9.4.3)
+	 * @param clusterNameOpt Nom du cluster
+	 * @param httpPortOpt Port HTTP
+	 * @param transportPortOpt Port Transport (TCP)
 	 */
 	@Inject
 	public EmbeddedElasticSearchServer(
-			@ParamValue("home") final String elasticSearchHome,
+			@ParamValue("docker.host") final Optional<String> dockerHostOpt,
+			@ParamValue("esImage") final Optional<String> imageOpt,
 			@ParamValue("cluster.name") final Optional<String> clusterNameOpt,
 			@ParamValue("http.port") final Optional<Integer> httpPortOpt,
-			@ParamValue("transport.tcp.port") final Optional<Integer> transportPortOpt,
-			final ResourceManager resourceManager) {
-		Assertion.check().isNotBlank(elasticSearchHome);
-		//-----
-		elasticSearchHomeURL = resourceManager.resolve(elasticSearchHome);
-		clusterName = clusterNameOpt.orElse(DEFAULT_VERTIGO_ES_CLUSTER_NAME);
-		httpPort = httpPortOpt.orElse(DEFAULT_HTTP_PORT);
-		transportPort = transportPortOpt.orElse(DEFAULT_TRANSPORT_PORT);
+			@ParamValue("transport.tcp.port") final Optional<Integer> transportPortOpt) {
+
+		final String imageName = imageOpt.orElse(DEFAULT_ES_IMAGE);
+		final String clusterName = clusterNameOpt.orElse(DEFAULT_VERTIGO_ES_CLUSTER_NAME);
+		final int httpPort = httpPortOpt.orElse(DEFAULT_HTTP_PORT);
+		final int transportPort = transportPortOpt.orElse(DEFAULT_TRANSPORT_PORT);
+
+		// Respect DOCKER_HOST env var (set by CI/docker:dind), fallback to config or default
+		final String dockerHost = Optional.ofNullable(System.getenv("DOCKER_HOST"))
+				.orElse(dockerHostOpt.orElse(DEFAULT_DOCKER_HOST));
+		TestcontainersConfiguration.getInstance().updateUserConfig("docker.host", dockerHost);
+
+		// Définition du conteneur
+		container = new ElasticsearchContainer(DockerImageName.parse(imageName))
+				.withEnv("cluster.name", clusterName)
+				.withEnv("discovery.type", "single-node")
+				// On désactive la sécurité (HTTPS, mots de passe) pour reproduire l'ancien comportement simple
+				.withEnv("xpack.security.enabled", "false")
+				// Limite la consommation RAM du conteneur pour ne pas tuer la CI
+				.withEnv("ES_JAVA_OPTS", "-Xms512m -Xmx512m")
+				// --- Conf de Watermark (gestion de l'espace disque) ---
+				.withEnv("cluster.routing.allocation.disk.watermark.low", "1000mb")
+				.withEnv("cluster.routing.allocation.disk.watermark.high", "500mb")
+				.withEnv("cluster.routing.allocation.disk.watermark.flood_stage", "250mb");
+
+		// IMPORTANT : On force l'exposition des ports fixes demandés par la configuration Vertigo.
+		// Cela permet au Client Vertigo qui démarre juste après de s'y connecter via "localhost:9200"
+		container.setPortBindings(List.of(
+				httpPort + ":9200",
+				transportPort + ":9300"));
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public void start() {
-		node = createNode(elasticSearchHomeURL);
 		try {
-			node.start();
-		} catch (final NodeValidationException e) {
-			throw WrappedException.wrap(e, "Error at ElasticSearch node start");
+			container.start();
+		} catch (final Exception e) {
+			throw WrappedException.wrap(e, "Error at Testcontainers ElasticSearch start");
 		}
 	}
 
@@ -107,47 +108,9 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 	@Override
 	public void stop() {
 		try {
-			node.close();
-		} catch (final IOException e) {
-			throw WrappedException.wrap(e, "Error at ElasticSearch node stop");
+			container.stop();
+		} catch (final Exception e) {
+			throw WrappedException.wrap(e, "Error at Testcontainers ElasticSearch stop");
 		}
-	}
-
-	private Node createNode(final URL esHomeURL) {
-		Assertion.check().isNotNull(esHomeURL);
-		//-----
-		final File home;
-		try {
-			home = new File(URLDecoder.decode(esHomeURL.getFile(), StandardCharsets.UTF_8.name()));
-		} catch (final UnsupportedEncodingException e) {
-			throw WrappedException.wrap(e, "Error de parametrage du ElasticSearchHome {0}", esHomeURL);
-		}
-		Assertion.check()
-				.isTrue(home.exists() && home.isDirectory(), "Le ElasticSearchHome : {0} n''existe pas, ou n''est pas un répertoire.", home.getAbsolutePath())
-				.isTrue(home.canWrite(), "L''application n''a pas les droits d''écriture sur le ElasticSearchHome : {0}", home.getAbsolutePath());
-		return new MyNode(buildNodeSettings(home.getAbsolutePath()), Arrays.asList(Netty4Plugin.class, ReindexPlugin.class, CommonAnalysisPlugin.class, MapperExtrasPlugin.class));
-	}
-
-	private static class MyNode extends Node {
-		//Need to extends elastic Node, to access this advanced constructor and add plugins
-		public MyNode(final Settings preparedSettings, final Collection<Class<? extends Plugin>> classpathPlugins) {
-			super(InternalSettingsPreparer.prepareEnvironment(preparedSettings, Collections.emptyMap(), null, null), classpathPlugins, true);
-		}
-	}
-
-	private Settings buildNodeSettings(final String homePath) {
-		//Build settings
-		return Settings.builder()
-				.put("node.name", "es-embedded-node-" + System.currentTimeMillis())
-				.put("transport.type", "netty4")
-				.put("http.type", "netty4")
-				.put("http.port", httpPort)
-				.put("transport.tcp.port", transportPort)
-				.put("cluster.name", clusterName)
-				.put("cluster.routing.allocation.disk.watermark.low", "1000mb")
-				.put("cluster.routing.allocation.disk.watermark.high", "500mb")
-				.put("cluster.routing.allocation.disk.watermark.flood_stage", "250mb")
-				.put("path.home", homePath)
-				.build();
 	}
 }
