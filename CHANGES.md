@@ -6,9 +6,9 @@ Running 5.0.0
 more to come :)
 
 
-Running 4.4.0 - 2026-06-XX
+Running 4.5.0-SNAPSHOT - 2026-07-XX
 ----------------------
-[Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-432-to-440)
+[Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-440-to-450)
 
 * [OIDC] Add proxy support
 * [OIDC] Add interfaces for extensibility
@@ -286,5 +286,6 @@ Release 3.0.0 - 2020/11/20
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-210-to-300)
  * First release
+
 
 
