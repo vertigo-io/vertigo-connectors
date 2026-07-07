@@ -17,7 +17,6 @@ Running 4.4.0 - 2026-06-XX
 * [ElasticSearch] Rename ES7 connector package to `elasticsearch_7_17` for clarity
 * [Redis] Deprecated RedisSingleConnector no longer supports Sentinel configuration (use withJedisSentineled instead)
 * New libs
-  - jackson-datatype-jsr310 2.22.0
   - testcontainers-elasticsearch 1.19.8 (test dependency for ES 9 connector)
 * Update libs
   - neo4j 5.26.7 -> 5.26.28
