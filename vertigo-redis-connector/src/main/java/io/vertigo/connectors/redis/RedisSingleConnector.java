@@ -22,6 +22,7 @@ import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Optional;
+
 import javax.inject.Inject;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
@@ -53,12 +54,14 @@ public class RedisSingleConnector implements Connector<Jedis>, Activeable {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param connectorNameOpt name of the connector (main by default)
 	 * @param redisHost REDIS server host name
 	 * @param redisPort REDIS server port
 	 * @param redisDatabase REDIS database index
 	 * @param passwordOpt password (optional)
 	 */
+	@Deprecated
 	@Inject
 	public RedisSingleConnector(
 			final ResourceManager resourceManager,
@@ -66,6 +69,7 @@ public class RedisSingleConnector implements Connector<Jedis>, Activeable {
 			@ParamValue("host") final String redisHost,
 			@ParamValue("port") final int redisPort,
 			@ParamValue("database") final int redisDatabase,
+			@ParamValue("username") final Optional<String> usernameOpt,
 			@ParamValue("password") final Optional<String> passwordOpt,
 			@ParamValue("ssl") final boolean ssl,
 			@ParamValue("mastername") final Optional<String> masternameOpt,
@@ -94,6 +98,7 @@ public class RedisSingleConnector implements Connector<Jedis>, Activeable {
 				.connectionTimeoutMillis(CONNECT_TIMEOUT)
 				.database(redisDatabase)
 				.ssl(ssl);
+		usernameOpt.ifPresent(jedisClientConfigBuilder::user);
 		passwordOpt.ifPresent(jedisClientConfigBuilder::password);
 
 		if (trustStoreUrlOpt.isPresent()) {
@@ -121,23 +126,27 @@ public class RedisSingleConnector implements Connector<Jedis>, Activeable {
 	/**
 	 * @return jedis client
 	 */
+	@Deprecated
 	@Override
 	public Jedis getClient() {
 		return jedisPool.getResource();
 	}
 
+	@Deprecated
 	@Override
 	public String getName() {
 		return connectorName;
 	}
 
 	/** {@inheritDoc} */
+	@Deprecated
 	@Override
 	public void start() {
 		//
 	}
 
 	/** {@inheritDoc} */
+	@Deprecated
 	@Override
 	public void stop() {
 		jedisPool.close();
