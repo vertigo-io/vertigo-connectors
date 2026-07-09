@@ -6,7 +6,7 @@ Running 5.0.0
 more to come :)
 
 
-Running 4.4.0 - 2026-06-XX
+Release 4.4.0 - 2026/07/09
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-432-to-440)
 
@@ -15,6 +15,7 @@ Running 4.4.0 - 2026-06-XX
 * [ElasticSearch] Add connector ES 9
 * [ElasticSearch] Add embedded elasticSearch as testContainer (ES9 can't run embedded as simpler as ES7)
 * [ElasticSearch] Rename ES7 connector package to `elasticsearch_7_17` for clarity
+* [Redis] Add username parameter for ACL authentication support
 * [Redis] Deprecated RedisSingleConnector no longer supports Sentinel configuration (use withJedisSentineled instead)
 * New libs
   - testcontainers-elasticsearch 1.21.4 (for ES 9 connector)
