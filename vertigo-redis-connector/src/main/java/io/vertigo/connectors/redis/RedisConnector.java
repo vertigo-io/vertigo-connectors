@@ -1,7 +1,7 @@
 /*
  * vertigo - application development platform
  *
- * Copyright (C) 2013-2025, Vertigo.io, team@vertigo.io
+ * Copyright (C) 2013-2026, Vertigo.io, team@vertigo.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,7 @@ public class RedisConnector implements Connector<UnifiedJedis>, Activeable {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param connectorNameOpt name of the connector (main by default)
 	 * @param redisHost REDIS server host name
 	 * @param redisPort REDIS server port
@@ -90,6 +91,7 @@ public class RedisConnector implements Connector<UnifiedJedis>, Activeable {
 			@ParamValue("sentinels") final Optional<String> sentinelsOpt,
 			@ParamValue("clusterNodes") final Optional<String> clusterNodesOpt,
 			@ParamValue("database") final int redisDatabase,
+			@ParamValue("username") final Optional<String> usernameOpt,
 			@ParamValue("password") final Optional<String> passwordOpt,
 			@ParamValue("ssl") final boolean ssl,
 			@ParamValue("trustStoreUrl") final Optional<String> trustStoreUrlOpt,
@@ -128,6 +130,7 @@ public class RedisConnector implements Connector<UnifiedJedis>, Activeable {
 				.connectionTimeoutMillis(CONNECT_TIMEOUT)
 				.database(redisDatabase)
 				.ssl(ssl);
+		usernameOpt.ifPresent(jedisClientConfigBuilder::user);
 		passwordOpt.ifPresent(jedisClientConfigBuilder::password);
 
 		if (trustStoreUrlOpt.isPresent()) {
