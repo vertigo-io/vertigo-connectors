@@ -21,7 +21,6 @@
 		<module>vertigo-neo4j-connector</module>
 		<module>vertigo-openstack-connector</module>
 		<module>vertigo-elasticsearch-connector</module>
-		<module>vertigo-elasticsearch_7_17-connector</module>
 		<module>vertigo-influxdb-connector</module>
 		<module>vertigo-ldap-connector</module>
 		<module>vertigo-mail-connector</module>

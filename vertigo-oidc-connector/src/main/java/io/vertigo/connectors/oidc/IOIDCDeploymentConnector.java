@@ -1,7 +1,7 @@
 /*
  * vertigo - application development platform
  *
- * Copyright (C) 2013-2025, Vertigo.io, team@vertigo.io
+ * Copyright (C) 2013-2026, Vertigo.io, team@vertigo.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.vertigo.connectors.elasticsearch;
+package io.vertigo.connectors.oidc;
 
-import org.elasticsearch.client.Client;
-
-import io.vertigo.core.node.component.Activeable;
 import io.vertigo.core.node.component.Connector;
 
-/**
- * @author npiedeloup
- */
-public interface ElasticSearchConnector extends Connector<Client>, Activeable {
-	//
+public interface IOIDCDeploymentConnector extends Connector<IOIDCClient> {
+
 }

@@ -1,7 +1,7 @@
 /*
  * vertigo - application development platform
  *
- * Copyright (C) 2013-2025, Vertigo.io, team@vertigo.io
+ * Copyright (C) 2013-2026, Vertigo.io, team@vertigo.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.Optional;
 import jakarta.inject.Inject;
 
 import io.vertigo.core.lang.Assertion;
-import io.vertigo.core.node.component.Connector;
 import io.vertigo.core.param.ParamValue;
 import io.vertigo.core.resource.ResourceManager;
 
@@ -31,7 +30,7 @@ import io.vertigo.core.resource.ResourceManager;
  *
  * @author skerdudou
  */
-public class OIDCDeploymentConnector implements Connector<OIDCClient> {
+public class OIDCDeploymentConnector implements IOIDCDeploymentConnector {
 
 	private final OIDCClient oidcClient;
 	private final String connectorName;

@@ -1,7 +1,7 @@
 /*
  * vertigo - application development platform
  *
- * Copyright (C) 2013-2025, Vertigo.io, team@vertigo.io
+ * Copyright (C) 2013-2026, Vertigo.io, team@vertigo.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ import io.vertigo.core.util.StringUtil;
  *
  * @author skerdudou
  */
-public class OIDCClient {
+public class OIDCClient implements IOIDCClient {
 
 	private static final Logger LOG = LogManager.getLogger(OIDCClient.class);
 	// if metadata is not available at startup, limit check frequency at runtime
@@ -135,7 +135,7 @@ public class OIDCClient {
 			sslSocketFactoryOpt = Optional.empty();
 		}
 
-		this.requestConfigurator = (final var httpRequest) -> {
+		requestConfigurator = (final var httpRequest) -> {
 			httpRequest.setConnectTimeout(oidcParameters.httpConnectTimeout());
 			httpRequest.setReadTimeout(oidcParameters.httpReadTimeout());
 			if (sslSocketFactoryOpt.isPresent()) {
@@ -287,6 +287,7 @@ public class OIDCClient {
 	 * @param requestedScopes the scopes requested for the authentication
 	 * @return the URL to redirect the user to for OIDC authentication
 	 */
+	@Override
 	public String getLoginUrl(final URI callbackUri, final IOIDCStateStorage oidcStateStorage, final Optional<Locale> localeOpt, final Map<String, Serializable> additionalInfos,
 			final String... requestedScopes) {
 		Assertion.check()
@@ -338,6 +339,7 @@ public class OIDCClient {
 	 * @param oidcStateStorage the storage to retrieve the state and nonce
 	 * @return OIDC tokens (with ID token and Access token).
 	 */
+	@Override
 	public OIDCTokens parseResponse(final URI responseUri, final URI callbackUri, final IOIDCStateStorage oidcStateStorage) {
 		Assertion.check()
 				.isNotNull(responseUri)
@@ -428,6 +430,7 @@ public class OIDCClient {
 	 * @param session the current HTTP session
 	 * @return the additional infos corresponding to those provided at login time
 	 */
+	@Override
 	public Map<String, Serializable> retrieveAdditionalInfos(final URI responseUri, final IOIDCStateStorage oidcStateStorage) {
 		Assertion.check()
 				.isNotNull(responseUri)
@@ -443,10 +446,11 @@ public class OIDCClient {
 	 *
 	 * @param redirectUriOpt the URL to redirect to after logout
 	 * @param idTokenOpt the ID token of the connected user to logout. Needed by some SSO providers to skip logout confirmation.
-	 * user session if any, needed for logoutIdParamName to be sent (prevent session ending confirmation by the SSO)
+	 *        user session if any, needed for logoutIdParamName to be sent (prevent session ending confirmation by the SSO)
 	 * @param localeOpt the user locale, default to French. Sent if localeParamName is configured.
 	 * @return the URL to logout the user from the SSO
 	 */
+	@Override
 	public String getLogoutUrl(final Optional<URI> redirectUriOpt, final Optional<String> idTokenOpt, final Optional<Locale> localeOpt) {
 		Assertion.check()
 				.isNotNull(redirectUriOpt)

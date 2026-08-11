@@ -1,7 +1,7 @@
 /*
  * vertigo - application development platform
  *
- * Copyright (C) 2013-2025, Vertigo.io, team@vertigo.io
+ * Copyright (C) 2013-2026, Vertigo.io, team@vertigo.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,14 @@
  */
 package io.vertigo.connectors.elasticsearch;
 
+import io.vertigo.core.lang.Assertion;
 import io.vertigo.core.node.config.Feature;
 import io.vertigo.core.node.config.Features;
 import io.vertigo.core.param.Param;
-import io.vertigo.core.lang.Assertion;
 
 /**
  * Defines ElasticSearchConnector module.
+ *
  * @author npiedeloup
  */
 public final class ElasticSearchFeatures extends Features<ElasticSearchFeatures> {
@@ -35,39 +36,26 @@ public final class ElasticSearchFeatures extends Features<ElasticSearchFeatures>
 		super("vertigo-elasticsearch-connector");
 	}
 
+	@Feature("rest")
+	public ElasticSearchFeatures withRest(final Param... params) {
+		Assertion.check().isNotNull(params);
+		//---
+		getModuleConfigBuilder()
+				.addConnector(RestElasticSearchConnector.class, params);
+		return this;
+	}
+
 	@Feature("embeddedServer")
 	public ElasticSearchFeatures withEmbeddedServer(final Param... params) {
 		Assertion.check().isNotNull(params);
 		//---
+		/**
+		 * To use EmbeddedServer with org.testcontainers, we need to declare a varEnv DOCKER_HOST to point on docker socket (like DOCKER_HOST=tcp://localhost:2375)
+		 * To active socket on a docket with WSL, you shoud edit "/lib/systemd/system/docker.service" and add this line in [Service] section:
+		 * ExecStart=/usr/bin/dockerd -H fd:// -H tcp://127.0.0.1:2375 --containerd=/run/containerd/containerd.sock
+		 */
 		getModuleConfigBuilder()
 				.addComponent(EmbeddedElasticSearchServer.class, params);
-		return this;
-	}
-
-	@Feature("transport")
-	public ElasticSearchFeatures withTransport(final Param... params) {
-		Assertion.check().isNotNull(params);
-		//---
-		getModuleConfigBuilder()
-				.addConnector(TransportElasticSearchConnector.class, params);
-		return this;
-	}
-
-	@Feature("node")
-	public ElasticSearchFeatures withNode(final Param... params) {
-		Assertion.check().isNotNull(params);
-		//---
-		getModuleConfigBuilder()
-				.addConnector(NodeElasticSearchConnector.class, params);
-		return this;
-	}
-
-	@Feature("restHL")
-	public ElasticSearchFeatures withRestHL(final Param... params) {
-		Assertion.check().isNotNull(params);
-		//---
-		getModuleConfigBuilder()
-				.addConnector(RestHighLevelElasticSearchConnector.class, params);
 		return this;
 	}
 

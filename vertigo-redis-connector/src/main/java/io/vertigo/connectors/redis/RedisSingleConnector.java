@@ -1,7 +1,7 @@
 /*
  * vertigo - application development platform
  *
- * Copyright (C) 2013-2025, Vertigo.io, team@vertigo.io
+ * Copyright (C) 2013-2026, Vertigo.io, team@vertigo.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ package io.vertigo.connectors.redis;
 
 import java.time.Duration;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLParameters;
 
@@ -37,7 +35,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisClientConfig;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.JedisSentinelPool;
 import redis.clients.jedis.util.Pool;
 
 /**
@@ -51,12 +48,14 @@ public class RedisSingleConnector implements Connector<Jedis>, Activeable {
 
 	/**
 	 * Constructor.
+	 *
 	 * @param connectorNameOpt name of the connector (main by default)
 	 * @param redisHost REDIS server host name
 	 * @param redisPort REDIS server port
 	 * @param redisDatabase REDIS database index
 	 * @param passwordOpt password (optional)
 	 */
+	@Deprecated
 	@Inject
 	public RedisSingleConnector(
 			final ResourceManager resourceManager,
@@ -64,6 +63,7 @@ public class RedisSingleConnector implements Connector<Jedis>, Activeable {
 			@ParamValue("host") final String redisHost,
 			@ParamValue("port") final int redisPort,
 			@ParamValue("database") final int redisDatabase,
+			@ParamValue("username") final Optional<String> usernameOpt,
 			@ParamValue("password") final Optional<String> passwordOpt,
 			@ParamValue("ssl") final boolean ssl,
 			@ParamValue("mastername") final Optional<String> masternameOpt,
@@ -92,9 +92,7 @@ public class RedisSingleConnector implements Connector<Jedis>, Activeable {
 				.connectionTimeoutMillis(CONNECT_TIMEOUT)
 				.database(redisDatabase)
 				.ssl(ssl);
-		final var sentinelConfigBuilder = DefaultJedisClientConfig.builder()
-				.connectionTimeoutMillis(CONNECT_TIMEOUT)
-				.ssl(ssl);
+		usernameOpt.ifPresent(jedisClientConfigBuilder::user);
 		passwordOpt.ifPresent(jedisClientConfigBuilder::password);
 
 		if (trustStoreUrlOpt.isPresent()) {
@@ -103,18 +101,12 @@ public class RedisSingleConnector implements Connector<Jedis>, Activeable {
 			jedisClientConfigBuilder
 					.sslParameters(sslParameters)
 					.sslSocketFactory(sslSocketFactory);
-
-			sentinelConfigBuilder
-					.sslParameters(sslParameters)
-					.sslSocketFactory(sslSocketFactory);
 		}
 		final JedisClientConfig jedisClientConfig = jedisClientConfigBuilder.build();
 		if (sentinelsOpt.isPresent()) {
-			final Set<HostAndPort> sentinels = Set.of(sentinelsOpt.get().split(";")).stream().map(HostAndPort::from).collect(Collectors.toSet());
-			jedisPool = new JedisSentinelPool(masternameOpt.get(), sentinels, jedisPoolConfig, jedisClientConfig, sentinelConfigBuilder.build());
-		} else {
-			jedisPool = new JedisPool(jedisPoolConfig, new HostAndPort(redisHost, redisPort), jedisClientConfig);
+			throw new UnsupportedOperationException("Sentinel configuration is no longer supported in RedisSingleConnector (deprecated). Use withJedisSentineled instead.");
 		}
+		jedisPool = new JedisPool(jedisPoolConfig, new HostAndPort(redisHost, redisPort), jedisClientConfig);
 		//test
 		try (var jedis = jedisPool.getResource()) {
 			jedis.ping();
@@ -124,23 +116,27 @@ public class RedisSingleConnector implements Connector<Jedis>, Activeable {
 	/**
 	 * @return jedis client
 	 */
+	@Deprecated
 	@Override
 	public Jedis getClient() {
 		return jedisPool.getResource();
 	}
 
+	@Deprecated
 	@Override
 	public String getName() {
 		return connectorName;
 	}
 
 	/** {@inheritDoc} */
+	@Deprecated
 	@Override
 	public void start() {
 		//
 	}
 
 	/** {@inheritDoc} */
+	@Deprecated
 	@Override
 	public void stop() {
 		jedisPool.close();

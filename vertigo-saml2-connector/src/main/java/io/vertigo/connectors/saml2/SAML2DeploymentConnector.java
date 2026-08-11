@@ -1,7 +1,7 @@
 /*
  * vertigo - application development platform
  *
- * Copyright (C) 2013-2025, Vertigo.io, team@vertigo.io
+ * Copyright (C) 2013-2026, Vertigo.io, team@vertigo.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import io.vertigo.core.resource.ResourceManager;
  */
 public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 
-	private final SAML2Parameters oidcParameters;
+	private final SAML2Parameters samlParameters;
 	private final String connectorName;
 
 	@Inject
@@ -60,7 +60,7 @@ public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 				.isNotNull(resourceManager);
 		//---
 		connectorName = connectorNameOpt.orElse("main");
-		oidcParameters = new SAML2Parameters(
+		samlParameters = new SAML2Parameters(
 				clientName,
 				externalUrlOpt,
 				signatureTypeOpt.orElse("RSA-SHA256"),
@@ -83,7 +83,7 @@ public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 	 */
 	@Override
 	public SAML2Parameters getClient() {
-		return oidcParameters;
+		return samlParameters;
 	}
 
 }
