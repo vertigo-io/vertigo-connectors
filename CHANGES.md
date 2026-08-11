@@ -3,6 +3,14 @@ Version history
 
 Running 5.0.0
 ----------------------
+[Migration help](https://github.com/vertigo-io/vertigo-core/wiki/Vertigo-Migration-Guide#from-44x-to-500)
+
+* **[ElasticSearch] Drop ElasticSearch 7 support** : `vertigo-elasticsearch_7_17-connector` module (legacy ES 7 connectors) is removed, only the ES 9 connector remains (stay on vertigo 4.x LTS if you need ES 7)
+* **[All] Removed `vertigo-twitter-connector` and `vertigo-ifttt-connector`**
+* **[All] Switch dependency injection annotations from `javax.inject` to `jakarta.inject`**
+* [All] New module `vertigo-connector-commons` : shared SSL helper (`ConnectorSslUtil`) used by elasticsearch, redis and httpclient connectors
+* [All] Migration Jetty 11 -> 12, Javalin 6 -> 7, Spring 6 -> 7 (jetty websocket artifact renamed `websocket-jetty-server` -> `jetty-websocket-jetty-server`)
+
 more to come :)
 
 
@@ -15,6 +23,7 @@ Release 4.4.0 - 2026/07/09
 * [ElasticSearch] Add connector ES 9
 * [ElasticSearch] Add embedded elasticSearch as testContainer (ES9 can't run embedded as simpler as ES7)
 * [ElasticSearch] Rename ES7 connector package to `elasticsearch_7_17` for clarity
+* [Redis] Add username parameter for ACL authentication support
 * [Redis] Deprecated RedisSingleConnector no longer supports Sentinel configuration (use withJedisSentineled instead)
 * New libs
   - testcontainers-elasticsearch 1.21.4 (for ES 9 connector)
