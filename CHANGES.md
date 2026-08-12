@@ -10,6 +10,7 @@ Running 5.0.0
 * **[All] Switch dependency injection annotations from `javax.inject` to `jakarta.inject`**
 * [All] New module `vertigo-connector-commons` : shared SSL helper (`ConnectorSslUtil`) used by elasticsearch, redis and httpclient connectors
 * [All] Migration Jetty 11 -> 12, Javalin 6 -> 7, Spring 6 -> 7 (jetty websocket artifact renamed `websocket-jetty-server` -> `jetty-websocket-jetty-server`)
+* [Javalin] Add explicit jackson-databind dependency (optional in javalin 7 but required at runtime by its default JsonMapper)
 
 more to come :)
 

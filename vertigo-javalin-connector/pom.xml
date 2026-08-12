@@ -69,6 +69,12 @@
 			<artifactId>javalin</artifactId>
 		</dependency>
 		<dependency>
+			<!-- javalin 7 declares jackson-databind as optional but its default JsonMapper requires it at runtime -->
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.18.3</version>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-http</artifactId>
 		</dependency>
