@@ -18,7 +18,10 @@ more to come :)
 
 Running 4.4.1-SNAPSHOT - 2026-12-XX
 ----------------------
-more to come :)
+* [HttpClient] Add mTLS support (client authentication) : `keyStoreUrl`, `keyStorePassword`, `keyStoreKeyAlias`, `keyStoreForceAlias`
+* [HttpClient] Add `tlsProtocols` and `tlsCipherSuites` params (`;` separated) to restrict the TLS negotiation
+* [HttpClient] Enforce a minimum TLS version (TLSv1.2) on every client, whatever its configuration
+* [HttpClient] SSLContext is now obtained with "TLS" instead of "TLSv1.2", which excluded TLS 1.3
 
 
 Release 4.4.0 - 2026/07/09
