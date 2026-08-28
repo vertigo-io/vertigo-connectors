@@ -6,6 +6,14 @@ Running 5.0.0
 more to come :)
 
 
+Running 4.4.1-SNAPSHOT - 2026-12-XX
+----------------------
+* [HttpClient] Add mTLS support (client authentication) : `keyStoreUrl`, `keyStorePassword`, `keyStoreKeyAlias`, `keyStoreForceAlias`
+* [HttpClient] Add `tlsProtocols` and `tlsCipherSuites` params (`;` separated) to restrict the TLS negotiation
+* [HttpClient] Enforce a minimum TLS version (TLSv1.2) on every client, whatever its configuration
+* [HttpClient] SSLContext is now obtained with "TLS" instead of "TLSv1.2", which excluded TLS 1.3
+
+
 Release 4.4.0 - 2026/07/09
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-432-to-440)
@@ -287,5 +295,6 @@ Release 3.0.0 - 2020/11/20
 ----------------------
 [Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-210-to-300)
  * First release
+
 
 
