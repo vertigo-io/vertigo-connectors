@@ -43,6 +43,7 @@ import io.vertigo.core.param.Param;
 import io.vertigo.core.plugins.resource.classpath.ClassPathResourceResolverPlugin;
 
 public class MongoClientConnectorTest {
+	private static final String MONGO_URL = System.getenv("MONGO_URL") != null ? System.getenv("MONGO_URL") : "mongodb://docker-vertigo.part.klee.lan.net:27017";
 
 	@Inject
 	private MongoClientConnector mongoClientConnector;
@@ -88,7 +89,7 @@ public class MongoClientConnectorTest {
 						.build())
 				.addModule(new MongodbFeatures()
 						.withMongoClient(
-								Param.of("connectionString", "mongodb://docker-vertigo.part.klee.lan.net:27017"))
+								Param.of("connectionString", MONGO_URL))
 						.build())
 				.build();
 	}
