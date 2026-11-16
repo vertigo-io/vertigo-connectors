@@ -47,16 +47,7 @@
 						<groupId>org.apache.logging.log4j</groupId>
 						<artifactId>log4j-api</artifactId>
 					</exclusion>
-					<exclusion> <!-- unmaintained, replaced by its fork at.yawk.lz4:lz4-java (same net.jpountz packages) -->
-						<groupId>org.lz4</groupId>
-						<artifactId>lz4-java</artifactId>
-					</exclusion>
 				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>at.yawk.lz4</groupId>
-				<artifactId>lz4-java</artifactId>
-				<version>1.14.0</version> <!-- maintained fork of org.lz4:lz4-java 1.8.0 (CVEs without fix) -->
 			</dependency>
 			<dependency>
 				<groupId>org.elasticsearch.client</groupId>
@@ -86,10 +77,6 @@
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>at.yawk.lz4</groupId>
-			<artifactId>lz4-java</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.elasticsearch.client</groupId>
