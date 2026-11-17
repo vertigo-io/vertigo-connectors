@@ -8,10 +8,10 @@ more to come :)
 
 Running 4.5.0-SNAPSHOT - 2026-12-XX
 ----------------------
-* [ElasticSearch] `EmbeddedElasticSearchServer` (Testcontainers) : default image elasticsearch 9.4.3 -> 9.5.6, the version of the elasticsearch-java client
+* [ElasticSearch] `EmbeddedElasticSearchServer` (Testcontainers) : default image elasticsearch 9.4.3 -> 9.4.9, the latest 9.4 server image (same minor as the elasticsearch-java client)
 * Update libs
   - elasticsearch / elasticsearch-rest-high-level-client / x-pack-transport 7.17.28 -> 7.17.29 (ES 7.17 connector)
-  - elasticsearch-java 9.4.3 -> 9.5.6
+  - elasticsearch-java 9.4.3 -> 9.4.10 (kept on 9.4 : a client is only guaranteed with a server of the same major and a greater or equal minor, a 9.5 client would require ES 9.5+ servers)
   - jackson-datatype-jsr310 2.22.0 -> 2.23.0
   - bcpkix-jdk18on / bcprov-jdk18on 1.84 -> 1.87
   - jsch 0.2.26 -> 2.28.8 (same com.github.mwiede library, new numbering)
