@@ -8,6 +8,7 @@ more to come :)
 
 Running 4.5.0-SNAPSHOT - 2026-12-XX
 ----------------------
+* [ElasticSearch] `EmbeddedElasticSearchServer` (Testcontainers) : default image elasticsearch 9.4.3 -> 9.5.6, the version of the elasticsearch-java client
 * Update libs
   - elasticsearch / elasticsearch-rest-high-level-client / x-pack-transport 7.17.28 -> 7.17.29 (ES 7.17 connector)
   - elasticsearch-java 9.4.3 -> 9.5.6
