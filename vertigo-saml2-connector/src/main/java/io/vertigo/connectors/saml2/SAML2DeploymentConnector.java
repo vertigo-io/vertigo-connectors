@@ -45,6 +45,10 @@ public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 			@ParamValue("signatureType") final Optional<String> signatureTypeOpt,
 			@ParamValue("cryptAssertion") final Optional<Boolean> cryptAssertionOpt,
 			@ParamValue("extractPublicKeyFromCertificate") final Optional<Boolean> extractPublicKeyFromCertificateOpt,
+			@ParamValue("clockSkewSeconds") final Optional<Integer> clockSkewSecondsOpt,
+			@ParamValue("checkAudience") final Optional<Boolean> checkAudienceOpt,
+			@ParamValue("checkDestination") final Optional<Boolean> checkDestinationOpt,
+			@ParamValue("checkInResponseTo") final Optional<Boolean> checkInResponseToOpt,
 			final SAML2SpKeyPlugin spKeyConfig,
 			final SAML2IpConfigPlugin ipConfig,
 			final ResourceManager resourceManager) {
@@ -55,6 +59,10 @@ public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 				.isNotNull(externalUrlOpt)
 				.isNotNull(signatureTypeOpt)
 				.isNotNull(cryptAssertionOpt)
+				.isNotNull(clockSkewSecondsOpt)
+				.isNotNull(checkAudienceOpt)
+				.isNotNull(checkDestinationOpt)
+				.isNotNull(checkInResponseToOpt)
 				.isNotNull(spKeyConfig)
 				.isNotNull(ipConfig)
 				.isNotNull(resourceManager);
@@ -66,6 +74,11 @@ public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 				signatureTypeOpt.orElse("RSA-SHA256"),
 				cryptAssertionOpt.orElse(true),
 				extractPublicKeyFromCertificateOpt.orElse(false),
+				// checks of the SAML 2.0 Web Browser SSO profile, on by default ; InResponseTo off : it needs the session at the callback (cross site POST from the IdP)
+				clockSkewSecondsOpt.orElse(180),
+				checkAudienceOpt.orElse(true),
+				checkDestinationOpt.orElse(true),
+				checkInResponseToOpt.orElse(false),
 				spKeyConfig.getCredentials(),
 				ipConfig.getLoginUrl(),
 				ipConfig.getLogoutUrl(),
