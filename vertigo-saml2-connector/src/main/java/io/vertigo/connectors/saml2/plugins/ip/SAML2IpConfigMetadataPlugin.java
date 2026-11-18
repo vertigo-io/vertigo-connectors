@@ -90,7 +90,7 @@ public class SAML2IpConfigMetadataPlugin implements SAML2IpConfigPlugin {
 		if (nextMetadataFileOpt.isPresent() && !StringUtil.isBlank(nextMetadataFileOpt.get())) {
 			final var metadataFile2Url = resourceManager.resolve(nextMetadataFileOpt.get());
 			final var metadataResolver2 = getMetadataResolver(metadataFile2Url, parserPool);
-			final var idpEntityDescriptor2 = getEntityDescriptor(metadataResolver);
+			final var idpEntityDescriptor2 = getEntityDescriptor(metadataResolver2);
 			signingCredentials.add(resolveIdpCredential(metadataResolver2, idpEntityDescriptor2));
 		}
 

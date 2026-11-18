@@ -101,6 +101,15 @@ class SAML2IpConfigMetadataPluginTest {
 		assertSignatureChecked(plugin.getPublicCredentials(), idpNext);
 	}
 
+	@Test
+	void testNextMetadataFileOtherEntity() throws Exception {
+		//IdP change : another entityID in the next metadata file
+		final var plugin = new SAML2IpConfigMetadataPlugin(metadataFile("idp.xml", IDP_ENTITY_ID, idp),
+				Optional.of(metadataFile("idp-other.xml", "https://other-idp.test/saml", idpNext)), Optional.empty(), Optional.empty(), RESOURCE_MANAGER);
+		assertEquals(2, plugin.getPublicCredentials().size());
+		assertSignatureChecked(plugin.getPublicCredentials(), idpNext);
+	}
+
 	private static String metadataFile(final String fileName, final String entityId, final KeyMaterial signing) throws Exception {
 		return writeFile(tempDir, fileName, idpMetadata(entityId, signing));
 	}
