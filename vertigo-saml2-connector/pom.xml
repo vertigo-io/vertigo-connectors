@@ -41,6 +41,20 @@
 				<artifactId>woodstox-core</artifactId>
 				<version>7.3.0</version>
 			</dependency>
+			<!-- BouncyCastle : opensaml 5.2.3 (the latest, Shibboleth parent 17.2.3) brings BC 1.84. Forced to 1.87 for the CVE fixes of BC 1.85+
+				and to keep a single BC version : an application using this connector with vertigo-jsch-connector got bcprov 1.84 with bcpkix/bcutil 1.87.
+				All the BC classes and methods referenced by opensaml / shib-security 5.2.3 exist in 1.87 (bytecode check).
+				Keep the BC version homogeneous with the other BC references : vertigo-jsch-connector (bcpkix) and vertigo-keycloak-connector (bcprov). -->
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk18on</artifactId>
+				<version>1.87</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcpkix-jdk18on</artifactId>
+				<version>1.87</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -52,6 +66,14 @@
 		<dependency>
 			<groupId>com.fasterxml.woodstox</groupId>
 			<artifactId>woodstox-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk18on</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk18on</artifactId>
 		</dependency>
 	</dependencies>
 

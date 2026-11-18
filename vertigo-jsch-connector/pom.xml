@@ -20,7 +20,7 @@
 				<artifactId>jsch</artifactId>
 				<version>2.28.8</version>
 			</dependency>
-			<dependency>
+			<dependency> <!-- keep the BC version homogeneous with vertigo-saml2-connector (bcprov, bcpkix) and vertigo-keycloak-connector (bcprov) -->
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcpkix-jdk18on</artifactId>
 				<version>1.87</version>

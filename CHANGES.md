@@ -9,6 +9,7 @@ more to come :)
 Running 4.5.0-SNAPSHOT - 2026-12-XX
 ----------------------
 * [ElasticSearch] `EmbeddedElasticSearchServer` (Testcontainers) : default image elasticsearch 9.4.3 -> 9.4.9, the latest 9.4 server image (same minor as the elasticsearch-java client)
+* [SAML2] BouncyCastle forced to 1.87 (opensaml 5.2.3, the latest, brings 1.84) : a single BC version with the jsch connector (an application using both got bcprov 1.84 with bcpkix 1.87) and the CVE fixes of BC 1.85+
 * Update libs
   - elasticsearch / elasticsearch-rest-high-level-client / x-pack-transport 7.17.28 -> 7.17.29 (ES 7.17 connector)
   - elasticsearch-java 9.4.3 -> 9.4.10 (kept on 9.4 : a client is only guaranteed with a server of the same major and a greater or equal minor, a 9.5 client would require ES 9.5+ servers)
