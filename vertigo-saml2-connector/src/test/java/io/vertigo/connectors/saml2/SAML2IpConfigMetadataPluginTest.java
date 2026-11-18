@@ -28,8 +28,10 @@ import static io.vertigo.connectors.saml2.SAML2TestSupport.idpMetadata;
 import static io.vertigo.connectors.saml2.SAML2TestSupport.writeFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +39,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.xmlsec.signature.support.SignatureConstants;
 
@@ -86,11 +89,61 @@ class SAML2IpConfigMetadataPluginTest {
 	}
 
 	@Test
+	void testTwoSigningCertificates() throws Exception {
+		//IdP key rollover : its metadata publishes the current and the next signing certificates, both trusted (as with nextCertFile)
+		final var keyDescriptorNext = "<md:KeyDescriptor use=\"signing\"><ds:KeyInfo><ds:X509Data><ds:X509Certificate>"
+				+ Base64.getEncoder().encodeToString(idpNext.certificate().getEncoded())
+				+ "</ds:X509Certificate></ds:X509Data></ds:KeyInfo></md:KeyDescriptor>";
+		final var metadata = idpMetadata(IDP_ENTITY_ID, idp).replaceFirst("</md:KeyDescriptor>", "</md:KeyDescriptor>" + keyDescriptorNext);
+		final var plugin = new SAML2IpConfigMetadataPlugin(writeFile(tempDir, "idp-rollover.xml", metadata), Optional.empty(), Optional.empty(), Optional.empty(), RESOURCE_MANAGER);
+		assertEquals(2, plugin.getPublicCredentials().size());
+		assertSignatureChecked(plugin.getPublicCredentials(), idp);
+		assertSignatureChecked(plugin.getPublicCredentials(), idpNext);
+	}
+
+	@Test
+	void testAggregateMetadataFile() throws Exception {
+		//a metadata file of several entities (federation) : its only IdP is used, whatever its position
+		final var plugin = new SAML2IpConfigMetadataPlugin(writeFile(tempDir, "federation.xml", entities(spEntity(), entity(IDP_ENTITY_ID, idp))),
+				Optional.empty(), Optional.empty(), Optional.empty(), RESOURCE_MANAGER);
+		assertEquals(IDP_LOGIN_URL, plugin.getLoginUrl());
+		assertSignatureChecked(plugin.getPublicCredentials(), idp);
+		//the signing key of another entity of the file (the SP here) is not trusted
+		assertEquals(1, plugin.getPublicCredentials().size());
+		assertThrows(Exception.class, () -> assertSignatureChecked(plugin.getPublicCredentials(), idpNext));
+		//several IdPs : which one to trust is not guessed
+		final var twoIdps = writeFile(tempDir, "federation-two-idps.xml", entities(entity(IDP_ENTITY_ID, idp), entity("https://other-idp.test/saml", idpNext)));
+		final var exception = assertThrows(VSystemException.class,
+				() -> new SAML2IpConfigMetadataPlugin(twoIdps, Optional.empty(), Optional.empty(), Optional.empty(), RESOURCE_MANAGER));
+		assertTrue(exception.getMessage().contains("federation-two-idps.xml") && exception.getMessage().contains("one SAML 2.0 IdP")
+				&& exception.getMessage().endsWith(": 2 found."), exception.getMessage());
+	}
+
+	private static String entities(final String... entities) {
+		return "<md:EntitiesDescriptor xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\">" + String.join("", entities) + "</md:EntitiesDescriptor>";
+	}
+
+	private static String entity(final String entityId, final KeyMaterial signing) throws Exception {
+		return idpMetadata(entityId, signing).replaceFirst("<\\?xml[^>]*\\?>", "");
+	}
+
+	private static String spEntity() throws Exception {
+		return "<md:EntityDescriptor xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\" entityID=\"https://app.test/saml\">"
+				+ "<md:SPSSODescriptor protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">"
+				+ "<md:KeyDescriptor use=\"signing\"><ds:KeyInfo xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"><ds:X509Data><ds:X509Certificate>"
+				+ Base64.getEncoder().encodeToString(idpNext.certificate().getEncoded())
+				+ "</ds:X509Certificate></ds:X509Data></ds:KeyInfo></md:KeyDescriptor>"
+				+ "<md:AssertionConsumerService Binding=\"" + SAMLConstants.SAML2_POST_BINDING_URI + "\" Location=\"https://app.test/saml/callback\" index=\"0\"/>"
+				+ "</md:SPSSODescriptor></md:EntityDescriptor>";
+	}
+
+	@Test
 	void testNoSigningCertificate() throws Exception {
 		//fails at startup, not at each login
 		final var metadataFile = writeFile(tempDir, "idp-encryption-only.xml", idpMetadata(IDP_ENTITY_ID, idp, " use=\"encryption\""));
-		assertThrows(VSystemException.class,
+		final var exception = assertThrows(VSystemException.class,
 				() -> new SAML2IpConfigMetadataPlugin(metadataFile, Optional.empty(), Optional.empty(), Optional.empty(), RESOURCE_MANAGER));
+		assertTrue(exception.getMessage().startsWith("No IdP signing certificate"), exception.getMessage());
 	}
 
 	@Test

@@ -15,6 +15,7 @@ Running 4.5.0-SNAPSHOT - 2026-12-XX
 * [SAML2] Fix `nextCertFile` of `saml.ip.metadata` : read as a file like `metadataFile` and `nextMetadataFile` (the value was parsed as the certificate content)
 * [OIDC] Fix a logout before any login with `dontFailAtStartup` and a provider not reachable at startup : NullPointerException, now the same error as the login (authentication currently unavailable)
 * [SAML2] New params of the SAML response checks : `clockSkewSeconds` (180), `checkAudience` (true), `checkDestination` (true), `checkInResponseTo` (false)
+* [SAML2] `saml.ip.metadata` : all the signing certificates of the IdP metadata are trusted (key rollover : the IdP publishes the current and the next ones, as with `nextCertFile`) ; a metadata file of several entities (federation) uses its only IdP, and fails at startup with none or several
 * Update libs
   - elasticsearch / elasticsearch-rest-high-level-client / x-pack-transport 7.17.28 -> 7.17.29 (ES 7.17 connector)
   - elasticsearch-java 9.4.3 -> 9.4.10 (kept on 9.4 : a client is only guaranteed with a server of the same major and a greater or equal minor, a 9.5 client would require ES 9.5+ servers)
