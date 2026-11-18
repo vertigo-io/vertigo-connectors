@@ -41,7 +41,6 @@ import org.opensaml.saml.metadata.resolver.impl.PredicateRoleDescriptorResolver;
 import org.opensaml.saml.saml2.metadata.Endpoint;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
-import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
 import org.opensaml.saml.security.impl.MetadataCredentialResolver;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.security.credential.UsageType;
@@ -133,7 +132,11 @@ public class SAML2IpConfigMetadataPlugin implements SAML2IpConfigPlugin {
 			metadataCredentialResolver.initialize();
 
 			final var criteriaSetSigning = getCredentialCriteriaSet(idpEntityDescriptor.getEntityID(), UsageType.SIGNING);
-			return metadataCredentialResolver.resolveSingle(criteriaSetSigning);
+			final var credential = metadataCredentialResolver.resolveSingle(criteriaSetSigning);
+			if (credential == null) {
+				throw new VSystemException("No IdP signing certificate found in SAML metadata of '{0}'.", idpEntityDescriptor.getEntityID());
+			}
+			return credential;
 			// Saml IDP metadata provides encryption public key but I don't found an usage, it can be retrieved with getCredentialCriteriaSet(..., UsageType.ENCRYPTION)
 		} catch (ComponentInitializationException | ResolverException e) {
 			throw new VSystemException(e, "Unable to resolve credentials from SAML metadata.");
@@ -144,7 +147,7 @@ public class SAML2IpConfigMetadataPlugin implements SAML2IpConfigPlugin {
 	private static CriteriaSet getCredentialCriteriaSet(final String entityId, final UsageType usageType) {
 		final var criteriaSet = new CriteriaSet();
 		criteriaSet.add(new UsageCriterion(usageType));
-		criteriaSet.add(new EntityRoleCriterion(SPSSODescriptor.DEFAULT_ELEMENT_NAME));
+		criteriaSet.add(new EntityRoleCriterion(IDPSSODescriptor.DEFAULT_ELEMENT_NAME));
 		criteriaSet.add(new ProtocolCriterion(SAMLConstants.SAML20P_NS));
 		criteriaSet.add(new EntityIdCriterion(entityId));
 
