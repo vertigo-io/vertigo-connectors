@@ -92,7 +92,7 @@ class SAML2ConnectorTest {
 	}
 
 	//-----------------------------------------------------------------------------------------------------------------
-	// Configuration of rdvPref : saml.ip.file (IdP certificate file) + saml.certif.keystore (PKCS12)
+	// IdP certificate in a file (saml.ip.file) and SP keys in a PKCS12 keystore (saml.certif.keystore)
 	//-----------------------------------------------------------------------------------------------------------------
 
 	@Test
@@ -124,7 +124,7 @@ class SAML2ConnectorTest {
 
 	@Test
 	void testIpFileEmptyNextCertificate() throws Exception {
-		//rdvPref sets nextPublicKeyFile to an empty value when there is no renewal
+		//nextPublicKeyFile set to an empty value when there is no renewal (a param given by an empty environment variable)
 		assertEquals(1, ipFilePlugin(Optional.of("")).getPublicCredentials().size());
 	}
 
@@ -138,7 +138,7 @@ class SAML2ConnectorTest {
 
 	@Test
 	void testSpRequestSignature() throws Exception {
-		//the AuthnRequest query string is signed with the SP credential (signatureType of rdvPref : RSA SHA256 / RSA SHA1)
+		//the AuthnRequest query string is signed with the SP credential (signatureType : RSA SHA256 by default, RSA SHA1 for legacy IdPs)
 		//and checked by the IdP with the SP certificate given in the SP metadata
 		final var spCredential = keystorePlugin().getCredentials().get(0);
 		final var signedContent = "SAMLRequest=abc&RelayState=xyz&SigAlg=alg".getBytes(StandardCharsets.UTF_8);
@@ -231,8 +231,9 @@ class SAML2ConnectorTest {
 	}
 
 	/**
-	 * Same steps as SAML2WebAuthenticationPlugin.doHandleCallback (vertigo-vega) : read the response, check its
-	 * signature with the IdP credentials (the first that validates it), decrypt the assertion with the SP credentials.
+	 * Signature and decryption only (vertigo-vega SAML2WebAuthenticationPlugin also checks the signature profile and the
+	 * response) : read the response, check its signature with the IdP credentials (the first that validates it), decrypt the
+	 * assertion with the SP credentials.
 	 */
 	static Map<String, Object> handleCallback(final String samlResponse, final List<Credential> ipCredentials, final List<Credential> spCredentials) throws Exception {
 		final var response = OpenSAMLUtil.extractSamlResponse(new ByteArrayInputStream(Base64.getDecoder().decode(samlResponse)));
