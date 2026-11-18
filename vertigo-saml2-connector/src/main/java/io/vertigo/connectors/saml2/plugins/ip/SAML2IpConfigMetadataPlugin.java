@@ -95,7 +95,7 @@ public class SAML2IpConfigMetadataPlugin implements SAML2IpConfigPlugin {
 		}
 
 		if (alternateCertFileOpt.isPresent() && !StringUtil.isBlank(alternateCertFileOpt.get())) {
-			signingCredentials.add(CertUtil.getCredentialFromString(alternateCertFileOpt.get()));
+			signingCredentials.add(CertUtil.getCredentialFromString(SAML2IpConfigFilePlugin.readFileContent(resourceManager, alternateCertFileOpt.get())));
 		}
 	}
 

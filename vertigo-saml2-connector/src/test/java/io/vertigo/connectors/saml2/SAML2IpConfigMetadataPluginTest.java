@@ -22,6 +22,7 @@ import static io.vertigo.connectors.saml2.SAML2TestSupport.IDP_LOGIN_URL;
 import static io.vertigo.connectors.saml2.SAML2TestSupport.IDP_LOGOUT_URL;
 import static io.vertigo.connectors.saml2.SAML2TestSupport.RESOURCE_MANAGER;
 import static io.vertigo.connectors.saml2.SAML2TestSupport.buildIdpResponse;
+import static io.vertigo.connectors.saml2.SAML2TestSupport.certificatePem;
 import static io.vertigo.connectors.saml2.SAML2TestSupport.generateKeyMaterial;
 import static io.vertigo.connectors.saml2.SAML2TestSupport.idpMetadata;
 import static io.vertigo.connectors.saml2.SAML2TestSupport.writeFile;
@@ -106,6 +107,16 @@ class SAML2IpConfigMetadataPluginTest {
 		//IdP change : another entityID in the next metadata file
 		final var plugin = new SAML2IpConfigMetadataPlugin(metadataFile("idp.xml", IDP_ENTITY_ID, idp),
 				Optional.of(metadataFile("idp-other.xml", "https://other-idp.test/saml", idpNext)), Optional.empty(), Optional.empty(), RESOURCE_MANAGER);
+		assertEquals(2, plugin.getPublicCredentials().size());
+		assertSignatureChecked(plugin.getPublicCredentials(), idpNext);
+	}
+
+	@Test
+	void testNextCertFile() throws Exception {
+		//nextCertFile : the next IdP certificate, given as a file like metadataFile and nextMetadataFile
+		final var nextCertFile = writeFile(tempDir, "idp-next.crt", certificatePem(idpNext));
+		final var plugin = new SAML2IpConfigMetadataPlugin(metadataFile("idp.xml", IDP_ENTITY_ID, idp),
+				Optional.empty(), Optional.of(nextCertFile), Optional.empty(), RESOURCE_MANAGER);
 		assertEquals(2, plugin.getPublicCredentials().size());
 		assertSignatureChecked(plugin.getPublicCredentials(), idpNext);
 	}

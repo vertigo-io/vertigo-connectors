@@ -46,7 +46,7 @@ public class SAML2IpConfigFilePlugin extends SAML2IpConfigStringPlugin {
 						.map(keyFile -> readFileContent(resourceManager, keyFile)));
 	}
 
-	private static String readFileContent(final ResourceManager resourceManager, final String path) {
+	static String readFileContent(final ResourceManager resourceManager, final String path) {
 		final var fileUrl = resourceManager.resolve(path);
 		try (var stream = fileUrl.openStream()) {
 			return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
