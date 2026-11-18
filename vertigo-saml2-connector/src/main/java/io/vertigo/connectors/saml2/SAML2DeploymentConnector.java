@@ -36,6 +36,8 @@ public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 
 	private final SAML2Parameters samlParameters;
 	private final String connectorName;
+	/** Beyond, the validity times of the assertion are no longer really checked. */
+	private static final int MAX_CLOCK_SKEW_SECONDS = 600;
 
 	@Inject
 	public SAML2DeploymentConnector(
@@ -65,12 +67,17 @@ public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 				.isNotNull(checkInResponseToOpt)
 				.isNotNull(spKeyConfig)
 				.isNotNull(ipConfig)
-				.isNotNull(resourceManager);
+				.isNotNull(resourceManager)
+				.isTrue(clockSkewSecondsOpt.orElse(0) >= 0 && clockSkewSecondsOpt.orElse(0) <= MAX_CLOCK_SKEW_SECONDS,
+						"clockSkewSeconds (clock gap accepted between the IdP and the application) must be between 0 and {0}s : {1}s", MAX_CLOCK_SKEW_SECONDS, clockSkewSecondsOpt.orElse(0))
+				.when(externalUrlOpt.filter(url -> !url.isBlank()).isPresent(), () -> Assertion.check()
+						.isTrue(externalUrlOpt.get().matches("(?i)https?://[^/].*") && !externalUrlOpt.get().endsWith("/"),
+								"externalUrl must be the absolute url of the application, without final / (the callback path is added to it) : {0}", externalUrlOpt.get()));
 		//---
 		connectorName = connectorNameOpt.orElse("main");
 		samlParameters = new SAML2Parameters(
 				clientName,
-				externalUrlOpt,
+				externalUrlOpt.filter(url -> !url.isBlank()), //an empty value (an empty environment variable) is no externalUrl
 				signatureTypeOpt.orElse("RSA-SHA256"),
 				cryptAssertionOpt.orElse(true),
 				extractPublicKeyFromCertificateOpt.orElse(false),

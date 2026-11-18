@@ -28,6 +28,7 @@ import static io.vertigo.connectors.saml2.SAML2TestSupport.pkcs8PrivateKeyPem;
 import static io.vertigo.connectors.saml2.SAML2TestSupport.publicKeyPem;
 import static io.vertigo.connectors.saml2.SAML2TestSupport.writeFile;
 import static io.vertigo.connectors.saml2.SAML2TestSupport.writePkcs12Keystore;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -177,6 +178,30 @@ class SAML2ConnectorTest {
 	void testIpStringPublicKey() throws Exception {
 		final var ipPlugin = new SAML2IpConfigStringPlugin(IDP_LOGIN_URL, IDP_LOGOUT_URL, publicKeyPem(idp), Optional.empty());
 		assertRoundTrip(ipPlugin.getPublicCredentials(), keystorePlugin().getCredentials(), idp, SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
+	}
+
+	//-----------------------------------------------------------------------------------------------------------------
+	// Params of the connector
+	//-----------------------------------------------------------------------------------------------------------------
+
+	@Test
+	void testParamsBounds() throws Exception {
+		assertDoesNotThrow(() -> connector(Optional.empty(), Optional.empty()));
+		assertDoesNotThrow(() -> connector(Optional.of("https://app.test/context"), Optional.of(0)));
+		//an empty externalUrl (an empty environment variable) is no externalUrl ; the scheme is case insensitive
+		assertDoesNotThrow(() -> connector(Optional.of(""), Optional.empty()));
+		assertDoesNotThrow(() -> connector(Optional.of("HTTPS://app.test/context"), Optional.empty()));
+		//clockSkewSeconds : from 0 to 600s (beyond, the validity times of the assertion are no longer checked)
+		assertThrows(IllegalStateException.class, () -> connector(Optional.empty(), Optional.of(-1)));
+		assertThrows(IllegalStateException.class, () -> connector(Optional.empty(), Optional.of(601)));
+		//externalUrl : the absolute url of the application, the callback path is added to it
+		assertThrows(IllegalStateException.class, () -> connector(Optional.of("app.test/context"), Optional.empty()));
+		assertThrows(IllegalStateException.class, () -> connector(Optional.of("https://app.test/context/"), Optional.empty()));
+	}
+
+	private static SAML2DeploymentConnector connector(final Optional<String> externalUrl, final Optional<Integer> clockSkewSeconds) throws Exception {
+		return new SAML2DeploymentConnector(Optional.empty(), "https://app.test/saml", externalUrl, Optional.empty(), Optional.empty(), Optional.empty(),
+				clockSkewSeconds, Optional.empty(), Optional.empty(), Optional.empty(), keystorePlugin(), ipFilePlugin(Optional.empty()), RESOURCE_MANAGER);
 	}
 
 	//-----------------------------------------------------------------------------------------------------------------
