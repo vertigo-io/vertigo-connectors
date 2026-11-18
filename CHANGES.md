@@ -17,6 +17,7 @@ Running 4.5.0-SNAPSHOT - 2026-12-XX
 * [SAML2] New params of the SAML response checks : `clockSkewSeconds` (180), `checkAudience` (true), `checkDestination` (true), `checkInResponseTo` (false)
 * [SAML2] `saml.ip.metadata` : all the signing certificates of the IdP metadata are trusted (key rollover : the IdP publishes the current and the next ones, as with `nextCertFile`) ; a metadata file of several entities (federation) uses its only IdP, and fails at startup with none or several
 * [SAML2] Params checked at startup, with a clear message : `clockSkewSeconds` from 0 to 600s, `externalUrl` absolute (`http(s)://...`) without final `/` (an empty value is no `externalUrl`)
+* [SAML2] Certificate and key files read without a BOM nor the blank lines around the PEM content (a BOM failed with `Illegal base64 character`)
 * Update libs
   - elasticsearch / elasticsearch-rest-high-level-client / x-pack-transport 7.17.28 -> 7.17.29 (ES 7.17 connector)
   - elasticsearch-java 9.4.3 -> 9.4.10 (kept on 9.4 : a client is only guaranteed with a server of the same major and a greater or equal minor, a 9.5 client would require ES 9.5+ servers)

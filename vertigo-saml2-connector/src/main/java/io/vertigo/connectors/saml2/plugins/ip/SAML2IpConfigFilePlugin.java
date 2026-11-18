@@ -49,7 +49,8 @@ public class SAML2IpConfigFilePlugin extends SAML2IpConfigStringPlugin {
 	static String readFileContent(final ResourceManager resourceManager, final String path) {
 		final var fileUrl = resourceManager.resolve(path);
 		try (var stream = fileUrl.openStream()) {
-			return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+			//a BOM (saved by some Windows editors) and blank lines around the PEM content are ignored
+			return new String(stream.readAllBytes(), StandardCharsets.UTF_8).replaceFirst("^\uFEFF", "").strip();
 		} catch (final IOException e) {
 			throw WrappedException.wrap(e);
 		}

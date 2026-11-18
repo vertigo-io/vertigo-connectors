@@ -175,6 +175,14 @@ class SAML2ConnectorTest {
 	}
 
 	@Test
+	void testIpFileWithBomAndBlankLines() throws Exception {
+		//a certificate file saved with a BOM (Windows editors) and blank lines around the PEM content
+		final var certificateFile = writeFile(tempDir, "idp-bom.crt", "\uFEFF\n\n" + certificatePem(idp) + "\n\n");
+		final var ipPlugin = new SAML2IpConfigFilePlugin(IDP_LOGIN_URL, IDP_LOGOUT_URL, certificateFile, Optional.empty(), RESOURCE_MANAGER);
+		assertRoundTrip(ipPlugin.getPublicCredentials(), keystorePlugin().getCredentials(), idp, SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
+	}
+
+	@Test
 	void testIpStringPublicKey() throws Exception {
 		final var ipPlugin = new SAML2IpConfigStringPlugin(IDP_LOGIN_URL, IDP_LOGOUT_URL, publicKeyPem(idp), Optional.empty());
 		assertRoundTrip(ipPlugin.getPublicCredentials(), keystorePlugin().getCredentials(), idp, SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
