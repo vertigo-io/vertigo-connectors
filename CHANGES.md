@@ -8,6 +8,8 @@ more to come :)
 
 Running 4.5.0-SNAPSHOT - 2026-12-XX
 ----------------------
+[Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-441-to-450)
+
 * [ElasticSearch] `EmbeddedElasticSearchServer` (Testcontainers) : default image elasticsearch 9.4.3 -> 9.4.9, the latest 9.4 server image (same minor as the elasticsearch-java client)
 * [SAML2] BouncyCastle forced to 1.87 (opensaml 5.2.3, the latest, brings 1.84) : a single BC version with the jsch connector (an application using both got bcprov 1.84 with bcpkix 1.87) and the CVE fixes of BC 1.85+
 * [SAML2] Fix `saml.ip.metadata` : the IdP signing certificate was never found in the metadata (searched with the SP role), every SAML login failed ; a metadata without signing certificate now fails at startup
@@ -15,6 +17,7 @@ Running 4.5.0-SNAPSHOT - 2026-12-XX
 * [SAML2] Fix `nextCertFile` of `saml.ip.metadata` : read as a file like `metadataFile` and `nextMetadataFile` (the value was parsed as the certificate content)
 * [OIDC] Fix a logout before any login with `dontFailAtStartup` and a provider not reachable at startup : NullPointerException, now the same error as the login (authentication currently unavailable)
 * [SAML2] New params of the SAML response checks : `clockSkewSeconds` (180), `checkAudience` (true), `checkDestination` (true), `checkInResponseTo` (false)
+* **[SAML2] `cryptAssertion` (true by default) is now applied by the SAML response checks** : an IdP that does not encrypt the assertions needs `cryptAssertion=false`, the login fails otherwise with an error naming this param
 * [SAML2] `saml.ip.metadata` : all the signing certificates of the IdP metadata are trusted (key rollover : the IdP publishes the current and the next ones, as with `nextCertFile`) ; a metadata file of several entities (federation) uses its only IdP, and fails at startup with none or several
 * [SAML2] Params checked at startup, with a clear message : `clockSkewSeconds` from 0 to 600s, `externalUrl` absolute (`http(s)://...`) without final `/` (an empty value is no `externalUrl`)
 * [SAML2] Certificate and key files read without a BOM nor the blank lines around the PEM content (a BOM failed with `Illegal base64 character`)
