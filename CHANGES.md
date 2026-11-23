@@ -27,9 +27,9 @@ Running 4.5.0-SNAPSHOT - 2026-12-XX
   - jackson-datatype-jsr310 2.22.0 -> 2.23.0
   - bcpkix-jdk18on / bcprov-jdk18on 1.84 -> 1.87
   - jsch 0.2.26 -> 2.28.8 (same com.github.mwiede library, new numbering)
-  - mongodb-driver-sync 5.8.0 -> 5.14.0
+  - mongodb-driver-sync 5.8.0 -> 5.15.0
   - msal4j 1.25.0 -> 1.26.1
-  - neo4j / neo4j-bolt 5.26.28 -> 5.26.33
+  - neo4j / neo4j-bolt 5.26.28 -> 5.26.34
   - neo4j-java-driver 5.28.14 -> 5.28.15
   - oauth2-oidc-sdk 11.37.2 -> 11.39
   - opensaml-saml-impl 5.1.4 -> 5.2.3
