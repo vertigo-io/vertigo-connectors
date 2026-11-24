@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -30,6 +31,7 @@ import io.vertigo.core.resource.ResourceManager;
 import io.vertigo.core.util.StringUtil;
 
 public class SAML2IpConfigFilePlugin extends SAML2IpConfigStringPlugin {
+	private static final Pattern BOM_PATTERN = Pattern.compile("^\uFEFF");
 
 	@Inject
 	public SAML2IpConfigFilePlugin(
@@ -50,7 +52,7 @@ public class SAML2IpConfigFilePlugin extends SAML2IpConfigStringPlugin {
 		final var fileUrl = resourceManager.resolve(path);
 		try (var stream = fileUrl.openStream()) {
 			//a BOM (saved by some Windows editors) and blank lines around the PEM content are ignored
-			return new String(stream.readAllBytes(), StandardCharsets.UTF_8).replaceFirst("^\uFEFF", "").strip();
+			return BOM_PATTERN.matcher(new String(stream.readAllBytes(), StandardCharsets.UTF_8)).replaceFirst("").strip();
 		} catch (final IOException e) {
 			throw WrappedException.wrap(e);
 		}

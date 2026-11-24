@@ -18,6 +18,7 @@
 package io.vertigo.connectors.saml2;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -34,10 +35,14 @@ import io.vertigo.core.resource.ResourceManager;
  */
 public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 
-	private final SAML2Parameters samlParameters;
-	private final String connectorName;
 	/** Beyond, the validity times of the assertion are no longer really checked. */
 	private static final int MAX_CLOCK_SKEW_SECONDS = 600;
+	/** Clock gap accepted by default between the IdP and the application. */
+	private static final int DEFAULT_CLOCK_SKEW_SECONDS = 180;
+	private static final Pattern ABSOLUTE_URL_PATTERN = Pattern.compile("(?i)https?://[^/].*");
+
+	private final SAML2Parameters samlParameters;
+	private final String connectorName;
 
 	@Inject
 	public SAML2DeploymentConnector(
@@ -71,7 +76,7 @@ public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 				.isTrue(clockSkewSecondsOpt.orElse(0) >= 0 && clockSkewSecondsOpt.orElse(0) <= MAX_CLOCK_SKEW_SECONDS,
 						"clockSkewSeconds (clock gap accepted between the IdP and the application) must be between 0 and {0}s : {1}s", MAX_CLOCK_SKEW_SECONDS, clockSkewSecondsOpt.orElse(0))
 				.when(externalUrlOpt.filter(url -> !url.isBlank()).isPresent(), () -> Assertion.check()
-						.isTrue(externalUrlOpt.get().matches("(?i)https?://[^/].*") && !externalUrlOpt.get().endsWith("/"),
+						.isTrue(ABSOLUTE_URL_PATTERN.matcher(externalUrlOpt.get()).matches() && !externalUrlOpt.get().endsWith("/"),
 								"externalUrl must be the absolute url of the application, without final / (the callback path is added to it) : {0}", externalUrlOpt.get()));
 		//---
 		connectorName = connectorNameOpt.orElse("main");
@@ -82,7 +87,7 @@ public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 				cryptAssertionOpt.orElse(true),
 				extractPublicKeyFromCertificateOpt.orElse(false),
 				// checks of the SAML 2.0 Web Browser SSO profile, on by default ; InResponseTo off : it needs the session at the callback (cross site POST from the IdP)
-				clockSkewSecondsOpt.orElse(180),
+				clockSkewSecondsOpt.orElse(DEFAULT_CLOCK_SKEW_SECONDS),
 				checkAudienceOpt.orElse(true),
 				checkDestinationOpt.orElse(true),
 				checkInResponseToOpt.orElse(false),

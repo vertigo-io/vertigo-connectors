@@ -193,7 +193,7 @@ class SAML2ConnectorTest {
 	//-----------------------------------------------------------------------------------------------------------------
 
 	@Test
-	void testParamsBounds() throws Exception {
+	void testParamsBounds() {
 		assertDoesNotThrow(() -> connector(Optional.empty(), Optional.empty()));
 		assertDoesNotThrow(() -> connector(Optional.of("https://app.test/context"), Optional.of(0)));
 		//an empty externalUrl (an empty environment variable) is no externalUrl ; the scheme is case insensitive
