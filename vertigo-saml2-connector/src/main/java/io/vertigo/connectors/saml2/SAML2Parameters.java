@@ -32,6 +32,11 @@ public final class SAML2Parameters {
 
 	private final boolean extractPublicKeyFromCertificate;
 
+	private final int clockSkewSeconds;
+	private final boolean checkAudience;
+	private final boolean checkDestination;
+	private final boolean checkInResponseTo;
+
 	private final List<Credential> spCredentials;
 	private final String loginUrl;
 	private final String logoutUrl;
@@ -43,6 +48,10 @@ public final class SAML2Parameters {
 			final String signatureType,
 			final boolean cryptAssertion,
 			final boolean extractPublicKeyFromCertificate,
+			final int clockSkewSeconds,
+			final boolean checkAudience,
+			final boolean checkDestination,
+			final boolean checkInResponseTo,
 			final List<Credential> spCredentials,
 			final String loginUrl,
 			final String logoutUrl,
@@ -53,6 +62,10 @@ public final class SAML2Parameters {
 		this.signatureType = signatureType;
 		this.cryptAssertion = cryptAssertion;
 		this.extractPublicKeyFromCertificate = extractPublicKeyFromCertificate;
+		this.clockSkewSeconds = clockSkewSeconds;
+		this.checkAudience = checkAudience;
+		this.checkDestination = checkDestination;
+		this.checkInResponseTo = checkInResponseTo;
 		this.spCredentials = spCredentials;
 		this.loginUrl = loginUrl;
 		this.logoutUrl = logoutUrl;
@@ -77,6 +90,26 @@ public final class SAML2Parameters {
 
 	public boolean isExtractPublicKeyFromCertificate() {
 		return extractPublicKeyFromCertificate;
+	}
+
+	/** @return tolerance (seconds) on the validity times of the assertion, for the clock gap between the IdP and this server */
+	public int getClockSkewSeconds() {
+		return clockSkewSeconds;
+	}
+
+	/** @return true if the assertion audience must be this SP (samlClientName) */
+	public boolean isCheckAudience() {
+		return checkAudience;
+	}
+
+	/** @return true if the response destination and the assertion recipient must be the callback url */
+	public boolean isCheckDestination() {
+		return checkDestination;
+	}
+
+	/** @return true if the assertion must answer a request sent from this session */
+	public boolean isCheckInResponseTo() {
+		return checkInResponseTo;
 	}
 
 	public List<Credential> getSpCredentials() {

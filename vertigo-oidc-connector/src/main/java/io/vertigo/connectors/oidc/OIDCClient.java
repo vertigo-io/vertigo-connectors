@@ -433,6 +433,8 @@ public class OIDCClient implements IOIDCClient {
 	 */
 	@Override
 	public String getLogoutUrl(final Optional<URI> redirectUriOpt, final Optional<String> idTokenOpt, final Optional<Locale> localeOpt) {
+		loadMetadataIfNeeded(false);
+
 		var logoutParam = "?client_id=" + clientID.getValue();
 
 		if (redirectUriOpt.isPresent()) {

@@ -41,7 +41,6 @@ import org.opensaml.saml.metadata.resolver.impl.PredicateRoleDescriptorResolver;
 import org.opensaml.saml.saml2.metadata.Endpoint;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
-import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
 import org.opensaml.saml.security.impl.MetadataCredentialResolver;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.security.credential.UsageType;
@@ -80,23 +79,23 @@ public class SAML2IpConfigMetadataPlugin implements SAML2IpConfigPlugin {
 		final var metadataFileUrl = resourceManager.resolve(metadataFilePath);
 		final var metadataResolver = getMetadataResolver(metadataFileUrl, parserPool);
 
-		final var idpEntityDescriptor = getEntityDescriptor(metadataResolver);
+		final var idpEntityDescriptor = getEntityDescriptor(metadataResolver, metadataFilePath);
 
 		loginUrl = resolveLoginUrl(idpEntityDescriptor);
 		logoutUrl = simpleLogoutUrl.orElseGet(() -> resolveLogoutUrl(idpEntityDescriptor));
 
 		signingCredentials = new ArrayList<>();
-		signingCredentials.add(resolveIdpCredential(metadataResolver, idpEntityDescriptor));
+		signingCredentials.addAll(resolveIdpCredentials(metadataResolver, idpEntityDescriptor));
 
 		if (nextMetadataFileOpt.isPresent() && !StringUtil.isBlank(nextMetadataFileOpt.get())) {
 			final var metadataFile2Url = resourceManager.resolve(nextMetadataFileOpt.get());
 			final var metadataResolver2 = getMetadataResolver(metadataFile2Url, parserPool);
-			final var idpEntityDescriptor2 = getEntityDescriptor(metadataResolver);
-			signingCredentials.add(resolveIdpCredential(metadataResolver2, idpEntityDescriptor2));
+			final var idpEntityDescriptor2 = getEntityDescriptor(metadataResolver2, nextMetadataFileOpt.get());
+			signingCredentials.addAll(resolveIdpCredentials(metadataResolver2, idpEntityDescriptor2));
 		}
 
 		if (alternateCertFileOpt.isPresent() && !StringUtil.isBlank(alternateCertFileOpt.get())) {
-			signingCredentials.add(CertUtil.getCredentialFromString(alternateCertFileOpt.get()));
+			signingCredentials.add(CertUtil.getCredentialFromString(SAML2IpConfigFilePlugin.readFileContent(resourceManager, alternateCertFileOpt.get())));
 		}
 	}
 
@@ -119,7 +118,10 @@ public class SAML2IpConfigMetadataPlugin implements SAML2IpConfigPlugin {
 		}
 	}
 
-	private static Credential resolveIdpCredential(final AbstractReloadingMetadataResolver metadataResolver, final EntityDescriptor idpEntityDescriptor) {
+	/**
+	 * @return the signing certificates of the IdP : all of them, its metadata publishes the current and the next ones during a key rollover
+	 */
+	private static List<Credential> resolveIdpCredentials(final AbstractReloadingMetadataResolver metadataResolver, final EntityDescriptor idpEntityDescriptor) {
 		try {
 			final var metadataCredentialResolver = new MetadataCredentialResolver();
 
@@ -133,7 +135,12 @@ public class SAML2IpConfigMetadataPlugin implements SAML2IpConfigPlugin {
 			metadataCredentialResolver.initialize();
 
 			final var criteriaSetSigning = getCredentialCriteriaSet(idpEntityDescriptor.getEntityID(), UsageType.SIGNING);
-			return metadataCredentialResolver.resolveSingle(criteriaSetSigning);
+			final List<Credential> credentials = new ArrayList<>();
+			metadataCredentialResolver.resolve(criteriaSetSigning).forEach(credentials::add);
+			if (credentials.isEmpty()) {
+				throw new VSystemException("No IdP signing certificate found in SAML metadata of '{0}'.", idpEntityDescriptor.getEntityID());
+			}
+			return credentials;
 			// Saml IDP metadata provides encryption public key but I don't found an usage, it can be retrieved with getCredentialCriteriaSet(..., UsageType.ENCRYPTION)
 		} catch (ComponentInitializationException | ResolverException e) {
 			throw new VSystemException(e, "Unable to resolve credentials from SAML metadata.");
@@ -144,19 +151,28 @@ public class SAML2IpConfigMetadataPlugin implements SAML2IpConfigPlugin {
 	private static CriteriaSet getCredentialCriteriaSet(final String entityId, final UsageType usageType) {
 		final var criteriaSet = new CriteriaSet();
 		criteriaSet.add(new UsageCriterion(usageType));
-		criteriaSet.add(new EntityRoleCriterion(SPSSODescriptor.DEFAULT_ELEMENT_NAME));
+		criteriaSet.add(new EntityRoleCriterion(IDPSSODescriptor.DEFAULT_ELEMENT_NAME));
 		criteriaSet.add(new ProtocolCriterion(SAMLConstants.SAML20P_NS));
 		criteriaSet.add(new EntityIdCriterion(entityId));
 
 		return criteriaSet;
 	}
 
-	private static EntityDescriptor getEntityDescriptor(final AbstractBatchMetadataResolver metadataResolver) {
-		final var it = metadataResolver.iterator();
-		if (!it.hasNext()) {
-			throw new VSystemException("Unable to read SAML metadata file.");
+	/**
+	 * @return the IdP of the metadata file : the only entity with an IdP role (a federation file may hold several entities)
+	 */
+	private static EntityDescriptor getEntityDescriptor(final AbstractBatchMetadataResolver metadataResolver, final String metadataFilePath) {
+		final List<EntityDescriptor> idps = new ArrayList<>();
+		metadataResolver.forEach(entityDescriptor -> {
+			if (entityDescriptor.getIDPSSODescriptor(SAMLConstants.SAML20P_NS) != null) {
+				idps.add(entityDescriptor);
+			}
+		});
+		if (idps.size() != 1) {
+			throw new VSystemException("SAML metadata file ''{0}'' must describe one SAML 2.0 IdP (an EntityDescriptor with an IDPSSODescriptor for the SAML 2.0 protocol) : {1} found.",
+					metadataFilePath, idps.size());
 		}
-		return it.next();
+		return idps.get(0);
 	}
 
 	private static String resolveLoginUrl(final EntityDescriptor idpEntityDescriptor) {

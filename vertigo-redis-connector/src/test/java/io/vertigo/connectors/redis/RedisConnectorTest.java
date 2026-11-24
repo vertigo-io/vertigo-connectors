@@ -30,6 +30,7 @@ import io.vertigo.core.param.Param;
 import redis.clients.jedis.UnifiedJedis;
 
 public class RedisConnectorTest {
+	private static final String REDIS_HOST = System.getenv("REDIS_HOST") != null ? System.getenv("REDIS_HOST") : "docker-vertigo.part.klee.lan.net";
 
 	@Inject
 	private RedisConnector redisConnector;
@@ -59,7 +60,7 @@ public class RedisConnectorTest {
 		return NodeConfig.builder()
 				.addModule(new RedisFeatures()
 						.withJedis(
-								Param.of("host", "docker-vertigo.part.klee.lan.net"),
+								Param.of("host", REDIS_HOST),
 								Param.of("port", "6379"),
 								Param.of("ssl", "false"),
 								Param.of("database", "0"))

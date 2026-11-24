@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.vertigo</groupId>
 		<artifactId>vertigo-connectors</artifactId>
-		<version>4.4.1</version>
+		<version>4.5.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>vertigo-elasticsearch-connector</artifactId>
@@ -41,7 +41,9 @@
 			<dependency>
 				<groupId>co.elastic.clients</groupId>
 			    <artifactId>elasticsearch-java</artifactId>
-				<version>9.4.3</version>
+				<!-- kept on 9.4 : a client is only guaranteed with a server of the same major and a greater or equal minor,
+					a 9.5 client would require ES 9.5+ servers -->
+				<version>9.4.10</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.apache.logging.log4j</groupId>
@@ -70,7 +72,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>2.22.0</version>
+			<version>2.23.0</version>
 		</dependency>
 	</dependencies>
 </project>

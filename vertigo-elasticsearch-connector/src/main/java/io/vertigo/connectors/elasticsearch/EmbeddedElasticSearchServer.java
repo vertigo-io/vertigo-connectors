@@ -44,19 +44,20 @@ public final class EmbeddedElasticSearchServer implements Component, Activeable 
 	public static final String DEFAULT_VERTIGO_ES_CLUSTER_NAME = "vertigo-elasticsearch-test";
 	//private static final String DEFAULT_ES_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch:7.17.28";
 	private static final String DEFAULT_DOCKER_HOST = "tcp://localhost:2375";
-	private static final String DEFAULT_ES_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch:9.4.3";
+	private static final String DEFAULT_ES_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch:9.4.9"; //same minor as the elasticsearch-java client (latest 9.4 server image)
 
 	private final ElasticsearchContainer container;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param imageOpt Image Docker ES (ex: docker.elastic.co/elasticsearch/elasticsearch:9.4.3)
+	 * @param imageOpt Image Docker ES (ex: docker.elastic.co/elasticsearch/elasticsearch:9.4.9)
 	 * @param clusterNameOpt Nom du cluster
 	 * @param httpPortOpt Port HTTP
 	 * @param transportPortOpt Port Transport (TCP)
 	 */
 	@Inject
+	@SuppressWarnings("java:S2095") // the container is closed by stop() : its lifecycle is the component one (start / stop)
 	public EmbeddedElasticSearchServer(
 			@ParamValue("docker.host") final Optional<String> dockerHostOpt,
 			@ParamValue("esImage") final Optional<String> imageOpt,

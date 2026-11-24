@@ -18,6 +18,7 @@
 package io.vertigo.connectors.saml2;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -34,6 +35,12 @@ import io.vertigo.core.resource.ResourceManager;
  */
 public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 
+	/** Beyond, the validity times of the assertion are no longer really checked. */
+	private static final int MAX_CLOCK_SKEW_SECONDS = 600;
+	/** Clock gap accepted by default between the IdP and the application. */
+	private static final int DEFAULT_CLOCK_SKEW_SECONDS = 180;
+	private static final Pattern ABSOLUTE_URL_PATTERN = Pattern.compile("(?i)https?://[^/].*");
+
 	private final SAML2Parameters samlParameters;
 	private final String connectorName;
 
@@ -45,6 +52,10 @@ public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 			@ParamValue("signatureType") final Optional<String> signatureTypeOpt,
 			@ParamValue("cryptAssertion") final Optional<Boolean> cryptAssertionOpt,
 			@ParamValue("extractPublicKeyFromCertificate") final Optional<Boolean> extractPublicKeyFromCertificateOpt,
+			@ParamValue("clockSkewSeconds") final Optional<Integer> clockSkewSecondsOpt,
+			@ParamValue("checkAudience") final Optional<Boolean> checkAudienceOpt,
+			@ParamValue("checkDestination") final Optional<Boolean> checkDestinationOpt,
+			@ParamValue("checkInResponseTo") final Optional<Boolean> checkInResponseToOpt,
 			final SAML2SpKeyPlugin spKeyConfig,
 			final SAML2IpConfigPlugin ipConfig,
 			final ResourceManager resourceManager) {
@@ -55,17 +66,31 @@ public class SAML2DeploymentConnector implements Connector<SAML2Parameters> {
 				.isNotNull(externalUrlOpt)
 				.isNotNull(signatureTypeOpt)
 				.isNotNull(cryptAssertionOpt)
+				.isNotNull(clockSkewSecondsOpt)
+				.isNotNull(checkAudienceOpt)
+				.isNotNull(checkDestinationOpt)
+				.isNotNull(checkInResponseToOpt)
 				.isNotNull(spKeyConfig)
 				.isNotNull(ipConfig)
-				.isNotNull(resourceManager);
+				.isNotNull(resourceManager)
+				.isTrue(clockSkewSecondsOpt.orElse(0) >= 0 && clockSkewSecondsOpt.orElse(0) <= MAX_CLOCK_SKEW_SECONDS,
+						"clockSkewSeconds (clock gap accepted between the IdP and the application) must be between 0 and {0}s : {1}s", MAX_CLOCK_SKEW_SECONDS, clockSkewSecondsOpt.orElse(0))
+				.when(externalUrlOpt.filter(url -> !url.isBlank()).isPresent(), () -> Assertion.check()
+						.isTrue(ABSOLUTE_URL_PATTERN.matcher(externalUrlOpt.get()).matches() && !externalUrlOpt.get().endsWith("/"),
+								"externalUrl must be the absolute url of the application, without final / (the callback path is added to it) : {0}", externalUrlOpt.get()));
 		//---
 		connectorName = connectorNameOpt.orElse("main");
 		samlParameters = new SAML2Parameters(
 				clientName,
-				externalUrlOpt,
+				externalUrlOpt.filter(url -> !url.isBlank()), //an empty value (an empty environment variable) is no externalUrl
 				signatureTypeOpt.orElse("RSA-SHA256"),
 				cryptAssertionOpt.orElse(true),
 				extractPublicKeyFromCertificateOpt.orElse(false),
+				// checks of the SAML 2.0 Web Browser SSO profile, on by default ; InResponseTo off : it needs the session at the callback (cross site POST from the IdP)
+				clockSkewSecondsOpt.orElse(DEFAULT_CLOCK_SKEW_SECONDS),
+				checkAudienceOpt.orElse(true),
+				checkDestinationOpt.orElse(true),
+				checkInResponseToOpt.orElse(false),
 				spKeyConfig.getCredentials(),
 				ipConfig.getLoginUrl(),
 				ipConfig.getLogoutUrl(),

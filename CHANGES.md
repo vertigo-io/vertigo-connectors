@@ -6,6 +6,38 @@ Running 5.0.0
 more to come :)
 
 
+Running 4.5.0-SNAPSHOT - 2026-12-XX
+----------------------
+[Migration help](https://github.com/vertigo-io/vertigo/wiki/Vertigo-Migration-Guide#from-441-to-450)
+
+* [ElasticSearch] `EmbeddedElasticSearchServer` (Testcontainers) : default image elasticsearch 9.4.3 -> 9.4.9, the latest 9.4 server image (same minor as the elasticsearch-java client)
+* [SAML2] BouncyCastle forced to 1.87 (opensaml 5.2.3, the latest, brings 1.84) : a single BC version with the jsch connector (an application using both got bcprov 1.84 with bcpkix 1.87) and the CVE fixes of BC 1.85+
+* [SAML2] Fix `saml.ip.metadata` : the IdP signing certificate was never found in the metadata (searched with the SP role), every SAML login failed ; a metadata without signing certificate now fails at startup
+* [SAML2] Fix `nextMetadataFile` of `saml.ip.metadata` : its signing certificate was searched with the entityID of the first metadata file, not found when it is another IdP
+* [SAML2] Fix `nextCertFile` of `saml.ip.metadata` : read as a file like `metadataFile` and `nextMetadataFile` (the value was parsed as the certificate content)
+* [OIDC] Fix a logout before any login with `dontFailAtStartup` and a provider not reachable at startup : NullPointerException, now the same error as the login (authentication currently unavailable)
+* [SAML2] New params of the SAML response checks : `clockSkewSeconds` (180), `checkAudience` (true), `checkDestination` (true), `checkInResponseTo` (false)
+* **[SAML2] `cryptAssertion` (true by default) is now applied by the SAML response checks** : an IdP that does not encrypt the assertions needs `cryptAssertion=false`, the login fails otherwise with an error naming this param
+* [SAML2] `saml.ip.metadata` : all the signing certificates of the IdP metadata are trusted (key rollover : the IdP publishes the current and the next ones, as with `nextCertFile`) ; a metadata file of several entities (federation) uses its only IdP, and fails at startup with none or several
+* [SAML2] Params checked at startup, with a clear message : `clockSkewSeconds` from 0 to 600s, `externalUrl` absolute (`http(s)://...`) without final `/` (an empty value is no `externalUrl`)
+* [SAML2] Certificate and key files read without a BOM nor the blank lines around the PEM content (a BOM failed with `Illegal base64 character`)
+* Update libs
+  - elasticsearch / elasticsearch-rest-high-level-client / x-pack-transport 7.17.28 -> 7.17.29 (ES 7.17 connector)
+  - elasticsearch-java 9.4.3 -> 9.4.10 (kept on 9.4 : a client is only guaranteed with a server of the same major and a greater or equal minor, a 9.5 client would require ES 9.5+ servers)
+  - jackson-datatype-jsr310 2.22.0 -> 2.23.0
+  - bcpkix-jdk18on / bcprov-jdk18on 1.84 -> 1.87
+  - jsch 0.2.26 -> 2.28.8 (same com.github.mwiede library, new numbering)
+  - mongodb-driver-sync 5.8.0 -> 5.15.0
+  - msal4j 1.25.0 -> 1.26.1
+  - neo4j / neo4j-bolt 5.26.28 -> 5.26.34
+  - neo4j-java-driver 5.28.14 -> 5.28.15
+  - oauth2-oidc-sdk 11.37.2 -> 11.39
+  - opensaml-saml-impl 5.1.4 -> 5.2.3
+  - woodstox-core 7.2.1 -> 7.3.0
+
+more to come :)
+
+
 Release 4.4.1 - 2026/08/28
 ----------------------
 * [HttpClient] Add mTLS support (client authentication) : `keyStoreUrl`, `keyStorePassword`, `keyStoreKeyAlias`, `keyStoreForceAlias`
