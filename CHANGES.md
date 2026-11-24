@@ -40,8 +40,6 @@ Release 4.5.0 - 2026/11/24
   - opensaml-saml-impl 5.1.4 -> 5.2.3
   - woodstox-core 7.2.1 -> 7.3.0
 
-more to come :)
-
 
 Release 4.4.1 - 2026/08/28
 ----------------------
